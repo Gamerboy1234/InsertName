@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Mouse_Aiming.h"
+#include "MyClass.h"
 
-Mouse_Aiming::Mouse_Aiming()
+MyClass::MyClass()
 {
 }
 
-Mouse_Aiming::~Mouse_Aiming()
+MyClass::~MyClass()
 {
 }

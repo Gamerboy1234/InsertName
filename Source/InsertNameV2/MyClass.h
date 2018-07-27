@@ -7,9 +7,9 @@
 /**
  * 
  */
-class INSERTNAMEV2_API Mouse_Aiming
+class INSERTNAMEV2_API MyClass
 {
 public:
-	Mouse_Aiming();
-	~Mouse_Aiming();
+	MyClass();
+	~MyClass();
 };
