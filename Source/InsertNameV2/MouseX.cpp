@@ -1,31 +1,35 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "MousePostionY.h"
+#include "MouseX.h"
 #include <string>
 #include <windows.h>
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
+
+
 
 using namespace std;
 
-int UMousePostionY::MouseY()
+int UMouseX::MouseX()
 {
 	POINT p;
-	int y = 0;
+	int x = 0;
 
 	if (GetCursorPos(&p))
 	{
 		//cursor position now in p.x and p.y
 
-		y = p.y;
+		x = p.x;
 
 	}
-
-	/*
-	int cy = GetSystemMetrics(SM_CYSCREEN);
-	cy = cy / 2;
-	*/
 	
-	return p.y;
+	/*
+	int cx = GetSystemMetrics(SM_CYSCREEN);
+
+	cx = cx / 2;
+
+	return cx;
+	*/
+
+	return p.x;
 }
-
-
-
