@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PriestBoss.h"
-#include <ctime>
+
 #include <cstdio>
 
 
@@ -19,28 +19,7 @@ void APriestBoss::BeginPlay()
 	Super::BeginPlay();
 
 }
-bool timer(double secondsToDelay)
-{
-	clock_t startTime = clock(); //Start timer
 
-	clock_t testTime;
-	clock_t timePassed;
-	double secondsPassed;
-
-	while (true)
-	{
-		testTime = clock();
-		timePassed = startTime - testTime;
-		secondsPassed = timePassed / (double)CLOCKS_PER_SEC;
-
-		if (secondsPassed >= secondsToDelay)
-		{
-			return true;
-		}
-	}
-
-
-}
 
 FVector insert;
 int distance = 0;
@@ -51,6 +30,8 @@ int range = 200;
 int distance2 = 0;
 bool negate1 = false;
 bool negate2 = false;
+FRotator direction;
+
 void APriestBoss::Tick(float DeltaTime)
 {
 	FVector PlayerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
@@ -65,19 +46,23 @@ void APriestBoss::Tick(float DeltaTime)
 	//moves object back and forth
 	if (myposition.X > PlayerLocation.X && distance < 100)
 	{
+		// left
+		direction.Yaw = 180;
 		myposition.X = myposition.X + .5;
+		SetActorLocation(myposition);
+		SetActorRotation(direction);
+		
 	}
 	if (myposition.X < PlayerLocation.X && distance < 100)
 	{
+		// right
+		direction.Yaw = 0;
 		myposition.X = myposition.X - .5;
-	}
-
-	
-
-	
-		
-
 		SetActorLocation(myposition);
+		SetActorRotation(direction );
+	}
+			
+			
 	}
 
 	
