@@ -41,7 +41,7 @@ bool timer(double secondsToDelay)
 
 
 }
-float position = 0;
+
 FVector insert;
 int distance = 0;
 bool on = true;
@@ -55,51 +55,27 @@ void APriestBoss::Tick(float DeltaTime)
 {
 	FVector PlayerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	FVector myposition = GetActorLocation();
+	distance = (PlayerLocation.X - myposition.X) * 1;
+	if (distance < 0)
+	{
+		distance = distance * -1;
+	}
 
 	Super::Tick(DeltaTime);
-
-
 	//moves object back and forth
-	if (on == true)
+	if (myposition.X > PlayerLocation.X && distance < 100)
 	{
-		distance = (PlayerLocation.X - position) * 1;
-		distance2 = PlayerLocation.X - position;
-		if (distance2 > 20)
-		{
-			negate1 = true;
-		}
-		else
-		{
-			negate1 = false;
-		}
-		if (distance2 < -20)
-		{
-			negate2 = true;
-		}
-		else
-		{
-			negate2 = false;
-		}
-		if (distance < 1)
-		{
+		myposition.X = myposition.X + .5;
+	}
+	if (myposition.X < PlayerLocation.X && distance < 100)
+	{
+		myposition.X = myposition.X - .5;
+	}
 
+	
 
-			if (negate1 == false)
-			{
-				position = position + .3f;
-			}
-		}
-		else if(distance > 1)
-		{
-			if (negate2 == false)
-			{
-				position = position - .3f;
-			}
-			
-			
-
-		}
-		myposition.X = position;
+	
+		
 
 		SetActorLocation(myposition);
 	}
@@ -111,4 +87,4 @@ void APriestBoss::Tick(float DeltaTime)
 
 
 
-}
+
