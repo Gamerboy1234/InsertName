@@ -5,6 +5,7 @@
 #include <cstdio>
 
 
+bool UBossTimmer::BossTimmer(float secondsToDelay)
 {
 	//clock_t startTime = clock(); //Start timer
 
