@@ -16,7 +16,7 @@ class INSERTNAMEV2_API USwordMousePostion : public UBlueprintFunctionLibrary
 	
 private:
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "SwordMousePosition", CompactNodeTitle = "SwordMousePosition", Keywords = "Sword"), Category = Game)
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "LeftOrRight?", CompactNodeTitle = "LeftOrRight?", Keywords = "LeftOrRight"), Category = Game)
 		static bool SwordMousePosition();
 
 	
