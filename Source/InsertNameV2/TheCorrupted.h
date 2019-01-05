@@ -23,6 +23,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
-	
+  UPROPERTY(EditAnywhere)
+   float velocity;
+  UPROPERTY(EditAnywhere)
+    float idlespeed;
+  UPROPERTY(EditAnywhere)
+    bool leftturn;
+  UPROPERTY(EditAnywhere)
+    bool rightturn; 
+  UPROPERTY(BlueprintReadWrite)
+    bool ag; 
+
 };

@@ -11,7 +11,7 @@ ATheCorrupted::ATheCorrupted()
 
 }
 
-float randomVelocity = 0;
+float velocity = 0;
 float distance = 0;
 bool ag = false;
 bool leftturn = false;
@@ -26,36 +26,8 @@ void ATheCorrupted::BeginPlay()
 	
 	Super::BeginPlay();
 
-	 randomVelocity = 0;
-	 distance = 0;
 	 ag = false;
-     leftturn = false;
-	 rightturn = false;
-	 movedistance = 0;
-	 idlespeed = 0;
-	
-	randomVelocity = 0 + (rand() % 8);
-	if (randomVelocity < 3)
-	{
-		 leftturn = false;
-
-	}
-	else
-	{
-		leftturn = true;
-	}
-	if (randomVelocity > 3)
-	{
-	  rightturn = false;
-
-	}
-	else
-	{
-		rightturn = true;
-	}
-	randomVelocity = randomVelocity / 7;
-	
-	
+  
 }
 
 // Called every frame
@@ -65,45 +37,38 @@ void ATheCorrupted::Tick(float DeltaTime)
 	FVector PlayerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
 	FVector myposition = GetActorLocation();
 	distance = (PlayerLocation.X - myposition.X) * 1;
-	if (distance < 0)
-	{
-		distance = distance * -1;
-	}
-	if (distance < 100)
-	{
-		ag = true;
-	}
+	
 	if (ag == true)
 	{
 		if (myposition.X < PlayerLocation.X)
 		{
-			myposition.X = myposition.X + randomVelocity;
+			myposition.X = myposition.X + velocity;
 			SetActorLocation(myposition);
 		}
 		if (myposition.X > PlayerLocation.X)
 		{
-			myposition.X = myposition.X - randomVelocity;
+			myposition.X = myposition.X - velocity;
 			SetActorLocation(myposition);
 		}
 		if (myposition.Z < PlayerLocation.Z)
 		{
-			myposition.Z = myposition.Z + randomVelocity;
+			myposition.Z = myposition.Z + velocity;
 			SetActorLocation(myposition);
 		}
 		if (myposition.Z > PlayerLocation.Z)
 		{
-			myposition.Z = myposition.Z - randomVelocity;
+			myposition.Z = myposition.Z - velocity; 
 			SetActorLocation(myposition);
 		}
 	}
 	else
 	{
-		idlespeed = randomVelocity / 2;
+		idlespeed = velocity / 2;
 		if (rightturn == true )
 		{
 			myposition.X = myposition.X + idlespeed;
 			SetActorLocation(myposition);
-			if (movedistance > 250)
+			if (movedistance > 100)
 			{
 				rightturn = false;
 				leftturn = true;
@@ -114,7 +79,7 @@ void ATheCorrupted::Tick(float DeltaTime)
 		{
 			myposition.X = myposition.X - idlespeed;
 			SetActorLocation(myposition);
-			if (movedistance < -250)
+			if (movedistance < -100)
 			{
 				rightturn = true;
 				leftturn = false;
