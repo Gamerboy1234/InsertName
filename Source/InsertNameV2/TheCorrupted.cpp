@@ -10,6 +10,7 @@ ATheCorrupted::ATheCorrupted()
 	PrimaryActorTick.bCanEverTick = true;
 
 }
+
 float randomVelocity = 0;
 float distance = 0;
 bool ag = false;
@@ -24,6 +25,7 @@ void ATheCorrupted::BeginPlay()
 {
 	
 	Super::BeginPlay();
+
 	 randomVelocity = 0;
 	 distance = 0;
 	 ag = false;
@@ -32,7 +34,7 @@ void ATheCorrupted::BeginPlay()
 	 movedistance = 0;
 	 idlespeed = 0;
 	
-	randomVelocity = 1 + (rand() % 8);
+	randomVelocity = 0 + (rand() % 8);
 	if (randomVelocity < 3)
 	{
 		 leftturn = false;
@@ -81,6 +83,16 @@ void ATheCorrupted::Tick(float DeltaTime)
 		if (myposition.X > PlayerLocation.X)
 		{
 			myposition.X = myposition.X - randomVelocity;
+			SetActorLocation(myposition);
+		}
+		if (myposition.Z < PlayerLocation.Z)
+		{
+			myposition.Z = myposition.Z + randomVelocity;
+			SetActorLocation(myposition);
+		}
+		if (myposition.Z > PlayerLocation.Z)
+		{
+			myposition.Z = myposition.Z - randomVelocity;
 			SetActorLocation(myposition);
 		}
 	}

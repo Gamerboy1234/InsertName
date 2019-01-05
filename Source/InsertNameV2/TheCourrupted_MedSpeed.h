@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "PriestBoss.generated.h"
+#include "TheCourrupted_MedSpeed.generated.h"
 
 UCLASS()
-class INSERTNAMEV2_API APriestBoss : public AActor
+class INSERTNAMEV2_API ATheCourrupted_MedSpeed : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	APriestBoss();
+	ATheCourrupted_MedSpeed();
 
 protected:
 	// Called when the game starts or when spawned
@@ -22,5 +22,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	
 	
 };
