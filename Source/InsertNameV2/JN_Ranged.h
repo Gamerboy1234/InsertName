@@ -25,5 +25,13 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 		bool dead;
+	UPROPERTY(BlueprintReadWrite)
+		bool isRight;
+	UPROPERTY(BlueprintReadWrite)
+		bool isLeft;
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+		int SpearAmmount;
+	UPROPERTY(BlueprintReadWrite)
+		bool SpearFound;
 	
 };
