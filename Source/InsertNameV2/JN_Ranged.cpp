@@ -31,7 +31,7 @@ bool SpearFound = false;
 void AJN_Ranged::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (SpearAmmount > 1)
+	if (SpearAmmount > 0)
 	{
 		if (dead != true) {
 			FVector PlayerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
@@ -44,7 +44,7 @@ void AJN_Ranged::Tick(float DeltaTime)
 
 			Super::Tick(DeltaTime);
 			//moves object back and forth
-			if (myposition.X > PlayerLocation.X && distance1 < 100)
+			if (myposition.X > PlayerLocation.X && distance1 < 150)
 			{
 				// left
 				direction1.Yaw = 180;
@@ -55,7 +55,7 @@ void AJN_Ranged::Tick(float DeltaTime)
 				isRight = false;
 
 			}
-			if (myposition.X < PlayerLocation.X && distance1 < 100)
+			if (myposition.X < PlayerLocation.X && distance1 < 150)
 			{
 				// right
 				direction1.Yaw = 0;
