@@ -33,5 +33,10 @@ public:
 		int SpearAmmount;
 	UPROPERTY(BlueprintReadWrite)
 		bool SpearFound;
-	
+	UPROPERTY(BlueprintReadWrite)
+		FVector SpearLocation; 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		int maxSpearAmount; 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		int agRadius; 
 };

@@ -24,6 +24,11 @@ bool dead = false;
 bool isLeft = false; 
 bool isRight = false; 
 bool SpearFound = false;
+FVector SpearLocation; 
+bool aggro = false; 
+
+
+
 
 
 
@@ -31,50 +36,80 @@ bool SpearFound = false;
 void AJN_Ranged::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (SpearAmmount > 0)
+	FVector PlayerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	FVector myposition = GetActorLocation();
+	distance1 = (PlayerLocation.X - myposition.X) * 1;
+	if (distance1 < 0)
 	{
-		if (dead != true) {
-			FVector PlayerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
-			FVector myposition = GetActorLocation();
-			distance1 = (PlayerLocation.X - myposition.X) * 1;
-			if (distance1 < 0)
-			{
-				distance1 = distance1 * -1;
-			}
-
-			Super::Tick(DeltaTime);
-			//moves object back and forth
-			if (myposition.X > PlayerLocation.X && distance1 < 150)
-			{
-				// left
-				direction1.Yaw = 180;
-				myposition.X = myposition.X + .5;
-				SetActorLocation(myposition);
-				SetActorRotation(direction1);
-				isLeft = true;
-				isRight = false;
-
-			}
-			if (myposition.X < PlayerLocation.X && distance1 < 150)
-			{
-				// right
-				direction1.Yaw = 0;
-				myposition.X = myposition.X - .5;
-				SetActorLocation(myposition);
-				SetActorRotation(direction1);
-				isLeft = false;
-				isRight = true;
-			}
-
-		}
+		distance1 = distance1 * -1;
 	}
-	else
-	{
-		if (SpearFound)
+	if (distance1 < agRadius) {
+		aggro = true;
+	}
+	
+	if (aggro) {
+		if (SpearAmmount > 0)
 		{
 
+			if (dead != true && SpearFound != true) {
+
+				distance1 = (PlayerLocation.X - myposition.X) * 1;
+				if (distance1 < 0)
+				{
+					distance1 = distance1 * -1;
+				}
+
+				Super::Tick(DeltaTime);
+				//moves object back and forth
+				if (myposition.X > PlayerLocation.X && distance1 < 150)
+				{
+					// left
+					direction1.Yaw = 180;
+					myposition.X = myposition.X + .5;
+					SetActorLocation(myposition);
+					SetActorRotation(direction1);
+					isLeft = true;
+					isRight = false;
+
+				}
+				if (myposition.X < PlayerLocation.X && distance1 < 150)
+				{
+					// right
+					direction1.Yaw = 0;
+					myposition.X = myposition.X - .5;
+					SetActorLocation(myposition);
+					SetActorRotation(direction1);
+					isLeft = false;
+					isRight = true;
+				}
+
+			}
+		}
+		else
+		{
+			if (SpearFound)
+			{
+				if (myposition.X > SpearLocation.X)
+
+				{
+					direction1.Yaw = 0;
+					myposition.X = myposition.X - .5;
+					SetActorLocation(myposition);
+					SetActorRotation(direction1);
+				}
+				if (myposition.X < SpearLocation.X)
+				{
+					direction1.Yaw = 180;
+					myposition.X = myposition.X + .5;
+					SetActorLocation(myposition);
+					SetActorRotation(direction1);
+				
+				}
+
+			}
 		}
 	}
+	
 
 }
 
