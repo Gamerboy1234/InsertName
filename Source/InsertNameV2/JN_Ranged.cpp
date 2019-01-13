@@ -26,11 +26,7 @@ bool isRight = false;
 bool SpearFound = false;
 FVector SpearLocation; 
 bool aggro = false; 
-
-
-
-
-
+bool isFiring = false;
 
 // Called every frame
 void AJN_Ranged::Tick(float DeltaTime)
@@ -61,7 +57,7 @@ void AJN_Ranged::Tick(float DeltaTime)
 
 				Super::Tick(DeltaTime);
 				//moves object back and forth
-				if (myposition.X > PlayerLocation.X && distance1 < 150)
+				if (myposition.X > PlayerLocation.X && distance1 < 150 )
 				{
 					// left
 					direction1.Yaw = 180;
@@ -72,7 +68,7 @@ void AJN_Ranged::Tick(float DeltaTime)
 					isRight = false;
 
 				}
-				if (myposition.X < PlayerLocation.X && distance1 < 150)
+				if (myposition.X < PlayerLocation.X && distance1 < 150 )
 				{
 					// right
 					direction1.Yaw = 0;
@@ -89,6 +85,7 @@ void AJN_Ranged::Tick(float DeltaTime)
 		{
 			if (SpearFound)
 			{
+				
 				if (myposition.X > SpearLocation.X)
 
 				{
@@ -96,6 +93,7 @@ void AJN_Ranged::Tick(float DeltaTime)
 					myposition.X = myposition.X - .5;
 					SetActorLocation(myposition);
 					SetActorRotation(direction1);
+					
 				}
 				if (myposition.X < SpearLocation.X)
 				{
@@ -110,6 +108,16 @@ void AJN_Ranged::Tick(float DeltaTime)
 		}
 	}
 	
-
+	if (isFiring)
+	{
+		if (myposition.X > PlayerLocation.X)
+		{
+			direction1.Yaw = 0;
+	    }
+		if (myposition.X < PlayerLocation.X)
+		{
+			direction1.Yaw = 180;
+		}
+	}
 }
 

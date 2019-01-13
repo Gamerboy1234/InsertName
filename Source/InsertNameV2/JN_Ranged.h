@@ -39,4 +39,9 @@ public:
 		int maxSpearAmount; 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		int agRadius; 
+	UPROPERTY(BlueprintReadWrite)
+		bool isFiring;
+	UPROPERTY(BlueprintReadWrite)
+		bool aggro;
+	
 };
