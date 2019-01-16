@@ -43,5 +43,7 @@ public:
 		bool isFiring;
 	UPROPERTY(BlueprintReadWrite)
 		bool aggro;
+	UPROPERTY(BlueprintReadWrite)
+		bool finished1;
 	
 };
