@@ -45,5 +45,7 @@ public:
 		bool aggro;
 	UPROPERTY(BlueprintReadWrite)
 		bool finished1;
-	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+		float velocity1;
+
 };

@@ -28,6 +28,7 @@ FVector SpearLocation;
 bool aggro = false; 
 bool isFiring = false;
 bool finished1 = false;
+float velocity1 = 0;
 
 // Called every frame
 void AJN_Ranged::Tick(float DeltaTime)
@@ -65,7 +66,7 @@ void AJN_Ranged::Tick(float DeltaTime)
 				{
 					// left
 					direction1.Yaw = 180;
-					myposition.X = myposition.X + .5;
+					myposition.X = myposition.X + velocity1;
 					SetActorLocation(myposition);
 					SetActorRotation(direction1);
 					isLeft = true;
@@ -76,7 +77,7 @@ void AJN_Ranged::Tick(float DeltaTime)
 				{
 					// right
 					direction1.Yaw = 0;
-					myposition.X = myposition.X - .5;
+					myposition.X = myposition.X - velocity1;
 					SetActorLocation(myposition);
 					SetActorRotation(direction1);
 					isLeft = false;
