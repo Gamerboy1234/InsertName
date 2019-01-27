@@ -97,7 +97,6 @@ void AJN_Ranged::Tick(float DeltaTime)
 					direction1.Yaw = 180;
 					myposition.X = myposition.X - .5;
 					SetActorLocation(myposition);
-					SetActorRotation(direction1);
 					
 				}
 				if (myposition.X < SpearLocation.X)
@@ -105,8 +104,7 @@ void AJN_Ranged::Tick(float DeltaTime)
 					direction1.Yaw = 0;
 					myposition.X = myposition.X + .5;
 					SetActorLocation(myposition);
-					SetActorRotation(direction1);
-				
+							
 				}
 				if (SpearAmmount >= 2)
 				{
