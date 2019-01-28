@@ -29,15 +29,15 @@ public:
 		bool isRight;
 	UPROPERTY(BlueprintReadWrite)
 		bool isLeft;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = "Damage Info")
 		int SpearAmmount;
 	UPROPERTY(BlueprintReadWrite)
 		bool SpearFound;
 	UPROPERTY(BlueprintReadWrite)
 		FVector SpearLocation; 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category = "Damage Info")
 		int maxSpearAmount; 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category = "Movement Info")
 		int agRadius; 
 	UPROPERTY(BlueprintReadWrite)
 		bool isFiring;
@@ -45,7 +45,7 @@ public:
 		bool aggro;
 	UPROPERTY(BlueprintReadWrite)
 		bool finished1;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = "Movement Info")
 		float velocity1;
 
 };
