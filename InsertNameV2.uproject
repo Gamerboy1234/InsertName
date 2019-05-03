@@ -56,6 +56,11 @@
 			"Name": "Prefabricator",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/39ccbbf668e84847890992df9922e355"
+		},
+		{
+			"Name": "APTiledToolkit",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/784561cbeb8348a88cc3383d8103c268"
 		}
 	]
 }
