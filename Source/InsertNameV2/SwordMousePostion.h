@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SwordMousePostion.generated.h"
+
 
 /**
  * 
@@ -17,8 +19,6 @@ class INSERTNAMEV2_API USwordMousePostion : public UBlueprintFunctionLibrary
 private:
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "LeftOrRight?", CompactNodeTitle = "LeftOrRight?", Keywords = "LeftOrRight"), Category = Game)
-		static bool SwordMousePosition();
+		static bool SwordMousePosition(float mouseX, float mouseY);
 
-	
-	
 };
