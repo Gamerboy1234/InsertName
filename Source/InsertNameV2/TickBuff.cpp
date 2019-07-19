@@ -5,7 +5,7 @@
 
 float UTickBuff::TickDamage(float Tick, float GunDamage, float BuffAmount)
 {
-  float temp1 = BuffAmount * Tick + 1; 
+  float temp1 = Tick * BuffAmount + 1;
   float temp2 = temp1 * GunDamage;
   return temp2;
 }
