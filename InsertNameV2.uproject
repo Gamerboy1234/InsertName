@@ -62,6 +62,10 @@
 			"Name": "APTiledToolkit",
 			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/784561cbeb8348a88cc3383d8103c268"
+		},
+		{
+			"Name": "Niagara",
+			"Enabled": true
 		}
 	]
 }
