@@ -15,4 +15,6 @@ class INSERTNAMEV2_API UTickBuff : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
     UFUNCTION(BlueprintPure, meta = (DisplayName = "TickBuff", CompactNodeTitle = "Buff", Keywords = "TickBuff"), Category = Math)
     static float TickDamage(float Tick, float GunDamage, float BuffAmount);
+  UFUNCTION(BlueprintPure, meta = (DisplayName = "CalcReflectionVector", CompactNodeTitle = "CalcReflectionVector", Keywords = "CalcReflectionVector"), Category = Math)
+    static FVector CalcReflectionVector(FVector VectorToReflect, FVector Normal);
 };
