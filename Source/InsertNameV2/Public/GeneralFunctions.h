@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Math/UnrealMathUtility.h"
 #include "GeneralFunctions.generated.h"
 
 /**
@@ -21,7 +22,7 @@ public:
   UFUNCTION(BlueprintPure, meta = (DisplayName = "TickBuff", CompactNodeTitle = "Buff", Keywords = "TickBuff"), Category = Math)
     static float TickDamage(float Tick, float GunDamage, float BuffAmount);
   UFUNCTION(BlueprintPure, meta = (DisplayName = "CalcReflectionVector", CompactNodeTitle = "CalcReflectionVector", Keywords = "CalcReflectionVector"), Category = Math)
-    static FVector CalcReflectionVector(FVector VectorToReflect, FVector Normal);
+    static FVector CalcReflectionVector(FVector VectorToReflect, FVector Normal, float Bounciness);
   UFUNCTION(BlueprintPure, meta = (DisplayName = "LeftOrRight?", CompactNodeTitle = "LeftOrRight?", Keywords = "LeftOrRight"), Category = Game)
     static bool MouseLeftOrRight(float mouseX, float mouseY);
   UFUNCTION(BlueprintPure, meta = (DisplayName = "RandomNumberNoRepeat", CompactNodeTitle = "RandomNumber", Keywords = "RandomNumber"), Category = Math)
