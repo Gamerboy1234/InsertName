@@ -28,11 +28,10 @@ float UGeneralFunctions::TickDamage(float Tick, float GunDamage, float BuffAmoun
   return temp2;
 }
 
-FVector UGeneralFunctions::CalcReflectionVector(FVector VectorToReflect, FVector Normal, float Bounciness)
+FVector UGeneralFunctions::CalcReflectionVector(FVector VectorToReflect, FVector Normal)
 {
-  Bounciness = FMath::Clamp<float>(Bounciness, 0, 1);
   float DotProduct = FVector::DotProduct(VectorToReflect, Normal);
-  FVector NewVector = Bounciness * -2 * DotProduct * Normal + VectorToReflect;
+  FVector NewVector = 1 * -2 * DotProduct * Normal + VectorToReflect;
   return NewVector;
 }
 
