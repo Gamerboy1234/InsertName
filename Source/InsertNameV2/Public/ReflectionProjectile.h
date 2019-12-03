@@ -4,15 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/EngineTypes.h"
+#include "DrawDebugHelpers.h"
 #include "ReflectionProjectile.generated.h"
 
 class UProjectileMovementComponent;
-class UPaperFlipbookComponent;
+class USphereComponent;
 
 UCLASS()
 class INSERTNAMEV2_API AReflectionProjectile : public AActor
 {
 	GENERATED_BODY()
+
+  bool bReflected;
+  /** Projectile's velocity vector */
+  FVector MyVelocity;
 
 public:	
 	// Sets default values for this actor's properties
@@ -21,15 +27,30 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-  
-  UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-  UPaperFlipbookComponent* PaperFlipBook = nullptr;
+
+  UPROPERTY(BlueprintReadWrite, Category = Projectile)
+  UProjectileMovementComponent* ProjectileMovement = nullptr;
+
+  UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+  USphereComponent* SphereComponent = nullptr;
+
+  UPROPERTY(BlueprintReadOnly, Category = Projectile)
+  FHitResult HitResult;
+
+  UPROPERTY(BlueprintReadOnly, Category = Projectile)
+  FVector CurrentReflection;
+
+  // Speed loss after reflection
+  UPROPERTY(BlueprintReadWrite, Category = Projectile)
+  float BounceSpeedLoss = 0;
+  /** How fast the projectile moves */
+  UPROPERTY(BlueprintReadWrite, Category = Projectile)
+  float CurrentSpeed = 0;
+
+  UFUNCTION()
+  void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-private:
-  UProjectileMovementComponent* ProjectialMovement = nullptr;
- 
 };
