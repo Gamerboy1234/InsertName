@@ -34,11 +34,10 @@ void AReflectionProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
   // Reflect the projectile because we hit a non-physics object
   FVector ReflectedVelocity = BounceSpeedLoss * (-2 * FVector::DotProduct(MyVelocity, Hit.Normal) * Hit.Normal + MyVelocity);
   MyVelocity = ReflectedVelocity;
-  CurrentReflection = ReflectedVelocity;
   ReflectedVelocity.Normalize();
   SetActorRotation(ReflectedVelocity.Rotation());
+  HitResult = Hit;
   bReflected = true;
- 
 }
 
 
@@ -46,9 +45,10 @@ void AReflectionProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 void AReflectionProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-  // Debug Info
-  FColor LineColor = bReflected ? FColor::Red : FColor::Green;
-  DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + MyVelocity * DeltaTime, LineColor, false, 2.f, 0, 1.f);
+
+ /* FColor LineColor = bReflected ? FColor::Red : FColor::Green;
+  DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + MyVelocity * DeltaTime, LineColor, false, 2.f, 0, 1.f); */
+
   // Updated Velocity
   SetActorLocation(GetActorLocation() + MyVelocity * DeltaTime, true);
 }
