@@ -21,6 +21,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+  
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+  UPaperFlipbookComponent* PaperFlipBook = nullptr;
 
 public:	
 	// Called every frame
@@ -28,5 +31,5 @@ public:
 
 private:
   UProjectileMovementComponent* ProjectialMovement = nullptr;
-  UPaperFlipbookComponent* PaperFlipBook = nullptr;
+ 
 };

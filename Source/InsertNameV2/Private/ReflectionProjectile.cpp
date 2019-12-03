@@ -12,6 +12,7 @@ AReflectionProjectile::AReflectionProjectile()
 	PrimaryActorTick.bCanEverTick = true;
   ProjectialMovement = CreateDefaultSubobject<UProjectileMovementComponent>(FName("ProjectialMovement"));
   PaperFlipBook = CreateDefaultSubobject<UPaperFlipbookComponent>(FName("PaperFlipBook;"));
+  RootComponent = PaperFlipBook;
 }
 
 // Called when the game starts or when spawned
