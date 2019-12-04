@@ -34,7 +34,6 @@ void AReflectionProjectile::BeginPlay()
 
 void AReflectionProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
-  // Reflect the projectile because we hit a non-physics object
   FVector ReflectedVelocity = BounceSpeedLoss * (-2 * FVector::DotProduct(MyVelocity, Hit.Normal) * Hit.Normal + MyVelocity);
   MyVelocity = ReflectedVelocity;
   ReflectedVelocity.Normalize();
