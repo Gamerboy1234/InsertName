@@ -19,6 +19,8 @@ AReflectionProjectile::AReflectionProjectile()
   ProjectileMovement->bRotationFollowsVelocity = true;
   ProjectileMovement->bShouldBounce = true;
   ProjectileMovement->Bounciness = 1;
+  ProjectileMovement->Friction = 0;
+  ProjectileMovement->BounceVelocityStopSimulatingThreshold = 0;
   // Get Current Velocity of Actor
   MyVelocity = GetActorForwardVector() * CurrentSpeed;
 }
@@ -46,13 +48,11 @@ void AReflectionProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
- /* FColor LineColor = bReflected ? FColor::Red : FColor::Green;
-  DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + MyVelocity * DeltaTime, LineColor, false, 2.f, 0, 1.f); */
-
   // Updated Velocity
   SetActorLocation(GetActorLocation() + MyVelocity * DeltaTime, true);
 }
 
+// Called when Firewall spell collision hits this projectile can be overriden in Blueprints
 void AReflectionProjectile::OnFireWallHit_Implementation()
 {
   Destroy();

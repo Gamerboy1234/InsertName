@@ -26,7 +26,7 @@ public:
 
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = SpellFunction)
   void OnFireWallHit();
-  void OnFireWallHit_sImplementation();
+  void OnFireWallHit_Implementation();
 
 protected:
 	// Called when the game starts or when spawned
