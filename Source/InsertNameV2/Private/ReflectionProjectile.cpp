@@ -41,7 +41,6 @@ void AReflectionProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
   bReflected = true;
 }
 
-
 // Called every frame
 void AReflectionProjectile::Tick(float DeltaTime)
 {
@@ -52,4 +51,9 @@ void AReflectionProjectile::Tick(float DeltaTime)
 
   // Updated Velocity
   SetActorLocation(GetActorLocation() + MyVelocity * DeltaTime, true);
+}
+
+void AReflectionProjectile::OnFireWallHit_Implementation()
+{
+  Destroy();
 }

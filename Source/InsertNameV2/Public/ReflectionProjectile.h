@@ -24,6 +24,10 @@ public:
 	// Sets default values for this actor's properties
 	AReflectionProjectile();
 
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = SpellFunction)
+  void OnFireWallHit();
+  void OnFireWallHit_sImplementation();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
