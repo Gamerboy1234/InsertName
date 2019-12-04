@@ -18,6 +18,7 @@ AReflectionProjectile::AReflectionProjectile()
   ProjectileMovement->UpdatedComponent = SphereComponent;
   ProjectileMovement->bRotationFollowsVelocity = true;
   ProjectileMovement->bShouldBounce = true;
+  ProjectileMovement->Bounciness = 1;
   // Get Current Velocity of Actor
   MyVelocity = GetActorForwardVector() * CurrentSpeed;
 }

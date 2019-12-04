@@ -28,7 +28,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-  UPROPERTY(BlueprintReadWrite, Category = Projectile)
+  UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = Projectile)
   UProjectileMovementComponent* ProjectileMovement = nullptr;
 
   UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
@@ -36,9 +36,6 @@ protected:
 
   UPROPERTY(BlueprintReadOnly, Category = Projectile)
   FHitResult HitResult;
-
-  UPROPERTY(BlueprintReadOnly, Category = Projectile)
-  FVector CurrentReflection;
 
   // Speed loss after reflection
   UPROPERTY(BlueprintReadWrite, Category = Projectile)
