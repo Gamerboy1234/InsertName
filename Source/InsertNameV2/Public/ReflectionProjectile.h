@@ -28,7 +28,7 @@ public:
   void OnFireWallHit();
   void OnFireWallHit_Implementation();
 
-  UFUNCTION(BlueprintImplementableEvent, Category = Collision)
+  UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Collision)
   void OnObjectHit();
 
 protected:
@@ -38,7 +38,7 @@ protected:
   UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = Projectile)
   UProjectileMovementComponent* ProjectileMovement = nullptr;
 
-  UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+  UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = Projectile)
   USphereComponent* SphereComponent = nullptr;
 
   UPROPERTY(BlueprintReadOnly, Category = Projectile)
@@ -47,7 +47,7 @@ protected:
   // Speed loss after reflection
   UPROPERTY(BlueprintReadWrite, Category = Projectile)
   float BounceSpeedLoss = 0;
-  /** How fast the projectile moves */
+  // How fast the projectile movess
   UPROPERTY(BlueprintReadWrite, Category = Projectile)
   float CurrentSpeed = 0;
 
