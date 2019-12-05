@@ -40,6 +40,7 @@ void AReflectionProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
   SetActorRotation(ReflectedVelocity.Rotation());
   HitResult = Hit;
   bReflected = true;
+  OnObjectHit();
 }
 
 // Called every frame

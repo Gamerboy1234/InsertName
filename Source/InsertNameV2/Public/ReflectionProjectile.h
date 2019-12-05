@@ -28,6 +28,9 @@ public:
   void OnFireWallHit();
   void OnFireWallHit_Implementation();
 
+  UFUNCTION(BlueprintImplementableEvent, Category = Collision)
+  void OnObjectHit();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
