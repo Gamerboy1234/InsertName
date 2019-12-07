@@ -10,6 +10,7 @@
 
 class UProjectileMovementComponent;
 class USphereComponent;
+class UPaperFlipbookComponent;
 
 UCLASS()
 class INSERTNAMEV2_API AReflectionProjectile : public AActor
@@ -43,6 +44,9 @@ protected:
 
   UPROPERTY(BlueprintReadOnly, Category = Projectile)
   FHitResult HitResult;
+
+  UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = Projectile)
+  UPaperFlipbookComponent* FlipBook = nullptr;
 
   // Speed loss after reflection
   UPROPERTY(BlueprintReadWrite, Category = Projectile)

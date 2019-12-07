@@ -3,6 +3,7 @@
 
 #include "ReflectionProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "PaperFlipBookComponent.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values
@@ -13,6 +14,8 @@ AReflectionProjectile::AReflectionProjectile()
   // Collsion Setup
   SphereComponent = CreateDefaultSubobject<USphereComponent>(FName("Sphere Component"));
   RootComponent = SphereComponent;
+  FlipBook = CreateDefaultSubobject<UPaperFlipbookComponent>(FName("FlipBook"));
+  FlipBook->AttachTo(SphereComponent);
   // Movement Setup
   ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(FName("ProjectialMovement"));
   ProjectileMovement->UpdatedComponent = SphereComponent;
