@@ -15,7 +15,7 @@ AReflectionProjectile::AReflectionProjectile()
   SphereComponent = CreateDefaultSubobject<USphereComponent>(FName("Sphere Component"));
   RootComponent = SphereComponent;
   FlipBook = CreateDefaultSubobject<UPaperFlipbookComponent>(FName("FlipBook"));
-  FlipBook->AttachTo(SphereComponent);
+  FlipBook->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
   // Movement Setup
   ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(FName("ProjectialMovement"));
   ProjectileMovement->UpdatedComponent = SphereComponent;
