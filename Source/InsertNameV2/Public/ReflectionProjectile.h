@@ -22,8 +22,6 @@ class INSERTNAMEV2_API AReflectionProjectile : public AActor
   FVector MyVelocity;
 
 public:	
-	// Sets default values for this actor's properties
-	AReflectionProjectile();
 
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = SpellFunction)
   void OnFireWallHit();
@@ -54,6 +52,10 @@ protected:
   // How fast the projectile movess
   UPROPERTY(BlueprintReadWrite, Category = Projectile)
   float CurrentSpeed = 0;
+
+private:
+  // Sets default values for this actor's properties
+  AReflectionProjectile();
 
   UFUNCTION()
   void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
