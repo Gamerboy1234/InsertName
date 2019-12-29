@@ -28,7 +28,7 @@ public:
   void OnFireWallHit_Implementation();
 
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Collision)
-  void OnObjectHit();
+  void OnObjectHit(FHitResult NewHit);
 
 protected:
 	// Called when the game starts or when spawned
@@ -40,16 +40,13 @@ protected:
   UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = Projectile)
   USphereComponent* SphereComponent = nullptr;
 
-  UPROPERTY(BlueprintReadOnly, Category = Projectile)
-  FHitResult HitResult;
-
   UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = Projectile)
   UPaperFlipbookComponent* FlipBook = nullptr;
 
   // Speed loss after reflection
   UPROPERTY(BlueprintReadWrite, Category = Projectile)
   float BounceSpeedLoss = 0;
-  // How fast the projectile movess
+  // How fast the projectile moves
   UPROPERTY(BlueprintReadWrite, Category = Projectile)
   float CurrentSpeed = 0;
 

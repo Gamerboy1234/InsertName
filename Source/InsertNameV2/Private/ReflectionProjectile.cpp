@@ -11,11 +11,15 @@ AReflectionProjectile::AReflectionProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-  // Collsion Setup
+  // Collision Setup
   SphereComponent = CreateDefaultSubobject<USphereComponent>(FName("Sphere Component"));
+  SphereComponent->SetSphereRadius(130.0f);
+  SphereComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
   RootComponent = SphereComponent;
+  // Flipbook Setup
   FlipBook = CreateDefaultSubobject<UPaperFlipbookComponent>(FName("FlipBook"));
-  FlipBook->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+  FlipBook->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  FlipBook->SetupAttachment(SphereComponent);
   // Movement Setup
   ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(FName("ProjectialMovement"));
   ProjectileMovement->UpdatedComponent = SphereComponent;
@@ -41,9 +45,8 @@ void AReflectionProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
   MyVelocity = ReflectedVelocity;
   ReflectedVelocity.Normalize();
   SetActorRotation(ReflectedVelocity.Rotation());
-  HitResult = Hit;
   bReflected = true;
-  OnObjectHit();
+  OnObjectHit(Hit);
 }
 
 // Called every frame
@@ -55,7 +58,7 @@ void AReflectionProjectile::Tick(float DeltaTime)
   SetActorLocation(GetActorLocation() + MyVelocity * DeltaTime, true);
 }
 
-// Called when Firewall spell collision hits this projectile can be overriden in Blueprints
+// Called when Firewall spell collision hits this projectile can be overridden in Blueprints
 void AReflectionProjectile::OnFireWallHit_Implementation()
 {
   Destroy();
