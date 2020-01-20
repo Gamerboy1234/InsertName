@@ -4,12 +4,22 @@
 #include "Master_Enemy.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/Blueprint.h"
+#include "Master_AIController.h"
 
 AMaster_Enemy::AMaster_Enemy()
 {
+  // HP Setup
   CurrentHP = 10;
   MaxHP = 10;
+  ActorDespawnDelay = 1.0;
+  HPBarHideDelay = 3.0;
+  bCanBeStunned = true;
 
+  DamageToPlayer = 1.0;
+
+  ControllerToUse = AMaster_AIController::StaticClass();
+
+  HomeLocation = GetActorLocation();
 }
 
 void AMaster_Enemy::BeginPlay()

@@ -7,6 +7,8 @@
 #include "Master_Enemy.generated.h"
 
 class UBlueprint;
+class UBehaviorTree;
+class AMaster_AIController;
 
 UCLASS()
 class INSERTNAMEV2_API AMaster_Enemy : public APaperZDCharacter
@@ -32,8 +34,23 @@ public:
   UPROPERTY(EditAnywhere, Category = "HP Values")
   bool bCanBeStunned;
 
-  UPROPERTY(EditAnywhere, Category = "HP Values")
-  UBlueprint* WarlustEffect;
+  UPROPERTY(EditAnywhere, Category = "AI", meta = (EditCondition = "bUseBT"))
+  UBehaviorTree* BehaviorTreeToUse;
+
+  UPROPERTY(EditAnywhere, Category = "AI")
+  bool bUseBT;
+
+  UPROPERTY(EditAnywhere, Category = "AI")
+  bool bAddToKillCount;
+
+  UPROPERTY(EditAnywhere, Category = "AI")
+  TSubclassOf <AMaster_AIController> ControllerToUse;
+
+  UPROPERTY(BlueprintReadOnly, Category = "AI")
+  bool bAggroed;
+
+  UPROPERTY(EditAnywhere, Category = "Damage")
+  float DamageToPlayer;
 
 protected:
 
@@ -42,5 +59,13 @@ protected:
   
 private:
 
-  
+  UBlueprint* WarlustEffect;
+
+  int32 ID;
+
+  bool bIsDead;
+
+  bool bTakenDamage;
+
+  FVector HomeLocation;
 };
