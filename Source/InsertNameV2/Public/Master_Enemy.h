@@ -52,12 +52,19 @@ public:
   UPROPERTY(EditAnywhere, Category = "Damage")
   float DamageToPlayer;
 
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const FVector GetHomeLocation();
+
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const int32 GetID();
+
 protected:
 
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;
   
 private:
+  int32 AssignID();
 
   UBlueprint* WarlustEffect;
 

@@ -9,7 +9,7 @@ int32 ASideScrollerGamemode::GenID()
   int32 ID = UGeneralFunctions::RandomNumber(1, 10000);
   if (bDoesIDAlreadyExist(ID))
   {
-    int32 ID = UGeneralFunctions::RandomNumber(1, 1000);
+    ID = UGeneralFunctions::RandomNumber(1, 1000);
     AllIDs.Add(ID);
     return ID;
   }
@@ -35,7 +35,7 @@ bool ASideScrollerGamemode::bDoesIDAlreadyExist(int32 ID)
   return bExist;
 }
 
-TArray<int32> ASideScrollerGamemode::GetAllIDs()
+const TArray<int32> ASideScrollerGamemode::GetAllIDs()
 {
   TArray<int32> LocalIDs = AllIDs;
 

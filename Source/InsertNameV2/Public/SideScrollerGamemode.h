@@ -26,9 +26,8 @@ public:
   bool bDoesIDAlreadyExist(int32 ID);
 
   UFUNCTION(Blueprintpure, Category = "ID Function")
-  TArray<int32> GetAllIDs();
+  const TArray<int32> GetAllIDs();
 
 private:
-
   TArray<int32> AllIDs;
 };
