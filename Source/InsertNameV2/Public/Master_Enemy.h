@@ -58,6 +58,14 @@ public:
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const int32 GetID();
 
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
+  void DamageEnemy(float Damage);
+  void DamageEnemy_Implementation(float Damage);
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
+  void OnDeath();
+  void OnDeath_Implementation();
+
 protected:
 
   // Called when the game starts or when spawned
@@ -65,6 +73,8 @@ protected:
   
 private:
   int32 AssignID();
+
+  void RemoveIDFromGamemode();
 
   UBlueprint* WarlustEffect;
 
@@ -75,4 +85,26 @@ private:
   bool bTakenDamage;
 
   FVector HomeLocation;
+
+  FLinearColor DefaultColor;
+
+  bool bIsStunned;
+
+  float StunDuration;
+
+  bool bIsJumping;
+
+  float DefaultSpeed;
+
+  float DefaultGravityScale;
+
+  float DefaultMaxAcceleration;
+
+  bool bWasKnockedBack;
+
+  bool bOverlapedPlayer;
+
+  bool bHitPlayer;
+
+  bool bIsPlayerOnEnemy;
 };

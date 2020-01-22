@@ -22,7 +22,6 @@ AMaster_Enemy::AMaster_Enemy()
   ControllerToUse = AMaster_AIController::StaticClass();
 
   HomeLocation = GetActorLocation();
-
 }
 
 void AMaster_Enemy::BeginPlay()
@@ -31,9 +30,7 @@ void AMaster_Enemy::BeginPlay()
 
   ID = AssignID();
 
-  UE_LOG(LogTemp, Log, TEXT("Enemy ID: %i"), ID)
-
-  WarlustEffect = LoadObject<UBlueprint>(NULL, TEXT("/Game/2DPlatformingKit/Blueprints/BP_Combat/Spells/SpellEffects/Particles/Warlust_Effect_BP"), NULL, 0, NULL);
+  UE_LOG(LogTemp, Log, TEXT("Enemy ID: %i"), ID) 
 }
 
 int32 AMaster_Enemy::AssignID()
@@ -48,6 +45,40 @@ int32 AMaster_Enemy::AssignID()
   {
     UE_LOG(LogTemp, Warning, TEXT("Unable to assing ID to enemy"))
     return 0;
+  }
+}
+
+void AMaster_Enemy::DamageEnemy_Implementation(float Damage)
+{
+  CurrentHP = FMath::Clamp<float>(CurrentHP - Damage, 0.0f, MaxHP);
+
+  bTakenDamage = true;
+
+  UE_LOG(LogTemp, Log, TEXT("Enemy taken damage amount: %f CurrentHP is at: %f"), Damage, CurrentHP)
+
+  if (CurrentHP <= 0.0f)
+  {
+    RemoveIDFromGamemode();
+    OnDeath();
+  }
+}
+
+void AMaster_Enemy::OnDeath_Implementation()
+{
+  Destroy();
+}
+
+void AMaster_Enemy::RemoveIDFromGamemode()
+{
+  ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(GetWorld()->GetAuthGameMode());
+
+  if (LocalGameMode)
+  {
+    LocalGameMode->RemoveID(ID);
+  }
+  else
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Cast to ASideScrollerGamemode failed in RemoveIDFromGamemode()"))
   }
 }
 

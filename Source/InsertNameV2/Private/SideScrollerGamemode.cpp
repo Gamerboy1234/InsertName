@@ -45,5 +45,13 @@ const TArray<int32> ASideScrollerGamemode::GetAllIDs()
 void ASideScrollerGamemode::RemoveID(int32 IDToRemove)
 {
   auto Index = AllIDs.Find(IDToRemove);
-  AllIDs.RemoveAt(Index);
+
+  if (Index)
+  {
+    AllIDs.RemoveAt(Index);
+  }
+  else
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Unable to find ID to remove"))
+  }
 }
