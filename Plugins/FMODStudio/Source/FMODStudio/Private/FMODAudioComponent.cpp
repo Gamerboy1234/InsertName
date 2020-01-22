@@ -1,4 +1,4 @@
-// Copyright (c), Firelight Technologies Pty, Ltd. 2012-2019.
+// Copyright (c), Firelight Technologies Pty, Ltd. 2012-2020.
 
 #include "FMODAudioComponent.h"
 #include "FMODStudioModule.h"
@@ -347,7 +347,7 @@ void UFMODAudioComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    if (bIsActive)
+    if (IsActive())
     {
         if (GetStudioModule().HasListenerMoved())
         {
@@ -411,11 +411,11 @@ void UFMODAudioComponent::PostLoad()
 
 void UFMODAudioComponent::Activate(bool bReset)
 {
+    Super::Activate(bReset);
     if (bReset || ShouldActivate() == true)
     {
         Play();
     }
-    Super::Activate(true);
 }
 
 void UFMODAudioComponent::Deactivate()
@@ -660,7 +660,7 @@ void UFMODAudioComponent::PlayInternal(EFMODSystemContext::Type Context)
         verifyfmod(StudioInstance->setUserData(this));
         verifyfmod(StudioInstance->start());
         UE_LOG(LogFMOD, Verbose, TEXT("Playing component %p"), this);
-        bIsActive = true;
+        SetActive(true);
         SetComponentTickEnabled(true);
     }
 }
@@ -711,7 +711,7 @@ void UFMODAudioComponent::OnPlaybackCompleted()
 {
     // Mark inactive before calling destroy to avoid recursion
     UE_LOG(LogFMOD, Verbose, TEXT("UFMODAudioComponent %p PlaybackCompleted"), this);
-    bIsActive = false;
+    SetActive(false);
     SetComponentTickEnabled(false);
 
     Release();
@@ -728,7 +728,7 @@ void UFMODAudioComponent::OnPlaybackCompleted()
 
 bool UFMODAudioComponent::IsPlaying(void)
 {
-    return bIsActive;
+    return IsActive();
 }
 
 void UFMODAudioComponent::SetVolume(float Volume)
@@ -858,4 +858,23 @@ float UFMODAudioComponent::GetParameter(FName Name)
         }
     }
     return Value;
+}
+
+void UFMODAudioComponent::GetParameterValue(FName Name, float &UserValue, float &FinalValue)
+{
+    if (!bDefaultParameterValuesCached)
+    {
+        CacheDefaultParameterValues();
+    }
+
+    float *CachedValue = ParameterCache.Find(Name);
+    if (StudioInstance)
+    {
+        FMOD_RESULT Result = StudioInstance->getParameterByName(TCHAR_TO_UTF8(*Name.ToString()), &UserValue, &FinalValue);
+        if (Result != FMOD_OK)
+        {
+            UserValue = FinalValue = 0;
+            UE_LOG(LogFMOD, Warning, TEXT("Failed to get parameter %s"), *Name.ToString());
+        }
+    }
 }

@@ -1,4 +1,4 @@
-// Copyright (c), Firelight Technologies Pty, Ltd. 2012-2019.
+// Copyright (c), Firelight Technologies Pty, Ltd. 2012-2020.
 using System.IO;
 
 namespace UnrealBuildTool.Rules
@@ -155,6 +155,12 @@ namespace UnrealBuildTool.Rules
             else if (Target.Platform == UnrealTargetPlatform.Linux)
             {
                 BasePath = System.IO.Path.Combine(BasePath, "x86_64");
+                linkExtension = ".so";
+                dllExtension = ".so";
+                libPrefix = "lib";
+            }
+            else if (Target.Platform.ToString() == "Stadia")
+            {
                 linkExtension = ".so";
                 dllExtension = ".so";
                 libPrefix = "lib";

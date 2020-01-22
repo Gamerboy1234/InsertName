@@ -1,4 +1,4 @@
-// Copyright (c), Firelight Technologies Pty, Ltd. 2012-2019.
+// Copyright (c), Firelight Technologies Pty, Ltd. 2012-2020.
 
 #pragma once
 
@@ -268,8 +268,8 @@ public:
 	/*
     * Specify the key for loading sounds from encrypted banks.
 	*/
-	UPROPERTY(config, EditAnywhere, Category = Advanced)
-	FString EncryptionKey;
+	UPROPERTY(config, EditAnywhere, Category = Advanced, meta = (DisplayName = "Encryption Key"))
+	FString StudioBankKey;
 
     /**
 	* Force wav writer output, for debugging only.  Setting this will prevent normal sound output!

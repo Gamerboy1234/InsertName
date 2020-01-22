@@ -1,4 +1,4 @@
-// Copyright (c), Firelight Technologies Pty, Ltd. 2012-2019.
+// Copyright (c), Firelight Technologies Pty, Ltd. 2012-2020.
 
 #include "FMODAudioComponentDetails.h"
 #include "Toolkits/AssetEditorManager.h"
@@ -6,6 +6,7 @@
 #include "FMODStudioModule.h"
 #include "FMODEvent.h"
 #include "fmod_studio.hpp"
+#include "UnrealEd/Public/Editor.h"
 #include "Widgets/Input/SButton.h"
 #include "PropertyEditor/Public/DetailLayoutBuilder.h"
 #include "PropertyEditor/Public/DetailCategoryBuilder.h"
@@ -75,7 +76,7 @@ FReply FFMODAudioComponentDetails::OnEditSoundClicked()
         UFMODEvent *Event = AudioComponent.Get()->Event.Get();
         if (Event)
         {
-            FAssetEditorManager::Get().OpenEditorForAsset(Event);
+            GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OpenEditorForAsset(Event);
         }
     }
 
