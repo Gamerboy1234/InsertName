@@ -6,10 +6,10 @@
 
 int32 ASideScrollerGamemode::GenID()
 {
-  int32 ID = UGeneralFunctions::RandomNumber(1, 10000);
-  if (bDoesIDAlreadyExist(ID))
+  int32 ID = UGeneralFunctions::RandomNumber(1, 100000);
+  if (DoesIDAlreadyExist(ID))
   {
-    ID = UGeneralFunctions::RandomNumber(1, 1000);
+    ID = UGeneralFunctions::RandomNumber(1, 100000);
     AllIDs.Add(ID);
     return ID;
   }
@@ -20,9 +20,10 @@ int32 ASideScrollerGamemode::GenID()
   }
 }
 
-bool ASideScrollerGamemode::bDoesIDAlreadyExist(int32 ID)
+bool ASideScrollerGamemode::DoesIDAlreadyExist(int32 ID)
 {
   bool bExist;
+
   for (int32 IDs : AllIDs)
   {
     if (ID == IDs)
@@ -30,7 +31,10 @@ bool ASideScrollerGamemode::bDoesIDAlreadyExist(int32 ID)
       bExist = true;
       break;
     }
-    bExist = false;
+    else
+    {
+      bExist = false;
+    }
   }
   return bExist;
 }
