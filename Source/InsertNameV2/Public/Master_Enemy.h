@@ -9,6 +9,7 @@
 class UBlueprint;
 class UBehaviorTree;
 class AMaster_AIController;
+class AFloatingCombatTextBase;
 
 UCLASS()
 class INSERTNAMEV2_API AMaster_Enemy : public APaperZDCharacter
@@ -26,7 +27,7 @@ public:
   float MaxHP;
 
   /* The delay before a actor despawns */
-  UPROPERTY(EditAnywhere, Category = "HP Values")
+  UPROPERTY(EditAnywhere, Category = "HP Values", meta = (ClampMin="1"))
   float ActorDespawnDelay;
 
   UPROPERTY(EditAnywhere, Category = "HP Values")
@@ -37,6 +38,9 @@ public:
 
   UPROPERTY(EditAnywhere, Category = "AI", meta = (EditCondition = "bUseBT"))
   UBehaviorTree* BehaviorTreeToUse;
+
+  UPROPERTY(EditAnywhere, Category = "HP Values")
+  AFloatingCombatTextBase* FloatingCombatManager;
 
   UPROPERTY(EditAnywhere, Category = "AI")
   bool bUseBT;
@@ -104,6 +108,7 @@ protected:
   virtual void BeginPlay() override;
   
 private:
+
   int32 AssignID();
 
   void RemoveIDFromGamemode();
@@ -114,7 +119,7 @@ private:
 
   bool bTakenDamage;
 
-  // Home location is the location the actor is placed in the world
+  // Home location is the location the actor is the point the actor first spawned
   FVector HomeLocation;
 
   bool bIsStunned;
@@ -136,4 +141,6 @@ private:
   bool bHitPlayer;
 
   bool bIsPlayerOnEnemy;
+
+  
 };

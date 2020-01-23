@@ -11,13 +11,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperWarden.h"
+#include "TimerManager.h"
+#include "FloatingCombatTextBase.h"
 
 AMaster_Enemy::AMaster_Enemy()
 {
   // HP Setup
   CurrentHP = 10;
   MaxHP = 10;
-  ActorDespawnDelay = 1.0;
+  ActorDespawnDelay = 2.0;
   HPBarHideDelay = 3.0;
   bCanBeStunned = true;
 
@@ -38,6 +40,13 @@ void AMaster_Enemy::BeginPlay()
   HomeLocation = GetActorLocation();
 
   ID = AssignID();
+
+  AFloatingCombatTextBase* FloatingCombatTextBP = LoadObject<AFloatingCombatTextBase>(NULL, TEXT("/Game/2DPlatformingKit/Blueprints/Player/Functions/FloatingCombatManager"), NULL, LOAD_None, NULL);
+
+  if (FloatingCombatManager)
+  {
+    
+  }
 
   auto MovementComp = this->GetCharacterMovement();
   DefaultSpeed = MovementComp->GetMaxSpeed();
@@ -66,28 +75,36 @@ int32 AMaster_Enemy::AssignID()
 
 void AMaster_Enemy::DamageEnemy_Implementation(float Damage)
 {
-  CurrentHP = FMath::Clamp<float>(CurrentHP - Damage, 0.0f, MaxHP);
-
-  bTakenDamage = true;
-
-  if (CurrentHP <= 0.0f)
+  if (!bIsDead)
   {
-    bIsDead = true;
+    CurrentHP = FMath::Clamp<float>(CurrentHP - Damage, 0.0f, MaxHP);
 
-    if (bAddToKillCount)
+    UE_LOG(LogTemp, Log, TEXT("Current HP is : %f"), CurrentHP)
+
+    bTakenDamage = true;
+
+    if (CurrentHP <= 0.0f)
     {
-      auto PlayerCharacter = Cast<APaperWarden>(UGameplayStatics::GetPlayerCharacter(this, 0));
-      PlayerCharacter->AddToKillCount(1);
-    }
+      bIsDead = true;
 
-    RemoveIDFromGamemode();
-    OnDeath();
+      SetActorEnableCollision(false);
+
+      if (bAddToKillCount)
+      {
+        auto PlayerCharacter = Cast<APaperWarden>(UGameplayStatics::GetPlayerCharacter(this, 0));
+        PlayerCharacter->AddToKillCount(1);
+      }
+
+      RemoveIDFromGamemode();
+      OnDeath();
+    }
   }
 }
 
 void AMaster_Enemy::OnDeath_Implementation()
 {
-  Destroy();
+  // Despawn the actor after a set delay
+  SetLifeSpan(ActorDespawnDelay);
 }
 
 void AMaster_Enemy::RemoveIDFromGamemode()
