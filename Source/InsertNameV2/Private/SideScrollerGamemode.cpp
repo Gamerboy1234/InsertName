@@ -22,7 +22,7 @@ int32 ASideScrollerGamemode::GenID()
 
 bool ASideScrollerGamemode::DoesIDAlreadyExist(int32 ID)
 {
-  bool bExist;
+  bool bExist = false;
 
   for (int32 IDs : AllIDs)
   {
@@ -34,6 +34,7 @@ bool ASideScrollerGamemode::DoesIDAlreadyExist(int32 ID)
     else
     {
       bExist = false;
+      continue;
     }
   }
   return bExist;

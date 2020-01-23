@@ -8,7 +8,9 @@
 #include "SideScrollerGamemode.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "PaperFlipbookComponent.h"
+#include "PaperWarden.h"
 
 AMaster_Enemy::AMaster_Enemy()
 {
@@ -22,6 +24,8 @@ AMaster_Enemy::AMaster_Enemy()
   DamageToPlayer = 1.0;
 
   ControllerToUse = AMaster_AIController::StaticClass();
+
+  bAddToKillCount = true;
 }
 
 // Setup default values for enemy when game starts
@@ -55,7 +59,7 @@ int32 AMaster_Enemy::AssignID()
   }
   else
   {
-    UE_LOG(LogTemp, Warning, TEXT("Unable to assing ID to enemy"))
+    UE_LOG(LogTemp, Warning, TEXT("Unable to assing ID to enemy cast to ASideScrollerGamemode failed in AssignID()"))
     return 0;
   }
 }
@@ -69,6 +73,13 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage)
   if (CurrentHP <= 0.0f)
   {
     bIsDead = true;
+
+    if (bAddToKillCount)
+    {
+      auto PlayerCharacter = Cast<APaperWarden>(UGameplayStatics::GetPlayerCharacter(this, 0));
+      PlayerCharacter->AddToKillCount(1);
+    }
+
     RemoveIDFromGamemode();
     OnDeath();
   }
@@ -89,7 +100,7 @@ void AMaster_Enemy::RemoveIDFromGamemode()
   }
   else
   {
-    UE_LOG(LogTemp, Warning, TEXT("Cast to ASideScrollerGamemode failed in RemoveIDFromGamemode()"))
+    UE_LOG(LogTemp, Warning, TEXT("Cast to ASideScrollerGamemode failed in RemoveIDFromGamemode() unable to remove ID"))
   }
 }
 

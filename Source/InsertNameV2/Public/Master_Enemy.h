@@ -108,14 +108,13 @@ private:
 
   void RemoveIDFromGamemode();
 
-  UBlueprint* WarlustEffect;
-
   int32 ID;
 
   bool bIsDead;
 
   bool bTakenDamage;
 
+  // Home location is the location the actor is placed in the world
   FVector HomeLocation;
 
   bool bIsStunned;
