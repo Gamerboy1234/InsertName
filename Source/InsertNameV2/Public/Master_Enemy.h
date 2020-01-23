@@ -25,6 +25,7 @@ public:
   UPROPERTY(EditAnywhere, Category = "HP Values")
   float MaxHP;
 
+  /* The delay before a actor despawns */
   UPROPERTY(EditAnywhere, Category = "HP Values")
   float ActorDespawnDelay;
 
@@ -58,13 +59,44 @@ public:
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const int32 GetID();
 
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const bool GetTakenDamage();
+
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const bool GetIsStunned();
+
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const bool GetWasKnockedBacked();
+
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const bool GetIsPlayerOnEnemy();
+
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const bool GetHitPlayer();
+
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const float GetDefaultSpeed();
+
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const float GetDefaultGravityScale();
+
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const float GetDefaultMaxAcceleration();
+
+  /* Apply damage to enemy */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
   void DamageEnemy(float Damage);
-  void DamageEnemy_Implementation(float Damage);
+  virtual void DamageEnemy_Implementation(float Damage);
 
+  /* What to do after enemy is killed */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
   void OnDeath();
-  void OnDeath_Implementation();
+  virtual void OnDeath_Implementation();
+
+  /* Is called after all default values are set in EventBeginPlay */
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Utility")
+  void AfterBeginPlay();
+  virtual void AfterBeginPlay_Implementation();
 
 protected:
 
@@ -85,8 +117,6 @@ private:
   bool bTakenDamage;
 
   FVector HomeLocation;
-
-  FLinearColor DefaultColor;
 
   bool bIsStunned;
 

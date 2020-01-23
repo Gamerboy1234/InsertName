@@ -7,6 +7,8 @@
 #include "Master_AIController.h"
 #include "SideScrollerGamemode.h"
 #include "Engine/World.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "PaperFlipbookComponent.h"
 
 AMaster_Enemy::AMaster_Enemy()
 {
@@ -20,19 +22,29 @@ AMaster_Enemy::AMaster_Enemy()
   DamageToPlayer = 1.0;
 
   ControllerToUse = AMaster_AIController::StaticClass();
-
-  HomeLocation = GetActorLocation();
 }
 
+// Setup default values for enemy when game starts
 void AMaster_Enemy::BeginPlay()
 {
   Super::BeginPlay();
 
+  bIsDead = false;
+
+  HomeLocation = GetActorLocation();
+
   ID = AssignID();
 
-  UE_LOG(LogTemp, Log, TEXT("Enemy ID: %i"), ID) 
+  auto MovementComp = this->GetCharacterMovement();
+  DefaultSpeed = MovementComp->GetMaxSpeed();
+  DefaultGravityScale = MovementComp->GravityScale;
+  DefaultMaxAcceleration = MovementComp->GetMaxAcceleration();
+
+  // All defaults values are now set the enemy can now do stuff
+  AfterBeginPlay();
 }
 
+// Assign a unique ID to an enemy 
 int32 AMaster_Enemy::AssignID()
 {
   ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(GetWorld()->GetAuthGameMode());
@@ -54,10 +66,9 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage)
 
   bTakenDamage = true;
 
-  UE_LOG(LogTemp, Log, TEXT("Enemy taken damage amount: %f CurrentHP is at: %f"), Damage, CurrentHP)
-
   if (CurrentHP <= 0.0f)
   {
+    bIsDead = true;
     RemoveIDFromGamemode();
     OnDeath();
   }
@@ -82,6 +93,12 @@ void AMaster_Enemy::RemoveIDFromGamemode()
   }
 }
 
+void AMaster_Enemy::AfterBeginPlay_Implementation()
+{
+  // for use in children
+}
+
+// Getter Functions for private var's 
 const FVector AMaster_Enemy::GetHomeLocation()
 {
   return HomeLocation;
@@ -90,4 +107,44 @@ const FVector AMaster_Enemy::GetHomeLocation()
 const int32 AMaster_Enemy::GetID()
 {
   return ID;
+}
+
+const bool AMaster_Enemy::GetTakenDamage()
+{
+  return bTakenDamage;
+}
+
+const bool AMaster_Enemy::GetIsStunned()
+{
+  return bIsStunned;
+}
+
+const bool AMaster_Enemy::GetWasKnockedBacked()
+{
+  return bWasKnockedBack;
+}
+
+const bool AMaster_Enemy::GetIsPlayerOnEnemy()
+{
+  return bIsPlayerOnEnemy;
+}
+
+const bool AMaster_Enemy::GetHitPlayer()
+{
+  return bHitPlayer;
+}
+
+const float AMaster_Enemy::GetDefaultSpeed()
+{
+  return DefaultSpeed;
+}
+
+const float AMaster_Enemy::GetDefaultGravityScale()
+{
+  return DefaultGravityScale;
+}
+
+const float AMaster_Enemy::GetDefaultMaxAcceleration()
+{
+  return DefaultMaxAcceleration;
 }
