@@ -9,7 +9,7 @@
 class UBlueprint;
 class UBehaviorTree;
 class AMaster_AIController;
-class AFloatingCombatTextBase;
+class UFloatingCombatTextComponent;
 
 UCLASS()
 class INSERTNAMEV2_API AMaster_Enemy : public APaperZDCharacter
@@ -36,11 +36,11 @@ public:
   UPROPERTY(EditAnywhere, Category = "HP Values")
   bool bCanBeStunned;
 
+  UPROPERTY(VisibleAnywhere, Category = "Components")
+  UFloatingCombatTextComponent* CombatTextComp;
+
   UPROPERTY(EditAnywhere, Category = "AI", meta = (EditCondition = "bUseBT"))
   UBehaviorTree* BehaviorTreeToUse;
-
-  UPROPERTY(EditAnywhere, Category = "HP Values")
-  AFloatingCombatTextBase* FloatingCombatManager;
 
   UPROPERTY(EditAnywhere, Category = "AI")
   bool bUseBT;

@@ -11,8 +11,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperWarden.h"
-#include "TimerManager.h"
-#include "FloatingCombatTextBase.h"
+#include "FloatingCombatTextComponent.h"
+
 
 AMaster_Enemy::AMaster_Enemy()
 {
@@ -26,8 +26,12 @@ AMaster_Enemy::AMaster_Enemy()
   DamageToPlayer = 1.0;
 
   ControllerToUse = AMaster_AIController::StaticClass();
+  if (!ensure(ControllerToUse != nullptr)) { return; }
 
   bAddToKillCount = true;
+
+  CombatTextComp = CreateDefaultSubobject<UFloatingCombatTextComponent>(TEXT("FloatingCombatTextComponent"));
+  if (!ensure(CombatTextComp != nullptr)) { return; }
 }
 
 // Setup default values for enemy when game starts
@@ -40,13 +44,6 @@ void AMaster_Enemy::BeginPlay()
   HomeLocation = GetActorLocation();
 
   ID = AssignID();
-
-  AFloatingCombatTextBase* FloatingCombatTextBP = LoadObject<AFloatingCombatTextBase>(NULL, TEXT("/Game/2DPlatformingKit/Blueprints/Player/Functions/FloatingCombatManager"), NULL, LOAD_None, NULL);
-
-  if (FloatingCombatManager)
-  {
-    
-  }
 
   auto MovementComp = this->GetCharacterMovement();
   DefaultSpeed = MovementComp->GetMaxSpeed();
@@ -82,6 +79,11 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage)
     UE_LOG(LogTemp, Log, TEXT("Current HP is : %f"), CurrentHP)
 
     bTakenDamage = true;
+
+    if (CombatTextComp)
+    {
+      CombatTextComp->SpawnCombatText(Damage, this);
+    }
 
     if (CurrentHP <= 0.0f)
     {
