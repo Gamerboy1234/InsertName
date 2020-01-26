@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "PaperZDCharacter.h"
+#include "DebuffData.h"
 #include "Master_Enemy.generated.h"
 
 class UBlueprint;
 class UBehaviorTree;
 class AMaster_AIController;
 class UFloatingCombatTextComponent;
+class AMaster_Debuff_E;
 
 UCLASS()
 class INSERTNAMEV2_API AMaster_Enemy : public APaperZDCharacter
@@ -19,12 +21,21 @@ class INSERTNAMEV2_API AMaster_Enemy : public APaperZDCharacter
 public:
 
   AMaster_Enemy();
+
+  UPROPERTY(BlueprintReadOnly, Category = "Debuffs")
+  TArray<AMaster_Debuff_E*> CurrentDebuffs;
+
+  UPROPERTY(BlueprintReadWrite, Category = "Debuffs")
+  bool bIsCurrentlyOnFire;
   
-  UPROPERTY(EditAnywhere, Category = "HP Values")
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP Values")
   float CurrentHP;
 
-  UPROPERTY(EditAnywhere, Category = "HP Values")
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP Values")
   float MaxHP;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP Values")
+  bool bTakenDamage;
 
   /* The delay before a actor despawns */
   UPROPERTY(EditAnywhere, Category = "HP Values", meta = (ClampMin="1"))
@@ -42,7 +53,7 @@ public:
   UPROPERTY(EditAnywhere, Category = "AI", meta = (EditCondition = "bUseBT"))
   UBehaviorTree* BehaviorTreeToUse;
 
-  UPROPERTY(EditAnywhere, Category = "AI")
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
   bool bUseBT;
 
   UPROPERTY(EditAnywhere, Category = "AI")
@@ -51,11 +62,29 @@ public:
   UPROPERTY(EditAnywhere, Category = "AI")
   TSubclassOf <AMaster_AIController> ControllerToUse;
 
-  UPROPERTY(BlueprintReadOnly, Category = "AI")
+  UPROPERTY(BlueprintReadWrite, Category = "AI")
   bool bAggroed;
 
-  UPROPERTY(EditAnywhere, Category = "Damage")
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
   float DamageToPlayer;
+
+  UPROPERTY(BlueprintReadWrite, Category = "AI")
+  bool bWasKnockedBack;
+
+  UPROPERTY(BlueprintReadWrite, Category = "AI")
+  bool bOverlapedPlayer;
+
+  UPROPERTY(BlueprintReadWrite, Category = "AI")
+  bool bHitPlayer;
+
+  UPROPERTY(BlueprintReadWrite, Category = "AI")
+  bool bIsPlayerOnEnemy;
+
+  UFUNCTION(BlueprintCallable, Category = "Debuffs")
+  AActor* ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, FDebuffData DebuffData, AActor* Target);
+
+  UFUNCTION(BlueprintCallable, Category = "Debuffs")
+  void RemoveAllDebuffs();
 
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const FVector GetHomeLocation();
@@ -70,15 +99,6 @@ public:
   const bool GetIsStunned();
 
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
-  const bool GetWasKnockedBacked();
-
-  UFUNCTION(BlueprintPure, Category = "Getter Functions")
-  const bool GetIsPlayerOnEnemy();
-
-  UFUNCTION(BlueprintPure, Category = "Getter Functions")
-  const bool GetHitPlayer();
-
-  UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const float GetDefaultSpeed();
 
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
@@ -86,6 +106,9 @@ public:
 
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const float GetDefaultMaxAcceleration();
+
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const bool GetIsDead();
 
   /* Apply damage to enemy */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
@@ -109,15 +132,9 @@ protected:
   
 private:
 
-  int32 AssignID();
-
-  void RemoveIDFromGamemode();
-
   int32 ID;
 
   bool bIsDead;
-
-  bool bTakenDamage;
 
   // Home location is the location the actor is the point the actor first spawned
   FVector HomeLocation;
@@ -134,13 +151,5 @@ private:
 
   float DefaultMaxAcceleration;
 
-  bool bWasKnockedBack;
-
-  bool bOverlapedPlayer;
-
-  bool bHitPlayer;
-
-  bool bIsPlayerOnEnemy;
-
-  
+  AMaster_Debuff_E* MostRecentDebuff;
 };

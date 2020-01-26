@@ -4,6 +4,7 @@
 #include "GeneralFunctions.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
+#include "SideScrollerGamemode.h"
 #include <iostream>
 #include <random>
 #include <time.h>
@@ -63,10 +64,10 @@ bool UGeneralFunctions::MouseLeftOrRight(float mouseX, float mouseY)
   }
 }
 
-int UGeneralFunctions::RandomNumber(int max, int min)
+int32 UGeneralFunctions::RandomNumber(int32 max, int32 min)
 {
   if (min > max) {
-    int temp = max;
+    int32 temp = max;
     max = min;
     min = temp;
   }
@@ -78,4 +79,33 @@ int UGeneralFunctions::RandomNumber(int max, int min)
     first = false;
   }
   return min + rand() % ((max + 1) - min);
+}
+
+int32 UGeneralFunctions::GetIDFromGamemode(UObject* WorldContextObject, AActor* ActorToAssign)
+{
+  ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(WorldContextObject->GetWorld()->GetAuthGameMode());
+
+  if (LocalGameMode)
+  {
+    return LocalGameMode->GenID();
+  }
+  else
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Unable to assing ID cast to ASideScrollerGamemode failed assign ID to : %s"), *ActorToAssign->GetName())
+    return 0;
+  }
+}
+
+void UGeneralFunctions::RemoveIDFromGamemode(UObject* WorldContextObject, int32 ID, AActor* ActorToRemove)
+{
+  ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(WorldContextObject->GetWorld()->GetAuthGameMode());
+
+  if (LocalGameMode)
+  {
+    LocalGameMode->RemoveID(ID);
+  }
+  else
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Unable to assing ID cast to ASideScrollerGamemode failed to remove ID from : %s"), *ActorToRemove->GetName())
+  }
 }

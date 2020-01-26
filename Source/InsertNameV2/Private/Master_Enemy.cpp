@@ -9,7 +9,9 @@
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "GeneralFunctions.h"
 #include "PaperFlipbookComponent.h"
+#include "Master_Debuff_E.h"
 #include "PaperWarden.h"
 #include "FloatingCombatTextComponent.h"
 
@@ -43,7 +45,7 @@ void AMaster_Enemy::BeginPlay()
 
   HomeLocation = GetActorLocation();
 
-  ID = AssignID();
+  ID = UGeneralFunctions::GetIDFromGamemode(this, this);
 
   auto MovementComp = this->GetCharacterMovement();
   DefaultSpeed = MovementComp->GetMaxSpeed();
@@ -54,19 +56,34 @@ void AMaster_Enemy::BeginPlay()
   AfterBeginPlay();
 }
 
-// Assign a unique ID to an enemy 
-int32 AMaster_Enemy::AssignID()
+AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, FDebuffData DebuffData, AActor* Target)
 {
-  ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(GetWorld()->GetAuthGameMode());
-
-  if (LocalGameMode)
+  if (Target)
   {
-    return LocalGameMode->GenID();
+    MostRecentDebuff = GetWorld()->SpawnActor<AMaster_Debuff_E>(DebuffToApply, FVector(0), FRotator(0));
+    if (MostRecentDebuff)
+    {
+      MostRecentDebuff->StartDamageTimer(MostRecentDebuff, this, DebuffData);
+      return MostRecentDebuff;
+    }
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("Was unable to apply debuff"))
+      return MostRecentDebuff;
+    }
   }
   else
   {
-    UE_LOG(LogTemp, Warning, TEXT("Unable to assing ID to enemy cast to ASideScrollerGamemode failed in AssignID()"))
-    return 0;
+    UE_LOG(LogTemp, Error, TEXT("Debuff target is not valid"))
+    return nullptr;
+  }
+}
+
+void AMaster_Enemy::RemoveAllDebuffs()
+{
+  for (AMaster_Debuff_E* CurrentDebuff : CurrentDebuffs)
+  {
+    CurrentDebuff->RemoveDebuff(CurrentDebuff);
   }
 }
 
@@ -97,7 +114,8 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage)
         PlayerCharacter->AddToKillCount(1);
       }
 
-      RemoveIDFromGamemode();
+      UGeneralFunctions::RemoveIDFromGamemode(this, ID, this);
+      RemoveAllDebuffs();
       OnDeath();
     }
   }
@@ -107,20 +125,6 @@ void AMaster_Enemy::OnDeath_Implementation()
 {
   // Despawn the actor after a set delay
   SetLifeSpan(ActorDespawnDelay);
-}
-
-void AMaster_Enemy::RemoveIDFromGamemode()
-{
-  ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(GetWorld()->GetAuthGameMode());
-
-  if (LocalGameMode)
-  {
-    LocalGameMode->RemoveID(ID);
-  }
-  else
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Cast to ASideScrollerGamemode failed in RemoveIDFromGamemode() unable to remove ID"))
-  }
 }
 
 void AMaster_Enemy::AfterBeginPlay_Implementation()
@@ -149,21 +153,6 @@ const bool AMaster_Enemy::GetIsStunned()
   return bIsStunned;
 }
 
-const bool AMaster_Enemy::GetWasKnockedBacked()
-{
-  return bWasKnockedBack;
-}
-
-const bool AMaster_Enemy::GetIsPlayerOnEnemy()
-{
-  return bIsPlayerOnEnemy;
-}
-
-const bool AMaster_Enemy::GetHitPlayer()
-{
-  return bHitPlayer;
-}
-
 const float AMaster_Enemy::GetDefaultSpeed()
 {
   return DefaultSpeed;
@@ -177,4 +166,9 @@ const float AMaster_Enemy::GetDefaultGravityScale()
 const float AMaster_Enemy::GetDefaultMaxAcceleration()
 {
   return DefaultMaxAcceleration;
+}
+
+const bool AMaster_Enemy::GetIsDead()
+{
+  return bIsDead;
 }

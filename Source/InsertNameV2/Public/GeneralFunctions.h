@@ -30,5 +30,11 @@ public:
   static bool MouseLeftOrRight(float mouseX, float mouseY);
 
   UFUNCTION(BlueprintPure, meta = (DisplayName = "RandomNumberNoRepeat", CompactNodeTitle = "RandomNumber", Keywords = "RandomNumber"), Category = Math)
-  static int RandomNumber(int max, int min);
+  static int32 RandomNumber(int32 max, int32 min);
+
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetIDFromGameMode", CompactNodeTitle = "GetID", Keywords = "GetID"), Category = "Utility")
+  static int32 GetIDFromGamemode(UObject* WorldContextObject, AActor* ActorToAssign);
+
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "RemoveIDFromGamemode", CompactNodeTitle = "RemoveID", Keywords = "RemoveID"), Category = "Utility")
+  static void RemoveIDFromGamemode(UObject* WorldContextObject, int32 ID, AActor* ActorToRemove);
 };
