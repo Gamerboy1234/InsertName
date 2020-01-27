@@ -17,9 +17,9 @@ class INSERTNAMEV2_API AMaster_Debuff_E : public AActor
 	
 public:
 
-  UFUNCTION(BlueprintNativeEvent, Category = "Enemy Debuffs")
-  void StartDamageTimer(AMaster_Debuff_E* DebuffToApply, AActor* CurrentActor, FDebuffData DebuffInfo);
-  void StartDamageTimer_Implementation(AMaster_Debuff_E* DebuffToApply, AActor* CurrentActor, FDebuffData DebuffInfo);
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable , Category = "Enemy Debuffs")
+  void StartDamageTimer(AMaster_Debuff_E* DebuffToApply, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo);
+  void StartDamageTimer_Implementation(AMaster_Debuff_E* DebuffToApply, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo);
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Debuff Settings")
   EDebuffType DebuffType;
@@ -28,17 +28,23 @@ public:
   void RemoveDebuff(AMaster_Debuff_E* DebuffToRemove);
 
   UFUNCTION(BlueprintCallable, Category = "Enemy Debuffs")
-  void CleanUpDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToCleanUp);
+  void SpawnEffect(AMaster_Enemy* CurrentActor);
+
+  UFUNCTION(BlueprintCallable, Category = "Enemy Debuffs")
+  AMaster_Debuff_E* FindDebuffByID(AMaster_Debuff_E* Debuff);
 
   UFUNCTION(BlueprintPure, Category = "Enemy Debuffs")
   const float GetTotalTime();
 
   UFUNCTION(BlueprintPure, Category = "Enemy Debuffs")
-  const bool IsDebuffAlreadyApplied(AMaster_Debuff_E* Debuff);
+  const bool IsDebuffAlreadyApplied(AMaster_Debuff_E* Debuff, AMaster_Enemy* CurrentActor);
 
   UFUNCTION(BlueprintNativeEvent, Category = "Enemy Debuffs")
   void StartDebuff();
   void StartDebuff_Implementation();
+
+  UFUNCTION(BlueprintPure, Category = "Enemy Debuffs")
+  float GetCurrentTickCount();
 
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
   int32 ID;
@@ -49,7 +55,7 @@ public:
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
   AMasterDamageEffect* CurrentEffect;
 
-  UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
+  UPROPERTY(BlueprintReadWrite, Category = "Debuff Settings")
   AMaster_Enemy* CurrentEnemy;
 
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
@@ -73,7 +79,6 @@ public:
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
   bool bUseTicks;
 
-private:
-
+  UFUNCTION(BlueprintCallable, Category = "Enemy Debuffs")
   void SetupDebuffInfo(FDebuffData DebuffInfo);
 };

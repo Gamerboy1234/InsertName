@@ -17,3 +17,8 @@ void APaperWarden::LoadKillCount(int32 KillCountToLoad)
 {
   KillCount = KillCountToLoad;
 }
+
+void APaperWarden::HealPlayer_Implementation(float HealAmount)
+{
+  UE_LOG(LogTemp, Warning, TEXT("Player Heal event has no Implementation"))
+}

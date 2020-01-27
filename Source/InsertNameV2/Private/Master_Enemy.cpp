@@ -11,13 +11,17 @@
 #include "Kismet/GameplayStatics.h"
 #include "GeneralFunctions.h"
 #include "PaperFlipbookComponent.h"
+#include "Components/SplineComponent.h"
 #include "Master_Debuff_E.h"
 #include "PaperWarden.h"
+#include "Math/Color.h"
 #include "FloatingCombatTextComponent.h"
 
 
 AMaster_Enemy::AMaster_Enemy()
 {
+  PrimaryActorTick.bCanEverTick = true;
+
   // HP Setup
   CurrentHP = 10;
   MaxHP = 10;
@@ -27,13 +31,16 @@ AMaster_Enemy::AMaster_Enemy()
 
   DamageToPlayer = 1.0;
 
+  bAddToKillCount = true;
+
   ControllerToUse = AMaster_AIController::StaticClass();
   if (!ensure(ControllerToUse != nullptr)) { return; }
 
-  bAddToKillCount = true;
-
   CombatTextComp = CreateDefaultSubobject<UFloatingCombatTextComponent>(TEXT("FloatingCombatTextComponent"));
   if (!ensure(CombatTextComp != nullptr)) { return; }
+
+  EnemySpline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
+  if (!ensure(EnemySpline != nullptr)) { return; }
 }
 
 // Setup default values for enemy when game starts
@@ -64,6 +71,7 @@ AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, 
     if (MostRecentDebuff)
     {
       MostRecentDebuff->StartDamageTimer(MostRecentDebuff, this, DebuffData);
+      CurrentDebuffs.Add(MostRecentDebuff);
       return MostRecentDebuff;
     }
     else
@@ -79,12 +87,51 @@ AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, 
   }
 }
 
-void AMaster_Enemy::RemoveAllDebuffs()
+bool AMaster_Enemy::FireCheck(float GunDamage, bool Heal, bool Damage, float BuffAmount)
 {
-  for (AMaster_Debuff_E* CurrentDebuff : CurrentDebuffs)
+  AMaster_Debuff_E* FireDebuff = FindFire();
+  if (FireDebuff)
   {
-    CurrentDebuff->RemoveDebuff(CurrentDebuff);
+    if (!Heal)
+    {
+      float BuffedDamaged = UGeneralFunctions::TickDamage(FireDebuff->GetCurrentTickCount(), GunDamage, BuffAmount);
+      DamageEnemy(BuffedDamaged);
+      FireDebuff->RemoveDebuff(FireDebuff);
+      return true;
+    }
+    else
+    {
+      auto Player = Cast<APaperWarden>(GetWorld()->GetFirstPlayerController());
+      float HealAmount = UGeneralFunctions::TickDamage(FireDebuff->GetCurrentTickCount(), GunDamage, BuffAmount);
+      Player->HealPlayer(HealAmount);
+      FireDebuff->RemoveDebuff(FireDebuff);
+      return true;
+    }
   }
+  else
+  {
+    return false;
+  }
+}
+
+AMaster_Debuff_E* AMaster_Enemy::FindFire()
+{
+  AMaster_Debuff_E* LocalDebuff = nullptr;
+
+  for (AMaster_Debuff_E* Debuff : CurrentDebuffs)
+  {
+    if (Debuff->DebuffType == EDebuffType::Fire)
+    {
+      LocalDebuff = Debuff;
+      break;
+    }
+    else
+    {
+      LocalDebuff = nullptr;
+      continue;
+    }
+  }
+  return LocalDebuff;
 }
 
 void AMaster_Enemy::DamageEnemy_Implementation(float Damage)
@@ -115,7 +162,6 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage)
       }
 
       UGeneralFunctions::RemoveIDFromGamemode(this, ID, this);
-      RemoveAllDebuffs();
       OnDeath();
     }
   }
@@ -130,6 +176,13 @@ void AMaster_Enemy::OnDeath_Implementation()
 void AMaster_Enemy::AfterBeginPlay_Implementation()
 {
   // for use in children
+}
+
+void AMaster_Enemy::Tick(float DeltaSeconds)
+{
+  Super::Tick(DeltaSeconds);
+  // Keep Actor on Y level 0
+  UGeneralFunctions::RemoveActorsY(this, this);
 }
 
 // Getter Functions for private var's 

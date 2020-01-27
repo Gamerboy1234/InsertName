@@ -12,6 +12,8 @@ class UBehaviorTree;
 class AMaster_AIController;
 class UFloatingCombatTextComponent;
 class AMaster_Debuff_E;
+class USplineComponent;
+class AMasterDamageEffect;
 
 UCLASS()
 class INSERTNAMEV2_API AMaster_Enemy : public APaperZDCharacter
@@ -38,7 +40,7 @@ public:
   bool bTakenDamage;
 
   /* The delay before a actor despawns */
-  UPROPERTY(EditAnywhere, Category = "HP Values", meta = (ClampMin="1"))
+  UPROPERTY(EditAnywhere, Category = "HP Values", meta = (ClampMin=".001"))
   float ActorDespawnDelay;
 
   UPROPERTY(EditAnywhere, Category = "HP Values")
@@ -49,6 +51,9 @@ public:
 
   UPROPERTY(VisibleAnywhere, Category = "Components")
   UFloatingCombatTextComponent* CombatTextComp;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+  USplineComponent* EnemySpline;
 
   UPROPERTY(EditAnywhere, Category = "AI", meta = (EditCondition = "bUseBT"))
   UBehaviorTree* BehaviorTreeToUse;
@@ -84,7 +89,10 @@ public:
   AActor* ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, FDebuffData DebuffData, AActor* Target);
 
   UFUNCTION(BlueprintCallable, Category = "Debuffs")
-  void RemoveAllDebuffs();
+  bool FireCheck(float GunDamage, bool Heal, bool Damage, float BuffAmount);
+
+  UFUNCTION(BlueprintPure, Category = "Debuffs")
+  AMaster_Debuff_E* FindFire();
 
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const FVector GetHomeLocation();
@@ -124,6 +132,9 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Utility")
   void AfterBeginPlay();
   virtual void AfterBeginPlay_Implementation();
+
+  // Called every frame
+  virtual void Tick(float DeltaSeconds) override;
 
 protected:
 

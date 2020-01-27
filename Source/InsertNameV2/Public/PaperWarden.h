@@ -25,6 +25,10 @@ public:
   UFUNCTION(BlueprintCallable, Category = "Utility")
   void LoadKillCount(int32 KillCountToLoad);
 
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
+  void HealPlayer(float HealAmount);
+  virtual void HealPlayer_Implementation(float HealAmount);
+
 private:
 
   int32 KillCount;

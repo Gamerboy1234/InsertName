@@ -109,3 +109,14 @@ void UGeneralFunctions::RemoveIDFromGamemode(UObject* WorldContextObject, int32 
     UE_LOG(LogTemp, Warning, TEXT("Unable to assing ID cast to ASideScrollerGamemode failed to remove ID from : %s"), *ActorToRemove->GetName())
   }
 }
+
+void UGeneralFunctions::RemoveActorsY(UObject* WorldContextObject, AActor* ActorRef)
+{
+  if (WorldContextObject && ActorRef)
+  {
+    float ActorsX = ActorRef->GetActorLocation().X;
+    float ActorsZ = ActorRef->GetActorLocation().Z;
+    FVector FilterdLocation = FVector(ActorsX, 0, ActorsZ);
+    ActorRef->SetActorLocation(FilterdLocation);
+  }
+}
