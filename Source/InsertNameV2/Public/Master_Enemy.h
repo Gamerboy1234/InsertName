@@ -83,7 +83,13 @@ public:
   bool bHitPlayer;
 
   UPROPERTY(BlueprintReadWrite, Category = "AI")
+  bool bIsFlying;
+
+  UPROPERTY(BlueprintReadWrite, Category = "AI")
   bool bIsPlayerOnEnemy;
+
+  UFUNCTION(BlueprintCallable, Category = "AI")
+  void Stun(float Duration);
 
   UFUNCTION(BlueprintCallable, Category = "Debuffs")
   AActor* ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, FDebuffData DebuffData, AActor* Target);
@@ -142,6 +148,8 @@ protected:
   virtual void BeginPlay() override;
   
 private:
+
+  void ResetStun();
 
   int32 ID;
 

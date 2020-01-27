@@ -13,8 +13,10 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/SplineComponent.h"
 #include "Master_Debuff_E.h"
+#include "AIController.h"
 #include "PaperWarden.h"
 #include "Math/Color.h"
+#include "BrainComponent.h"
 #include "FloatingCombatTextComponent.h"
 
 
@@ -61,6 +63,59 @@ void AMaster_Enemy::BeginPlay()
 
   // All defaults values are now set the enemy can now do stuff
   AfterBeginPlay();
+}
+
+void AMaster_Enemy::Stun(float Duration)
+{
+  if (bCanBeStunned)
+  {
+    StunDuration = Duration;
+    bIsStunned = true;
+    GetCharacterMovement()->StopMovementImmediately();
+    if (ControllerToUse)
+    {
+      auto LocalController = Cast<AMaster_AIController>(ControllerToUse->GetDefaultObject());
+      UBrainComponent* BrainComp = LocalController->GetBrainComponent();
+      if (BrainComp)
+      {
+        BrainComp->StopLogic("Stunned");
+      }
+    }
+    FTimerHandle StunTimer;
+    GetWorldTimerManager().SetTimer(StunTimer, this, &AMaster_Enemy::ResetStun, StunDuration, false);
+  }
+}
+
+void AMaster_Enemy::ResetStun()
+{
+  if (bIsFlying)
+  {
+    GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+    if (ControllerToUse)
+    {
+      auto LocalController = Cast<AMaster_AIController>(ControllerToUse->GetDefaultObject());
+      UBrainComponent* BrainComp = LocalController->GetBrainComponent();
+      if (BrainComp)
+      {
+        BrainComp->RestartLogic();
+      }
+    }
+    bIsStunned = false;
+  }
+  else
+  {
+    GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+    if (ControllerToUse)
+    {
+      auto LocalController = Cast<AMaster_AIController>(ControllerToUse->GetDefaultObject());
+      UBrainComponent* BrainComp = LocalController->GetBrainComponent();
+      if (BrainComp)
+      {
+        BrainComp->RestartLogic();
+      }
+    }
+    bIsStunned = false;
+  }
 }
 
 AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, FDebuffData DebuffData, AActor* Target)
