@@ -6,6 +6,8 @@
 #include "PaperZDCharacter.h"
 #include "PaperWarden.generated.h"
 
+class UBoxComponent;
+
 /**
  * 
  */
@@ -16,6 +18,14 @@ class INSERTNAMEV2_API APaperWarden : public APaperZDCharacter
 
 public:
 
+  APaperWarden();
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  UBoxComponent* BarkInnerCollision;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  UBoxComponent* BarkOuterCollision;
+
   UFUNCTION(BlueprintCallable, Category = "Utility")
   int32 AddToKillCount(int32 AmountToadd);
 
@@ -25,9 +35,26 @@ public:
   UFUNCTION(BlueprintCallable, Category = "Utility")
   void LoadKillCount(int32 KillCountToLoad);
 
+  UFUNCTION(BlueprintImplementableEvent, Category = "Utility")
+  void OnBarkInnerOverlap(AActor* OverlappedActor);
+
+  UFUNCTION(BlueprintImplementableEvent, Category = "Utility")
+  void OnBarkOuterOverlap(AActor* OverlappedActor);
+
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
   void HealPlayer(float HealAmount);
   virtual void HealPlayer_Implementation(float HealAmount);
+
+  UFUNCTION()
+  void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+  UFUNCTION()
+  void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+protected:
+
+  // Called when the game starts or when spawned
+  virtual void BeginPlay() override;
 
 private:
 

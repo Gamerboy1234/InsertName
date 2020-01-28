@@ -17,6 +17,7 @@ class INSERTNAMEV2_API UGeneralFunctions : public UBlueprintFunctionLibrary
   GENERATED_BODY()
 
 public:
+
   UFUNCTION(BlueprintPure, meta = (DisplayName = "IsNumberNegative", CompactNodeTitle = "NumberNegative", Keywords = "IsNumberNegative"), Category = Math)
   static bool IsNumberNegative(float number);
 

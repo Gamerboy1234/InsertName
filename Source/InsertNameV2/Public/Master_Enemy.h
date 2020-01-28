@@ -139,6 +139,10 @@ public:
   void AfterBeginPlay();
   virtual void AfterBeginPlay_Implementation();
 
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
+  void BarkKnockBack(float BarkStunDuration, float LaunchVelocityMultiplier);
+  virtual void BarkKnockBack_Implementation(float BarkStunDuration, float LaunchVelocityMultiplier);
+
   // Called every frame
   virtual void Tick(float DeltaSeconds) override;
 

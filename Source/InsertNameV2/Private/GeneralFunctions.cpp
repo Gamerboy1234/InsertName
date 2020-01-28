@@ -5,9 +5,11 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
 #include "SideScrollerGamemode.h"
+#include "PaperZDCharacter.h"
 #include <iostream>
 #include <random>
 #include <time.h>
+
 using namespace std;
 
 bool UGeneralFunctions::IsNumberNegative(float number)

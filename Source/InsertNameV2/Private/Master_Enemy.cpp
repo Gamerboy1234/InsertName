@@ -233,6 +233,30 @@ void AMaster_Enemy::AfterBeginPlay_Implementation()
   // for use in children
 }
 
+void AMaster_Enemy::BarkKnockBack_Implementation(float BarkStunDuration, float LaunchVelocityMultiplier)
+{
+  this->Stun(BarkStunDuration);
+  APaperWarden* PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerPawn(this, 0));
+  if (PlayerRef)
+  {
+    // Disable Bark Collision and reset capsule collision
+    PlayerRef->BarkInnerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    PlayerRef->BarkOuterCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    PlayerRef->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    // Calculate launch direction and velocity
+    FVector LaunchDirection = FVector(0, 0, 0);
+    float Size = GetActorLocation().Size();
+    GetActorLocation().ToDirectionAndLength(LaunchDirection, Size);
+    auto LaunchVelocity = LaunchDirection * LaunchVelocityMultiplier;
+    // Launch Player away from hit enemy
+    PlayerRef->LaunchCharacter(LaunchVelocity, false, false);
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Unable to get PlayerRef"))
+  }
+}
+
 void AMaster_Enemy::Tick(float DeltaSeconds)
 {
   Super::Tick(DeltaSeconds);
