@@ -26,7 +26,6 @@ AMaster_Enemy::AMaster_Enemy()
 
   // HP Setup
   CurrentHP = 10;
-  MaxHP = 10;
   ActorDespawnDelay = 2.0;
   HPBarHideDelay = 3.0;
   bCanBeStunned = true;
@@ -52,6 +51,8 @@ void AMaster_Enemy::BeginPlay()
 
   bIsDead = false;
 
+  MaxHP = CurrentHP;
+
   HomeLocation = GetActorLocation();
 
   ID = UGeneralFunctions::GetIDFromGamemode(this, this);
@@ -60,6 +61,8 @@ void AMaster_Enemy::BeginPlay()
   DefaultSpeed = MovementComp->GetMaxSpeed();
   DefaultGravityScale = MovementComp->GravityScale;
   DefaultMaxAcceleration = MovementComp->GetMaxAcceleration();
+
+  GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AMaster_Enemy::OnCompHit);
 
   // All defaults values are now set the enemy can now do stuff
   AfterBeginPlay();
@@ -150,7 +153,7 @@ bool AMaster_Enemy::FireCheck(float GunDamage, bool Heal, bool Damage, float Buf
     if (!Heal)
     {
       float BuffedDamaged = UGeneralFunctions::TickDamage(FireDebuff->GetCurrentTickCount(), GunDamage, BuffAmount);
-      DamageEnemy(BuffedDamaged);
+      DamageEnemy(BuffedDamaged, true);
       FireDebuff->RemoveDebuff(FireDebuff);
       return true;
     }
@@ -189,7 +192,7 @@ AMaster_Debuff_E* AMaster_Enemy::FindFire()
   return LocalDebuff;
 }
 
-void AMaster_Enemy::DamageEnemy_Implementation(float Damage)
+void AMaster_Enemy::DamageEnemy_Implementation(float Damage, bool bShowText)
 {
   if (!bIsDead)
   {
@@ -199,9 +202,12 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage)
 
     bTakenDamage = true;
 
-    if (CombatTextComp)
+    if (bShowText)
     {
-      CombatTextComp->SpawnCombatText(Damage, this);
+      if (CombatTextComp)
+      {
+        CombatTextComp->SpawnCombatText(Damage, this);
+      }
     }
 
     if (CurrentHP <= 0.0f)
@@ -220,6 +226,11 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage)
       OnDeath();
     }
   }
+}
+
+void AMaster_Enemy::KillEnemy()
+{
+  this->DamageEnemy(MaxHP, false);
 }
 
 void AMaster_Enemy::OnDeath_Implementation()
@@ -257,11 +268,27 @@ void AMaster_Enemy::BarkKnockBack_Implementation(float BarkStunDuration, float L
   }
 }
 
+void AMaster_Enemy::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+  APaperWarden* PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerPawn(this, 0));
+
+  if (OtherActor && HitComp && PlayerRef->bWasBarkUsed)
+  {
+    HitActor = HitComp->GetOwner();
+  }
+}
+
 void AMaster_Enemy::Tick(float DeltaSeconds)
 {
   Super::Tick(DeltaSeconds);
   // Keep Actor on Y level 0
   UGeneralFunctions::RemoveActorsY(this, this);
+}
+
+void AMaster_Enemy::ResetSpriteColor()
+{
+  FLinearColor DefaultColor = FLinearColor(1, 1, 1, 1);
+  this->GetSprite()->SetSpriteColor(DefaultColor);
 }
 
 // Getter Functions for private var's 
@@ -303,4 +330,14 @@ const float AMaster_Enemy::GetDefaultMaxAcceleration()
 const bool AMaster_Enemy::GetIsDead()
 {
   return bIsDead;
+}
+
+const float AMaster_Enemy::GetMaxHP()
+{
+  return MaxHP;
+}
+
+AActor* AMaster_Enemy::GetHitActor()
+{
+  return HitActor;
 }

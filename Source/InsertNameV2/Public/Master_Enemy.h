@@ -33,10 +33,7 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP Values")
   float CurrentHP;
 
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP Values")
-  float MaxHP;
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP Values")
+  UPROPERTY(BlueprintReadWrite, Category = "HP Values")
   bool bTakenDamage;
 
   /* The delay before a actor despawns */
@@ -91,6 +88,13 @@ public:
   UFUNCTION(BlueprintCallable, Category = "AI")
   void Stun(float Duration);
 
+  /* This will instantly kill the enemy */
+  UFUNCTION(BlueprintCallable, Category = "Damage")
+  void KillEnemy();
+
+  UFUNCTION(BlueprintCallable, Category = "Sprite")
+  void ResetSpriteColor();
+
   UFUNCTION(BlueprintCallable, Category = "Debuffs")
   AActor* ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, FDebuffData DebuffData, AActor* Target);
 
@@ -118,16 +122,23 @@ public:
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const float GetDefaultGravityScale();
 
+  /* Returns the MaxHP of the enemy MaxHP is the default value of CurrentHP */
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const float GetMaxHP();
+
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const float GetDefaultMaxAcceleration();
 
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const bool GetIsDead();
 
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  AActor* GetHitActor();
+
   /* Apply damage to enemy */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
-  void DamageEnemy(float Damage);
-  virtual void DamageEnemy_Implementation(float Damage);
+  void DamageEnemy(float Damage, bool bShowText);
+  virtual void DamageEnemy_Implementation(float Damage, bool bShowText);
 
   /* What to do after enemy is killed */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
@@ -143,6 +154,10 @@ public:
   void BarkKnockBack(float BarkStunDuration, float LaunchVelocityMultiplier);
   virtual void BarkKnockBack_Implementation(float BarkStunDuration, float LaunchVelocityMultiplier);
 
+  UFUNCTION()
+  void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+
   // Called every frame
   virtual void Tick(float DeltaSeconds) override;
 
@@ -154,6 +169,8 @@ protected:
 private:
 
   void ResetStun();
+
+  AActor* HitActor;
 
   int32 ID;
 
@@ -173,6 +190,8 @@ private:
   float DefaultGravityScale;
 
   float DefaultMaxAcceleration;
+
+  float MaxHP;
 
   AMaster_Debuff_E* MostRecentDebuff;
 };

@@ -25,7 +25,7 @@ void UFloatingCombatTextComponent::SpawnCombatText(float DamageApplied, AActor* 
   else
   {
     UE_LOG(LogTemp, Warning, TEXT("Unable to Spawn Floating Combat Text"))
-      return;
+    return;
   }
 }
 

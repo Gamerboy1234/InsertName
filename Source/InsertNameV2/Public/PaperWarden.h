@@ -26,6 +26,9 @@ public:
   UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
   UBoxComponent* BarkOuterCollision;
 
+  UPROPERTY(BlueprintReadWrite, Category = "Spells")
+  bool bWasBarkUsed;
+
   UFUNCTION(BlueprintCallable, Category = "Utility")
   int32 AddToKillCount(int32 AmountToadd);
 
