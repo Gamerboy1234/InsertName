@@ -244,8 +244,9 @@ void AMaster_Enemy::AfterBeginPlay_Implementation()
   // for use in children
 }
 
-void AMaster_Enemy::BarkKnockBack_Implementation(float BarkStunDuration, float LaunchVelocityMultiplier)
+void AMaster_Enemy::BarkKnockBack_Implementation(float BarkStunDuration, float LaunchVelocityMultiplier, float BarkDamage)
 {
+  this->DamageEnemy(BarkDamage, true);
   this->Stun(BarkStunDuration);
   APaperWarden* PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerPawn(this, 0));
   if (PlayerRef)

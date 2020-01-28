@@ -151,8 +151,8 @@ public:
   virtual void AfterBeginPlay_Implementation();
 
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
-  void BarkKnockBack(float BarkStunDuration, float LaunchVelocityMultiplier);
-  virtual void BarkKnockBack_Implementation(float BarkStunDuration, float LaunchVelocityMultiplier);
+  void BarkKnockBack(float BarkStunDuration, float LaunchVelocityMultiplier, float BarkDamage);
+  virtual void BarkKnockBack_Implementation(float BarkStunDuration, float LaunchVelocityMultiplier, float BarkDamage);
 
   UFUNCTION()
   void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
