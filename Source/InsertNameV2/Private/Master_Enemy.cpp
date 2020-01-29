@@ -244,7 +244,7 @@ void AMaster_Enemy::AfterBeginPlay_Implementation()
   // for use in children
 }
 
-void AMaster_Enemy::BarkKnockBack_Implementation(float BarkStunDuration, float LaunchVelocityMultiplier, float BarkDamage)
+void AMaster_Enemy::BarkKnockBack_Implementation(float BarkStunDuration, float BarkDamage)
 {
   this->DamageEnemy(BarkDamage, true);
   this->Stun(BarkStunDuration);
@@ -255,13 +255,6 @@ void AMaster_Enemy::BarkKnockBack_Implementation(float BarkStunDuration, float L
     PlayerRef->BarkInnerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     PlayerRef->BarkOuterCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     PlayerRef->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-    // Calculate launch direction and velocity
-    FVector LaunchDirection = FVector(0, 0, 0);
-    float Size = GetActorLocation().Size();
-    GetActorLocation().ToDirectionAndLength(LaunchDirection, Size);
-    auto LaunchVelocity = LaunchDirection * LaunchVelocityMultiplier;
-    // Launch Player away from hit enemy
-    PlayerRef->LaunchCharacter(LaunchVelocity, false, false);
   }
   else
   {
