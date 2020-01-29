@@ -90,7 +90,9 @@ public:
   /* Will check to see if current gravity scale is < 0.5 if so updates gravity so enemy can be knocked backed */
   UFUNCTION(BlueprintCallable, Category = "AI")
   void GravityCheck(float NewGravityScale);
-
+  /* Called when player uses the bark spell to bounce the enemy if the enemy does not die this is called */
+  UFUNCTION(BlueprintCallable, Category = "AI")
+  void BarkKnockBack(float BarkStunDuration, float BarkDamage);
   /* This will instantly kill the enemy */
   UFUNCTION(BlueprintCallable, Category = "Damage")
   void KillEnemy();
@@ -154,10 +156,6 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Utility")
   void AfterBeginPlay();
   virtual void AfterBeginPlay_Implementation();
-  /* Called when player uses the bark spell to bounce the enemy if the enemy does not die this is called */
-  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
-  void BarkKnockBack(float BarkStunDuration, float BarkDamage);
-  virtual void BarkKnockBack_Implementation(float BarkStunDuration, float BarkDamage);
   /* Called when enemy is knocked back */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
   void OnKnockBack();

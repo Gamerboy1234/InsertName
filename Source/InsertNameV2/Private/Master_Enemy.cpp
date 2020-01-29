@@ -96,6 +96,24 @@ void AMaster_Enemy::GravityCheck(float NewGravityScale)
   }
 }
 
+void AMaster_Enemy::BarkKnockBack(float BarkStunDuration, float BarkDamage)
+{
+  this->DamageEnemy(BarkDamage, true);
+  this->Stun(BarkStunDuration);
+  APaperWarden* PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerPawn(this, 0));
+  if (PlayerRef)
+  {
+    // Disable Bark Collision and reset capsule collision
+    PlayerRef->BarkInnerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    PlayerRef->BarkOuterCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    PlayerRef->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Unable to get PlayerRef"))
+  }
+}
+
 void AMaster_Enemy::ResetStun()
 {
   if (bIsFlying)
@@ -255,24 +273,6 @@ void AMaster_Enemy::OnDeath_Implementation()
 void AMaster_Enemy::AfterBeginPlay_Implementation()
 {
   // for use in children
-}
-
-void AMaster_Enemy::BarkKnockBack_Implementation(float BarkStunDuration, float BarkDamage)
-{
-  this->DamageEnemy(BarkDamage, true);
-  this->Stun(BarkStunDuration);
-  APaperWarden* PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerPawn(this, 0));
-  if (PlayerRef)
-  {
-    // Disable Bark Collision and reset capsule collision
-    PlayerRef->BarkInnerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    PlayerRef->BarkOuterCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    PlayerRef->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-  }
-  else
-  {
-    UE_LOG(LogTemp, Error, TEXT("Unable to get PlayerRef"))
-  }
 }
 
 void AMaster_Enemy::OnKnockBack_Implementation()
