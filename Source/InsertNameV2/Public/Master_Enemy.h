@@ -87,6 +87,9 @@ public:
 
   UFUNCTION(BlueprintCallable, Category = "AI")
   void Stun(float Duration);
+  /* Will check to see if current gravity scale is < 0.5 if so updates gravity so enemy can be knocked backed */
+  UFUNCTION(BlueprintCallable, Category = "AI")
+  void GravityCheck(float NewGravityScale);
 
   /* This will instantly kill the enemy */
   UFUNCTION(BlueprintCallable, Category = "Damage")
@@ -144,7 +147,6 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
   void OnDeath();
   virtual void OnDeath_Implementation();
-
   /* Is called after all default values are set in EventBeginPlay */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Utility")
   void AfterBeginPlay();
@@ -165,10 +167,17 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
   void ResetSpeed();
   virtual void ResetSpeed_Implementation();
+  /* Will make enemy jump into the air */
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
+  void AIJump();
+  virtual void AIJump_Implementation();
+  /* Reset Gravity back to default values */
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
+  void ResetGravity();
+  virtual void ResetGravity_Implementation();
 
   UFUNCTION()
   void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
 
   // Called every frame
   virtual void Tick(float DeltaSeconds) override;

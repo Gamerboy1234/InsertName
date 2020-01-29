@@ -89,6 +89,14 @@ void AMaster_Enemy::Stun(float Duration)
   }
 }
 
+void AMaster_Enemy::GravityCheck(float NewGravityScale)
+{
+  if (GetCharacterMovement()->GravityScale < 0.5f)
+  {
+    GetCharacterMovement()->GravityScale = NewGravityScale;
+  }
+}
+
 void AMaster_Enemy::ResetStun()
 {
   if (bIsFlying)
@@ -272,13 +280,24 @@ void AMaster_Enemy::IncreaseSpeed_Implementation(float SpeedMultiplier)
 {
   float NewSpeed = GetCharacterMovement()->MaxWalkSpeed * SpeedMultiplier;
   GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
-  UE_LOG(LogTemp, Log, TEXT("MaxSpeed %f"), GetCharacterMovement()->MaxWalkSpeed)
+  float NewAccleration = GetCharacterMovement()->MaxAcceleration * SpeedMultiplier;
+  GetCharacterMovement()->MaxAcceleration = NewAccleration;
 }
 
 void AMaster_Enemy::ResetSpeed_Implementation()
 {
   GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
   GetCharacterMovement()->MaxAcceleration = DefaultMaxAcceleration;
+}
+
+void AMaster_Enemy::AIJump_Implementation()
+{
+  this->Jump();
+}
+
+void AMaster_Enemy::ResetGravity_Implementation()
+{
+  GetCharacterMovement()->GravityScale = DefaultGravityScale;
 }
 
 void AMaster_Enemy::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -294,7 +313,7 @@ void AMaster_Enemy::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 void AMaster_Enemy::Tick(float DeltaSeconds)
 {
   Super::Tick(DeltaSeconds);
-  // Keep Actor on Y level 0
+  // Keep Enemy on Y level 0
   UGeneralFunctions::RemoveActorsY(this, this);
 }
 
