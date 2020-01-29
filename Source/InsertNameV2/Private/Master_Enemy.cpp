@@ -262,6 +262,25 @@ void AMaster_Enemy::BarkKnockBack_Implementation(float BarkStunDuration, float B
   }
 }
 
+void AMaster_Enemy::OnKnockBack_Implementation()
+{
+  this->Stun(0.01f);
+  ResetSpeed();
+}
+
+void AMaster_Enemy::IncreaseSpeed_Implementation(float SpeedMultiplier)
+{
+  float NewSpeed = GetCharacterMovement()->MaxWalkSpeed * SpeedMultiplier;
+  GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
+  UE_LOG(LogTemp, Log, TEXT("MaxSpeed %f"), GetCharacterMovement()->MaxWalkSpeed)
+}
+
+void AMaster_Enemy::ResetSpeed_Implementation()
+{
+  GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+  GetCharacterMovement()->MaxAcceleration = DefaultMaxAcceleration;
+}
+
 void AMaster_Enemy::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
   APaperWarden* PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerPawn(this, 0));

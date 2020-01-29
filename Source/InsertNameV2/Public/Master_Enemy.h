@@ -149,10 +149,22 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Utility")
   void AfterBeginPlay();
   virtual void AfterBeginPlay_Implementation();
-
-  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
+  /* Called when player uses the bark spell to bounce the enemy if the enemy does not die this is called */
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
   void BarkKnockBack(float BarkStunDuration, float BarkDamage);
   virtual void BarkKnockBack_Implementation(float BarkStunDuration, float BarkDamage);
+  /* Called when enemy is knocked back */
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
+  void OnKnockBack();
+  virtual void OnKnockBack_Implementation();
+  /* Increase enemies speed by a set multiplier will increase both MaxWalkSpeed and MaxAcceleration */
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
+  void IncreaseSpeed(float SpeedMultiplier);
+  virtual void IncreaseSpeed_Implementation(float SpeedMultiplier);
+  /* Reset speed back to default speed */
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
+  void ResetSpeed();
+  virtual void ResetSpeed_Implementation();
 
   UFUNCTION()
   void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
