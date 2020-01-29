@@ -27,7 +27,6 @@ AMaster_Enemy::AMaster_Enemy()
   // HP Setup
   CurrentHP = 10;
   ActorDespawnDelay = 2.0;
-  HPBarHideDelay = 3.0;
   bCanBeStunned = true;
 
   DamageToPlayer = 1.0;
@@ -239,6 +238,12 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage, bool bShowText)
 void AMaster_Enemy::KillEnemy()
 {
   this->DamageEnemy(MaxHP, false);
+}
+
+void AMaster_Enemy::UpdateCurrentHP(float NewCurrent)
+{
+  CurrentHP = NewCurrent;
+  MaxHP = NewCurrent;
 }
 
 void AMaster_Enemy::OnDeath_Implementation()

@@ -36,12 +36,12 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "HP Values")
   bool bTakenDamage;
 
+  UPROPERTY(BlueprintReadWrite, Category = "HP Values")
+  bool bIsDead;
+
   /* The delay before a actor despawns */
   UPROPERTY(EditAnywhere, Category = "HP Values", meta = (ClampMin=".001"))
   float ActorDespawnDelay;
-
-  UPROPERTY(EditAnywhere, Category = "HP Values")
-  float HPBarHideDelay;
 
   UPROPERTY(EditAnywhere, Category = "HP Values")
   bool bCanBeStunned;
@@ -94,6 +94,9 @@ public:
   /* This will instantly kill the enemy */
   UFUNCTION(BlueprintCallable, Category = "Damage")
   void KillEnemy();
+  /* This function will change both Current and Max HP at runtime */
+  UFUNCTION(BlueprintCallable, Category = "HP Values")
+  void UpdateCurrentHP(float NewCurrent);
 
   UFUNCTION(BlueprintCallable, Category = "Sprite")
   void ResetSpriteColor();
@@ -194,8 +197,6 @@ private:
   AActor* HitActor;
 
   int32 ID;
-
-  bool bIsDead;
 
   // Home location is the location the actor is the point the actor first spawned
   FVector HomeLocation;
