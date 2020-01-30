@@ -92,7 +92,10 @@ public:
   void GravityCheck(float NewGravityScale);
   /* Called when player uses the bark spell to bounce the enemy if the enemy does not die this is called */
   UFUNCTION(BlueprintCallable, Category = "AI")
-  void BarkKnockBack(float BarkStunDuration, float BarkDamage);
+  void BarkCollisionReset();
+  /* Called when player uses the bark spell will apply a short stun and damage to enemy */
+  UFUNCTION(BlueprintCallable, Category = "AI")
+  void BarkDamage(float BarkStunDuration, float BarkDamage);
   /* This will instantly kill the enemy */
   UFUNCTION(BlueprintCallable, Category = "Damage")
   void KillEnemy();
