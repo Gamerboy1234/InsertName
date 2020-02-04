@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MasterDamageEffect.h"
 #include "DebuffData.generated.h"
 
 class AMasterDamageEffect;
@@ -37,5 +38,7 @@ enum class EDebuffType : uint8
 {
   Fire UMETA(DisplayName = "Fire"),
 
-  Stun UMETA(DisplayName = "Stun")
+  Stun UMETA(DisplayName = "Stun"),
+
+  Leeched UMETA(DisplayName = "Leeched")
 };

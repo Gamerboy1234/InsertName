@@ -29,6 +29,9 @@ public:
 
   UPROPERTY(BlueprintReadWrite, Category = "Debuffs")
   bool bIsCurrentlyOnFire;
+
+  UPROPERTY(BlueprintReadWrite, Category = "Debuffs")
+  bool bDidEnemyTouchFlameMagnet;
   
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP Values")
   float CurrentHP;
@@ -113,7 +116,10 @@ public:
   bool FireCheck(float GunDamage, bool Heal, bool Damage, float BuffAmount);
 
   UFUNCTION(BlueprintPure, Category = "Debuffs")
-  AMaster_Debuff_E* FindFire();
+  AMaster_Debuff_E* FindDebuffByType(EDebuffType DebuffType);
+
+  UFUNCTION(BlueprintPure, Category = "Debuffs")
+  AMaster_Debuff_E* FindCurrentLeech();
 
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const FVector GetHomeLocation();

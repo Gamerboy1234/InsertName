@@ -41,6 +41,7 @@ AMaster_Enemy::AMaster_Enemy()
 
   EnemySpline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
   if (!ensure(EnemySpline != nullptr)) { return; }
+  EnemySpline->SetupAttachment(RootComponent);
 }
 
 // Setup default values for enemy when game starts
@@ -176,7 +177,7 @@ AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, 
 
 bool AMaster_Enemy::FireCheck(float GunDamage, bool Heal, bool Damage, float BuffAmount)
 {
-  AMaster_Debuff_E* FireDebuff = FindFire();
+  AMaster_Debuff_E* FireDebuff = FindDebuffByType(EDebuffType::Fire);
   if (FireDebuff)
   {
     if (!Heal)
@@ -201,13 +202,13 @@ bool AMaster_Enemy::FireCheck(float GunDamage, bool Heal, bool Damage, float Buf
   }
 }
 
-AMaster_Debuff_E* AMaster_Enemy::FindFire()
+AMaster_Debuff_E* AMaster_Enemy::FindDebuffByType(EDebuffType DebuffType)
 {
   AMaster_Debuff_E* LocalDebuff = nullptr;
 
   for (AMaster_Debuff_E* Debuff : CurrentDebuffs)
   {
-    if (Debuff->DebuffType == EDebuffType::Fire)
+    if (Debuff->DebuffType == DebuffType)
     {
       LocalDebuff = Debuff;
       break;
@@ -221,13 +222,25 @@ AMaster_Debuff_E* AMaster_Enemy::FindFire()
   return LocalDebuff;
 }
 
+AMaster_Debuff_E* AMaster_Enemy::FindCurrentLeech()
+{
+  AMaster_Debuff_E* Leech = FindDebuffByType(EDebuffType::Leeched);
+  if (Leech)
+  {
+    return Leech;
+  }
+  else
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Unable to find current leech"))
+    return nullptr;
+  }
+}
+
 void AMaster_Enemy::DamageEnemy_Implementation(float Damage, bool bShowText)
 {
   if (!bIsDead)
   {
     CurrentHP = FMath::Clamp<float>(CurrentHP - Damage, 0.0f, MaxHP);
-
-    UE_LOG(LogTemp, Log, TEXT("Current HP is : %f"), CurrentHP)
 
     bTakenDamage = true;
 

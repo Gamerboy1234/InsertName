@@ -26,6 +26,9 @@ public:
   /* This is how close the enemy should get to it's target location the math is this Enemies X - Targets X if it's less than the error tolerance it stops */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
   float ErrorTolerance;
+  /* The range of the charger's trace calculated like so Actor's Location + Actor's froward vector x TraceRange */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
+  float TraceRange;
   /* If true enemy will always look towards player before moving towards it traced location */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
   bool bDefaultToPlayer;
