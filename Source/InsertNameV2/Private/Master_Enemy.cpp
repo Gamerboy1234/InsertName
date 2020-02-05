@@ -116,8 +116,9 @@ void AMaster_Enemy::BarkCollisionReset()
 
 void AMaster_Enemy::BarkDamage(float BarkStunDuration, float BarkDamage)
 {
+  auto PlayerRef = UGameplayStatics::GetPlayerCharacter(this, 0);
   Stun(BarkStunDuration);
-  DamageEnemy(BarkDamage, true);
+  DamageEnemy(BarkDamage, true, PlayerRef);
 }
 
 void AMaster_Enemy::ResetStun()
@@ -179,12 +180,14 @@ AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, 
 bool AMaster_Enemy::FireCheck(float GunDamage, bool Heal, bool Damage, float BuffAmount)
 {
   AMaster_Debuff_E* FireDebuff = FindDebuffByType(EDebuffType::Fire);
+  auto PlayerRef = UGameplayStatics::GetPlayerCharacter(this, 0);
+
   if (FireDebuff)
   {
     if (!Heal)
     {
       float BuffedDamaged = UGeneralFunctions::TickDamage(FireDebuff->GetCurrentTickCount(), GunDamage, BuffAmount);
-      DamageEnemy(BuffedDamaged, true);
+      DamageEnemy(BuffedDamaged, true, PlayerRef);
       FireDebuff->RemoveDebuff(FireDebuff);
       return true;
     }
@@ -237,7 +240,7 @@ AMaster_Debuff_E* AMaster_Enemy::FindCurrentLeech()
   }
 }
 
-void AMaster_Enemy::DamageEnemy_Implementation(float Damage, bool bShowText)
+void AMaster_Enemy::DamageEnemy_Implementation(float Damage, bool bShowText, AActor* DamageInstigator)
 {
   if (!bIsDead)
   {
@@ -245,7 +248,7 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage, bool bShowText)
 
     bTakenDamage = true;
 
-    if (bShowText)
+    if (bShowText && Damage > 0)
     {
       if (CombatTextComp)
       {
@@ -278,7 +281,7 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage, bool bShowText)
 
 void AMaster_Enemy::KillEnemy()
 {
-  this->DamageEnemy(MaxHP, false);
+  this->DamageEnemy(MaxHP, false, this);
 }
 
 void AMaster_Enemy::UpdateCurrentHP(float NewCurrent)
@@ -332,9 +335,18 @@ void AMaster_Enemy::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 {
   APaperWarden* PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerPawn(this, 0));
 
-  if (OtherActor && HitComp && PlayerRef->bWasBarkUsed)
+  if (PlayerRef)
   {
-    HitActor = HitComp->GetOwner();
+    if (OtherActor && HitComp && PlayerRef->bWasBarkUsed)
+    {
+      HitActor = HitComp->GetOwner();
+    }
+
+    if (PlayerRef->bFlameMagnetActive)
+    {
+      PlayerRef->Damage(DamageToPlayer, true, this);
+      PlayerRef->bFlameMagnetActive = false;
+    }
   }
 }
 

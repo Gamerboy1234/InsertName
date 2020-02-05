@@ -29,6 +29,9 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "Spells")
   bool bWasBarkUsed;
 
+  UPROPERTY(BlueprintReadWrite, Category = "Spells")
+  bool bFlameMagnetActive;
+
   UFUNCTION(BlueprintCallable, Category = "Utility")
   int32 AddToKillCount(int32 AmountToadd);
 
@@ -47,6 +50,18 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
   void HealPlayer(float HealAmount);
   virtual void HealPlayer_Implementation(float HealAmount);
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
+  void KillPlayer();
+  virtual void KillPlayer_Implementation();
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
+  void UpgradeHP(float NewCurrentHP, float NewMaxHP);
+  virtual void UpgradeHP_Implementation(float NewCurrentHP, float NewMaxHP);
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
+  void Damage(float DamageAmount, bool bShowCombatText, AActor* DamageInstigator);
+  virtual void Damage_Implementation(float DamageAmount, bool bShowCombatText, AActor* DamageInstigator);
 
   UFUNCTION()
   void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

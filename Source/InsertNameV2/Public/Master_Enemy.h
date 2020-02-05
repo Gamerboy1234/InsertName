@@ -158,8 +158,8 @@ public:
 
   /* Apply damage to enemy */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")
-  void DamageEnemy(float Damage, bool bShowText);
-  virtual void DamageEnemy_Implementation(float Damage, bool bShowText);
+  void DamageEnemy(float Damage, bool bShowText, AActor* DamageInstigator);
+  virtual void DamageEnemy_Implementation(float Damage, bool bShowText, AActor* DamageInstigator);
 
   /* What to do after enemy is killed */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Damage")

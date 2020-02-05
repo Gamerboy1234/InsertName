@@ -34,6 +34,21 @@ void APaperWarden::HealPlayer_Implementation(float HealAmount)
   UE_LOG(LogTemp, Warning, TEXT("Player Heal event has no Implementation"))
 }
 
+void APaperWarden::KillPlayer_Implementation()
+{
+  UE_LOG(LogTemp, Warning, TEXT("Kill Player event has no Implementation"))
+}
+
+void APaperWarden::UpgradeHP_Implementation(float UpgradeAmount, float NewMaxHP)
+{
+  UE_LOG(LogTemp, Warning, TEXT("Upgrade HP event has no Implementation"))
+}
+
+void APaperWarden::Damage_Implementation(float DamageAmount, bool bShowCombatText, AActor* DamageInstigator)
+{
+  UE_LOG(LogTemp, Warning, TEXT("Damage event has no Implementation"))
+}
+
 void APaperWarden::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
   if (OtherActor)
