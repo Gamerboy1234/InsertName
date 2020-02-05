@@ -68,9 +68,6 @@ public:
   UPROPERTY(EditAnywhere, Category = "AI")
   bool bAddToKillCount;
 
-  UPROPERTY(EditAnywhere, Category = "AI")
-  TSubclassOf <AMaster_AIController> ControllerToUse;
-
   UPROPERTY(BlueprintReadWrite, Category = "AI")
   bool bAggroed;
 
