@@ -14,6 +14,7 @@ class UFloatingCombatTextComponent;
 class AMaster_Debuff_E;
 class USplineComponent;
 class AMasterDamageEffect;
+class AWarlustEffectBase;
 
 UCLASS()
 class INSERTNAMEV2_API AMaster_Enemy : public APaperZDCharacter
@@ -29,6 +30,9 @@ public:
 
   UPROPERTY(BlueprintReadWrite, Category = "Debuffs")
   bool bIsCurrentlyOnFire;
+
+  UPROPERTY(BlueprintReadWrite, Category = "Debuffs")
+  AWarlustEffectBase* WarlustEffect;
 
   UPROPERTY(BlueprintReadWrite, Category = "Debuffs")
   bool bDidEnemyTouchFlameMagnet;

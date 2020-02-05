@@ -13,6 +13,7 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/SplineComponent.h"
 #include "Master_Debuff_E.h"
+#include "WarlustEffectBase.h"
 #include "AIController.h"
 #include "PaperWarden.h"
 #include "Math/Color.h"
@@ -262,6 +263,11 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage, bool bShowText)
       {
         auto PlayerCharacter = Cast<APaperWarden>(UGameplayStatics::GetPlayerCharacter(this, 0));
         PlayerCharacter->AddToKillCount(1);
+      }
+
+      if (WarlustEffect)
+      {
+        WarlustEffect->RemoveLine();
       }
 
       UGeneralFunctions::RemoveIDFromGamemode(this, ID, this);
