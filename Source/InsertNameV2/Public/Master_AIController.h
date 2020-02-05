@@ -13,9 +13,5 @@ UCLASS()
 class INSERTNAMEV2_API AMaster_AIController : public AAIController
 {
 	GENERATED_BODY()
-
-protected:
-
-  // Called when the game starts or when spawned
-  virtual void BeginPlay() override;
+	
 };

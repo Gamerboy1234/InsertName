@@ -34,7 +34,8 @@ AMaster_Enemy::AMaster_Enemy()
 
   bAddToKillCount = true;
 
-  AIControllerClass = AMaster_AIController::StaticClass();
+  ControllerToUse = AMaster_AIController::StaticClass();
+  if (!ensure(ControllerToUse != nullptr)) { return; }
 
   CombatTextComp = CreateDefaultSubobject<UFloatingCombatTextComponent>(TEXT("FloatingCombatTextComponent"));
   if (!ensure(CombatTextComp != nullptr)) { return; }
@@ -75,12 +76,10 @@ void AMaster_Enemy::Stun(float Duration)
     StunDuration = Duration;
     bIsStunned = true;
     GetCharacterMovement()->StopMovementImmediately();
-
-    auto ControllerToUse = Cast<AMaster_AIController>(GetController());
-    
-    if (ControllerToUse && bUseBT)
+    if (ControllerToUse)
     {
-      UBrainComponent* BrainComp = ControllerToUse->GetBrainComponent();
+      auto LocalController = Cast<AMaster_AIController>(ControllerToUse->GetDefaultObject());
+      UBrainComponent* BrainComp = LocalController->GetBrainComponent();
       if (BrainComp)
       {
         BrainComp->StopLogic("Stunned");
@@ -127,12 +126,10 @@ void AMaster_Enemy::ResetStun()
   if (bIsFlying)
   {
     GetCharacterMovement()->SetMovementMode(MOVE_Flying);
-
-    auto ControllerToUse = Cast<AMaster_AIController>(GetController());
-
-    if (ControllerToUse && bUseBT)
+    if (ControllerToUse)
     {
-      UBrainComponent* BrainComp = ControllerToUse->GetBrainComponent();
+      auto LocalController = Cast<AMaster_AIController>(ControllerToUse->GetDefaultObject());
+      UBrainComponent* BrainComp = LocalController->GetBrainComponent();
       if (BrainComp)
       {
         BrainComp->RestartLogic();
@@ -143,12 +140,10 @@ void AMaster_Enemy::ResetStun()
   else
   {
     GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-
-    auto ControllerToUse = Cast<AMaster_AIController>(GetController());
-
-    if (ControllerToUse && bUseBT)
+    if (ControllerToUse)
     {
-      UBrainComponent* BrainComp = ControllerToUse->GetBrainComponent();
+      auto LocalController = Cast<AMaster_AIController>(ControllerToUse->GetDefaultObject());
+      UBrainComponent* BrainComp = LocalController->GetBrainComponent();
       if (BrainComp)
       {
         BrainComp->RestartLogic();
