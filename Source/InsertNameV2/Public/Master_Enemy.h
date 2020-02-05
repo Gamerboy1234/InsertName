@@ -49,7 +49,7 @@ public:
   /* The delay before a actor despawns */
   UPROPERTY(EditAnywhere, Category = "HP Values", meta = (ClampMin=".001"))
   float ActorDespawnDelay;
-
+  
   UPROPERTY(EditAnywhere, Category = "HP Values")
   bool bCanBeStunned;
 
@@ -58,18 +58,12 @@ public:
 
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
   USplineComponent* EnemySpline;
-
-  UPROPERTY(EditAnywhere, Category = "AI", meta = (EditCondition = "bUseBT"))
-  UBehaviorTree* BehaviorTreeToUse;
-
+  /* If true the given enemy is using a behavior tree so stunning will need to use different code */
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
   bool bUseBT;
-
+  /* If true enemy will add to the player's overall kill count */
   UPROPERTY(EditAnywhere, Category = "AI")
   bool bAddToKillCount;
-
-  UPROPERTY(EditAnywhere, Category = "AI")
-  TSubclassOf <AMaster_AIController> ControllerToUse;
 
   UPROPERTY(BlueprintReadWrite, Category = "AI")
   bool bAggroed;
