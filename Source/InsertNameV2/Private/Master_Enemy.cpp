@@ -16,6 +16,7 @@
 #include "WarlustEffectBase.h"
 #include "AIController.h"
 #include "PaperWarden.h"
+#include "Master_Buff_E.h"
 #include "Math/Color.h"
 #include "BrainComponent.h"
 #include "FloatingCombatTextComponent.h"
@@ -160,13 +161,29 @@ AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, 
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Was unable to apply debuff"))
-      return MostRecentDebuff;
+      UE_LOG(LogTemp, Error, TEXT("Was unable to apply Debuff"))
+      return nullptr;
     }
   }
   else
   {
     UE_LOG(LogTemp, Error, TEXT("Debuff target is not valid"))
+    return nullptr;
+  }
+}
+
+AActor* AMaster_Enemy::ApplyBuff(TSubclassOf<AMaster_Buff_E> BuffToApply, FBuffData BuffData)
+{
+  AMaster_Buff_E* Buff = GetWorld()->SpawnActor<AMaster_Buff_E>(BuffToApply, FVector(0), FRotator(0));
+  if (Buff)
+  {
+    Buff->SetUpBuff(BuffData, this);
+    CurrentBuffs.Add(Buff);
+    return Buff;
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Was unable to apply Buff"))
     return nullptr;
   }
 }
@@ -220,18 +237,24 @@ AMaster_Debuff_E* AMaster_Enemy::FindDebuffByType(EDebuffType DebuffType)
   return LocalDebuff;
 }
 
-AMaster_Debuff_E* AMaster_Enemy::FindCurrentLeech()
+AMaster_Buff_E* AMaster_Enemy::FindBuffByType(EBuffType BuffType)
 {
-  AMaster_Debuff_E* Leech = FindDebuffByType(EDebuffType::Leeched);
-  if (Leech)
+  AMaster_Buff_E* LocalBuff = nullptr;
+
+  for (AMaster_Buff_E* Buff : CurrentBuffs)
   {
-    return Leech;
+    if (Buff->BuffType == BuffType)
+    {
+      LocalBuff = Buff;
+      break;
+    }
+    else
+    {
+      LocalBuff = nullptr;
+      continue;
+    }
   }
-  else
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Unable to find current leech"))
-    return nullptr;
-  }
+  return LocalBuff;
 }
 
 void AMaster_Enemy::DamageEnemy_Implementation(float Damage, bool bShowText, AActor* DamageInstigator)

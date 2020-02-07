@@ -3,24 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MasterDamageEffect.h"
-#include "DebuffData.generated.h"
+#include "GameFramework/Actor.h"
+#include "BuffData.generated.h"
 
 class AMasterDamageEffect;
 
 USTRUCT(BlueprintType)
-struct FDebuffData
+struct FBuffData
 {
   GENERATED_USTRUCT_BODY()
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  float Damage = 0;
+  float BuffAmount;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  float Ticks = 0;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  float Occurrence = 0;
+  float BuffDuration;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TSubclassOf<AMasterDamageEffect> DamageEffect;
@@ -28,21 +25,16 @@ struct FDebuffData
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   FVector EffectScale = FVector(1);
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  bool bUseTicks = true;
-
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = "!bRefresh"))
-  bool bTower = false;
+  bool bTower = true;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = "!bTower"))
   bool bRefresh = false;
 };
 
 
-UENUM(BlueprintType)		
-enum class EDebuffType : uint8
+UENUM(BlueprintType)
+enum class EBuffType : uint8
 {
-  Fire UMETA(DisplayName = "Fire"),
-
-  Stun UMETA(DisplayName = "Stun")
+  Leeched UMETA(DisplayName = "Leeched")
 };

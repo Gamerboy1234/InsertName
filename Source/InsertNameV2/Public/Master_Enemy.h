@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PaperZDCharacter.h"
 #include "DebuffData.h"
+#include "BuffData.h"
 #include "Master_Enemy.generated.h"
 
 class UBlueprint;
@@ -14,6 +15,7 @@ class UFloatingCombatTextComponent;
 class AMaster_Debuff_E;
 class USplineComponent;
 class AMasterDamageEffect;
+class AMaster_Buff_E;
 class AWarlustEffectBase;
 
 UCLASS()
@@ -27,6 +29,9 @@ public:
 
   UPROPERTY(BlueprintReadOnly, Category = "Debuffs")
   TArray<AMaster_Debuff_E*> CurrentDebuffs;
+
+  UPROPERTY(BlueprintReadOnly, Category = "Buffs")
+  TArray<AMaster_Buff_E*> CurrentBuffs;
 
   UPROPERTY(BlueprintReadWrite, Category = "Debuffs")
   bool bIsCurrentlyOnFire;
@@ -110,14 +115,17 @@ public:
   UFUNCTION(BlueprintCallable, Category = "Debuffs")
   AActor* ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, FDebuffData DebuffData, AActor* Target);
 
+  UFUNCTION(BlueprintCallable, Category = "Buffs")
+  AActor* ApplyBuff(TSubclassOf<AMaster_Buff_E> BuffToApply, FBuffData BuffData);
+
   UFUNCTION(BlueprintCallable, Category = "Debuffs")
   bool FireCheck(float GunDamage, bool Heal, bool Damage, float BuffAmount);
 
   UFUNCTION(BlueprintPure, Category = "Debuffs")
   AMaster_Debuff_E* FindDebuffByType(EDebuffType DebuffType);
 
-  UFUNCTION(BlueprintPure, Category = "Debuffs")
-  AMaster_Debuff_E* FindCurrentLeech();
+  UFUNCTION(BlueprintPure, Category = "Buffs")
+  AMaster_Buff_E* FindBuffByType(EBuffType BuffType);
 
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const FVector GetHomeLocation();
