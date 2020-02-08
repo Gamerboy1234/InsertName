@@ -55,6 +55,12 @@ public:
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
   AMasterDamageEffect* CurrentEffect;
 
+  UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
+  bool bTower;
+
+  UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
+  bool bRefresh;
+
   UPROPERTY(BlueprintReadWrite, Category = "Debuff Settings")
   AMaster_Enemy* CurrentEnemy;
 
@@ -79,6 +85,19 @@ public:
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
   bool bUseTicks;
 
-  UFUNCTION(BlueprintCallable, Category = "Enemy Debuffs")
-  void SetupDebuffInfo(FDebuffData DebuffInfo);
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const int32 GetCurrentStackCount();
+  /* Increases enemy stack by one */
+  UFUNCTION(BlueprintCallable, Category = "Debuff Functions")
+  void AddToStack();
+  /* Re apply the given debuff */
+  UFUNCTION(BlueprintCallable, Category = "Debuff Functions")
+  void RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo);
+
+private:
+
+  int32 CurrentStackCount;
+
+  int32 FindDebuffIndex(AMaster_Debuff_E* DebuffIndex);
 };
+

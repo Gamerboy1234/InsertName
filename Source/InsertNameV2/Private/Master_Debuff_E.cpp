@@ -23,11 +23,23 @@ void AMaster_Debuff_E::StartDamageTimer_Implementation(AMaster_Debuff_E* DebuffT
     DamageEffect = DebuffInfo.DamageEffect;
     EffectScale = DebuffInfo.EffectScale;
     bUseTicks = DebuffInfo.bUseTicks;
+    bTower = DebuffInfo.bTower;
+    bRefresh = DebuffInfo.bRefresh;
+
+    CurrentActor->CurrentDebuffs.Add(DebuffToApply);
 
     SpawnEffect(CurrentActor);
    
     // Create Debuff timer
     GetWorldTimerManager().SetTimer(DebuffTimer, this, &AMaster_Debuff_E::StartDebuff, Occurrence, true);
+  }
+  else if (bTower)
+  {
+    AddToStack();
+  }
+  else if (bRefresh)
+  {
+    RefreshDebuff(DebuffToApply, CurrentActor, DebuffInfo);
   }
 }
 
@@ -39,14 +51,14 @@ void AMaster_Debuff_E::RemoveDebuff(AMaster_Debuff_E* DebuffToRemove)
     {
       CurrentEffect->RemoveEffect();
       
-      auto IndexToRemove = CurrentEnemy->CurrentDebuffs.Find(DebuffToRemove);
+      int32 IndexToRemove = FindDebuffIndex(DebuffToRemove);
       CurrentEnemy->CurrentDebuffs.RemoveAt(IndexToRemove);
       GetWorldTimerManager().ClearTimer(DebuffTimer);
       DebuffToRemove->Destroy();
     }
     else
     {
-      auto IndexToRemove = CurrentEnemy->CurrentDebuffs.Find(DebuffToRemove);
+      int32 IndexToRemove = FindDebuffIndex(DebuffToRemove);
       CurrentEnemy->CurrentDebuffs.RemoveAt(IndexToRemove);
       GetWorldTimerManager().ClearTimer(DebuffTimer);
       DebuffToRemove->Destroy();
@@ -121,6 +133,54 @@ const bool AMaster_Debuff_E::IsDebuffAlreadyApplied(AMaster_Debuff_E* Debuff, AM
   }
 }
 
+void AMaster_Debuff_E::AddToStack()
+{
+  CurrentStackCount++;
+}
+
+void AMaster_Debuff_E::RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo)
+{
+  if (DebuffToRefresh)
+  {
+    DebuffToRefresh->RemoveDebuff(DebuffToRefresh);
+    CurrentActor->ApplyDebuff(DebuffToRefresh->GetClass(), DebuffInfo, CurrentActor);
+  }
+  else
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Unable to refresh debuff"))
+    return;
+  }
+}
+
+int32 AMaster_Debuff_E::FindDebuffIndex(AMaster_Debuff_E* DebuffToFind)
+{
+  int32 LocalDebuffIndex = 0;
+
+  TArray<AMaster_Debuff_E*> CurrentEnemyDebuffs = CurrentEnemy->CurrentDebuffs;
+
+  for (int32 Index = 1; Index > CurrentEnemyDebuffs.Num(); Index++)
+  {
+    auto LocalDebuff = CurrentEnemyDebuffs[Index];
+
+    if (LocalDebuff->ID == DebuffToFind->ID)
+    {
+      LocalDebuffIndex = Index;
+      break;
+    }
+    else
+    {
+      LocalDebuffIndex = 0;
+      continue;
+    }
+  }
+  return LocalDebuffIndex;
+}
+
+const int32 AMaster_Debuff_E::GetCurrentStackCount()
+{
+  return CurrentStackCount;
+}
+
 void AMaster_Debuff_E::StartDebuff_Implementation()
 {
   UE_LOG(LogTemp, Warning, TEXT("Debuff %s has no implementation"), *this->GetName())
@@ -130,11 +190,6 @@ float AMaster_Debuff_E::GetCurrentTickCount()
 {
   return Ticks;
 }
-
-void AMaster_Debuff_E::SetupDebuffInfo(FDebuffData DebuffInfo)
-{
-}
-
 
 const float AMaster_Debuff_E::GetTotalTime()
 {

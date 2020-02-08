@@ -156,7 +156,6 @@ AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, 
     if (MostRecentDebuff)
     {
       MostRecentDebuff->StartDamageTimer(MostRecentDebuff, this, DebuffData);
-      CurrentDebuffs.Add(MostRecentDebuff);
       return MostRecentDebuff;
     }
     else
