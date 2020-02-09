@@ -119,30 +119,7 @@ const bool AMaster_Debuff_E::IsDebuffAlreadyApplied(AMaster_Debuff_E* Debuff, AM
     }
   }
 
-  if (LocalBool)
-  {
-    UE_LOG(LogTemp, Log, TEXT("Debuff was applied"))
-  }
-  else
-  {
-    UE_LOG(LogTemp, Log, TEXT("Debuff was not applied"))
-  }
-
   return LocalBool;
-}
-
-void AMaster_Debuff_E::RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo)
-{
-  if (DebuffToRefresh)
-  {
-    CurrentActor->ApplyDebuff(DebuffToRefresh->GetClass(), DebuffInfo, CurrentActor);
-    DebuffToRefresh->Destroy();
-  }
-  else
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Unable to refresh debuff"))
-    return;
-  }
 }
 
 void AMaster_Debuff_E::DecrementTick()
@@ -165,6 +142,38 @@ void AMaster_Debuff_E::DecrementTick()
     StartDebuff();
     OnDebuffStop();
     RemoveDebuff(this, TargetEnemy);
+  }
+}
+
+void AMaster_Debuff_E::RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo)
+{
+  AMaster_Debuff_E* DebuffToFind = nullptr;
+
+  TArray<AMaster_Debuff_E*> EnemyDebuffs = CurrentActor->CurrentDebuffs;
+  // Look for debuff to remove from enemy debuffs array
+  for (AMaster_Debuff_E* CurrentDebuff : EnemyDebuffs)
+  {
+    if (CurrentDebuff->DebuffType == DebuffToRefresh->DebuffType)
+    {
+      DebuffToFind = CurrentDebuff;
+      break;
+    }
+    else
+    {
+      DebuffToFind = nullptr;
+      continue;
+    }
+  }
+
+  if (DebuffToFind)
+  {
+    DebuffToFind->RemoveDebuff(DebuffToFind, CurrentActor);
+    CurrentActor->ApplyDebuff(DebuffToRefresh->GetClass(), DebuffInfo, CurrentActor);
+    DebuffToRefresh->Destroy();
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Was unable to refresh debuff. Debuff was not found in enemy CurrentDebuffs."))
   }
 }
 

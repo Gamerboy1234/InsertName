@@ -87,9 +87,9 @@ public:
 
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const bool CanContinueDebuff(AMaster_Enemy* CurrentActor);
-  /* Increases enemy stack by one */
+  /* Finds debuff in CurrentActor's debuff array and add given debuff to it's stack */
   UFUNCTION(BlueprintCallable, Category = "Debuff Functions")
-  void AddToStack(AMaster_Debuff_E* DebuffToAddTo);
+  void AddDebuffToStack(AMaster_Debuff_E* DebuffToAdd, AMaster_Enemy* CurrentActor);
   /* Re apply the given debuff */
   UFUNCTION(BlueprintCallable, Category = "Debuff Functions")
   void RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo);
@@ -97,7 +97,8 @@ public:
 private:
 
   void DecrementTick();
-  /* Finds debuff in CurrentActor's debuff array and add given debuff to it's stack */
-  void AddDebuffToStack(AMaster_Debuff_E* DebuffToAdd, AMaster_Enemy* CurrentActor);
+  
+  /* Increases enemy stack by one */
+  void AddToStack(AMaster_Debuff_E* DebuffToAddTo);
 };
 
