@@ -20,8 +20,8 @@ public:
   AMaster_Debuff_E();
 
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable , Category = "Enemy Debuffs")
-  void StartDamageTimer(AMaster_Debuff_E* DebuffToApply, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo);
-  void StartDamageTimer_Implementation(AMaster_Debuff_E* DebuffToApply, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo);
+  void StartDamageTimer(AMaster_Debuff_E* DebuffToApply, AMaster_Enemy* CurrentActor);
+  void StartDamageTimer_Implementation(AMaster_Debuff_E* DebuffToApply, AMaster_Enemy* CurrentActor);
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Debuff Settings")
   EDebuffType DebuffType;
@@ -63,24 +63,9 @@ public:
   bool bTower;
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = "!bTower"), Category = "Debuff Settings")
   bool bRefresh;
-
-  UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
-  float Damage;
-
-  UPROPERTY(BlueprintReadWrite, Category = "Debuff Settings")
-  float Ticks;
-
-  UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
-  float Occurrence;
-
-  UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
-  TSubclassOf<AMasterDamageEffect> DamageEffect;
-
-  UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
-  FVector EffectScale;
-
-  UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
-  bool bUseTicks;
+  
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Debuff Settings")
+  FDebuffData DebuffSettings;
 
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
   int32 CurrentStackCount;
@@ -92,13 +77,27 @@ public:
   void AddDebuffToStack(AMaster_Debuff_E* DebuffToAdd, AMaster_Enemy* CurrentActor);
   /* Re apply the given debuff */
   UFUNCTION(BlueprintCallable, Category = "Debuff Functions")
-  void RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo);
+  void RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_Enemy* CurrentActor);
 
 private:
 
   void DecrementTick();
+
+  void UnpackSettings();
   
   /* Increases enemy stack by one */
   void AddToStack(AMaster_Debuff_E* DebuffToAddTo);
+
+  float Damage;
+
+  float Ticks;
+
+  float Occurrence;
+
+  FVector EffectScale;
+
+  bool bUseTicks;
+
+  TSubclassOf<AMasterDamageEffect> DamageEffect;
 };
 

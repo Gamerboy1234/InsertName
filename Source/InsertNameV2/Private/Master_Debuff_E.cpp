@@ -21,19 +21,26 @@ AMaster_Debuff_E::AMaster_Debuff_E()
   CurrentStackCount = 1;
 }
 
-void AMaster_Debuff_E::StartDamageTimer_Implementation(AMaster_Debuff_E* DebuffToApply, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo)
+
+void AMaster_Debuff_E::UnpackSettings()
 {
+  // Get Debuff Info from Struct
+  Occurrence = DebuffSettings.Occurrence;
+  Ticks = DebuffSettings.Ticks;
+  Damage = DebuffSettings.Damage;
+  DamageEffect = DebuffSettings.DamageEffect;
+  EffectScale = DebuffSettings.EffectScale;
+  bUseTicks = DebuffSettings.bUseTicks;
+}
+
+void AMaster_Debuff_E::StartDamageTimer_Implementation(AMaster_Debuff_E* DebuffToApply, AMaster_Enemy* CurrentActor)
+{
+  UnpackSettings();
+
   if (!IsDebuffAlreadyApplied(DebuffToApply, CurrentActor))
   {
     // Assign an ID to debuff from gamemode
     ID = UGeneralFunctions::GetIDFromGamemode(this, this);
-    // Get Debuff Info from Struct
-    Occurrence = DebuffInfo.Occurrence;
-    Ticks = DebuffInfo.Ticks;
-    Damage = DebuffInfo.Damage;
-    DamageEffect = DebuffInfo.DamageEffect;
-    EffectScale = DebuffInfo.EffectScale;
-    bUseTicks = DebuffInfo.bUseTicks;
 
     TargetEnemy = CurrentActor;
 
@@ -50,7 +57,30 @@ void AMaster_Debuff_E::StartDamageTimer_Implementation(AMaster_Debuff_E* DebuffT
   }
   else if (bRefresh)
   {
-    RefreshDebuff(DebuffToApply, CurrentActor, DebuffInfo);
+    RefreshDebuff(DebuffToApply, CurrentActor);
+  }
+}
+
+void AMaster_Debuff_E::DecrementTick()
+{
+  if (bUseTicks) // Check to see if debuff is using ticks if not debuff will fire off once then remove it's self
+  {
+    Ticks--;
+    if (CanContinueDebuff(TargetEnemy)) // See if enemy is still alive or tick count is above 0
+    {
+      StartDebuff();
+    }
+    else
+    {
+      OnDebuffStop();
+      RemoveDebuff(this, TargetEnemy);
+    }
+  }
+  else
+  {
+    StartDebuff();
+    OnDebuffStop();
+    RemoveDebuff(this, TargetEnemy);
   }
 }
 
@@ -122,53 +152,14 @@ const bool AMaster_Debuff_E::IsDebuffAlreadyApplied(AMaster_Debuff_E* Debuff, AM
   return LocalBool;
 }
 
-void AMaster_Debuff_E::DecrementTick()
+void AMaster_Debuff_E::RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_Enemy* CurrentActor)
 {
-  if (bUseTicks) // Check to see if debuff is using ticks if not debuff will fire off once then remove it's self
-  {
-    Ticks--;
-    if (CanContinueDebuff(TargetEnemy)) // See if enemy is still alive or tick count is above 0
-    {
-      StartDebuff();
-    }
-    else
-    {
-      OnDebuffStop();
-      RemoveDebuff(this, TargetEnemy);
-    }
-  }
-  else
-  {
-    StartDebuff();
-    OnDebuffStop();
-    RemoveDebuff(this, TargetEnemy);
-  }
-}
-
-void AMaster_Debuff_E::RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo)
-{
-  AMaster_Debuff_E* DebuffToFind = nullptr;
-
-  TArray<AMaster_Debuff_E*> EnemyDebuffs = CurrentActor->CurrentDebuffs;
-  // Look for debuff to remove from enemy debuffs array
-  for (AMaster_Debuff_E* CurrentDebuff : EnemyDebuffs)
-  {
-    if (CurrentDebuff->DebuffType == DebuffToRefresh->DebuffType)
-    {
-      DebuffToFind = CurrentDebuff;
-      break;
-    }
-    else
-    {
-      DebuffToFind = nullptr;
-      continue;
-    }
-  }
+  AMaster_Debuff_E* DebuffToFind = CurrentActor->FindDebuffByType(DebuffToRefresh->DebuffType);
 
   if (DebuffToFind)
   {
     DebuffToFind->RemoveDebuff(DebuffToFind, CurrentActor);
-    CurrentActor->ApplyDebuff(DebuffToRefresh->GetClass(), DebuffInfo, CurrentActor);
+    CurrentActor->ApplyDebuff(DebuffToRefresh->GetClass(), CurrentActor);
     DebuffToRefresh->Destroy();
   }
   else
@@ -179,14 +170,17 @@ void AMaster_Debuff_E::RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_
 
 void AMaster_Debuff_E::AddDebuffToStack(AMaster_Debuff_E* DebuffToAdd, AMaster_Enemy* CurrentActor)
 {
-  for (AMaster_Debuff_E* CurrentDebuff : CurrentActor->CurrentDebuffs)
+  AMaster_Debuff_E* DebuffToFind = CurrentActor->FindDebuffByType(DebuffToAdd->DebuffType);
+
+  if (DebuffToFind)
   {
-    if (CurrentDebuff->DebuffType == DebuffToAdd->DebuffType)
-    {
-      CurrentDebuff->AddToStack(CurrentDebuff);
-      break;
-    }
+    DebuffToFind->AddToStack(DebuffToFind);
   }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Was unable to debuff to stack"))
+  }
+
   DebuffToAdd->Destroy();
 }
 
@@ -212,7 +206,7 @@ const float AMaster_Debuff_E::GetTotalTime()
 
 const bool AMaster_Debuff_E::CanContinueDebuff(AMaster_Enemy* CurrentActor)
 {
-  if (Ticks <= 0 || CurrentActor->GetIsDead())
+  if (Ticks < 0 || CurrentActor->GetIsDead())
   {
     return false;
   }

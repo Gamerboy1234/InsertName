@@ -148,14 +148,14 @@ void AMaster_Enemy::ResetStun()
   }
 }
 
-AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, FDebuffData DebuffData, AActor* Target)
+AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, AActor* Target)
 {
   if (Target)
   {
     MostRecentDebuff = GetWorld()->SpawnActor<AMaster_Debuff_E>(DebuffToApply, FVector(0), FRotator(0));
     if (MostRecentDebuff)
     {
-      MostRecentDebuff->StartDamageTimer(MostRecentDebuff, this, DebuffData);
+      MostRecentDebuff->StartDamageTimer(MostRecentDebuff, this);
       return MostRecentDebuff;
     }
     else

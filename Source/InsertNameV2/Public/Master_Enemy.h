@@ -110,7 +110,7 @@ public:
   void ResetSpriteColor();
 
   UFUNCTION(BlueprintCallable, Category = "Debuffs")
-  AActor* ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, FDebuffData DebuffData, AActor* Target);
+  AActor* ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, AActor* Target);
 
   UFUNCTION(BlueprintCallable, Category = "Buffs")
   AActor* ApplyBuff(TSubclassOf<AMaster_Buff_E> BuffToApply, FBuffData BuffData);
