@@ -198,7 +198,7 @@ bool AMaster_Enemy::FireCheck(float GunDamage, bool Heal, bool Damage, float Buf
     {
       float BuffedDamaged = UGeneralFunctions::TickDamage(FireDebuff->GetCurrentTickCount(), GunDamage, BuffAmount);
       DamageEnemy(BuffedDamaged, true, PlayerRef);
-      FireDebuff->RemoveDebuff(FireDebuff);
+      FireDebuff->RemoveDebuff(FireDebuff, this);
       return true;
     }
     else
@@ -206,7 +206,7 @@ bool AMaster_Enemy::FireCheck(float GunDamage, bool Heal, bool Damage, float Buf
       auto Player = Cast<APaperWarden>(GetWorld()->GetFirstPlayerController());
       float HealAmount = UGeneralFunctions::TickDamage(FireDebuff->GetCurrentTickCount(), GunDamage, BuffAmount);
       Player->HealPlayer(HealAmount);
-      FireDebuff->RemoveDebuff(FireDebuff);
+      FireDebuff->RemoveDebuff(FireDebuff, this);
       return true;
     }
   }

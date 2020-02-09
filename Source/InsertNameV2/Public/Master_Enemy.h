@@ -48,9 +48,6 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "HP Values")
   bool bTakenDamage;
 
-  UPROPERTY(BlueprintReadWrite, Category = "HP Values")
-  bool bIsDead;
-
   /* The delay before a actor despawns */
   UPROPERTY(EditAnywhere, Category = "HP Values", meta = (ClampMin=".001"))
   float ActorDespawnDelay;
@@ -215,6 +212,8 @@ private:
   FVector HomeLocation;
 
   bool bIsStunned;
+
+  bool bIsDead;
 
   float StunDuration;
 

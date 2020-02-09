@@ -20,9 +20,6 @@ public:
   /* The actual enemy to apply the buff to */
   UPROPERTY(BlueprintReadWrite, Category = "Enemy Buff Info")
   class AMaster_Enemy* TargetEnemy;
-  /* Struct that contains all buff info */
-  UPROPERTY(BlueprintReadOnly, Category = "Enemy Buff Info")
-  FBuffData BuffData;
   /* Type of Buff to apply */
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enemy Buff Info")
   EBuffType BuffType;
@@ -55,6 +52,7 @@ public:
 
   void SetUpBuff(FBuffData BuffData, class AMaster_Enemy* Target);
 
+
 private:
 
   int32 ID;
@@ -62,4 +60,5 @@ private:
   FBuffData CurrentInfo;
 
   int32 CurrentStackCount;
+
 };

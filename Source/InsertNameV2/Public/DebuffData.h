@@ -30,12 +30,6 @@ struct FDebuffData
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   bool bUseTicks = true;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = "!bRefresh"))
-  bool bTower = false;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = "!bTower"))
-  bool bRefresh = false;
 };
 
 

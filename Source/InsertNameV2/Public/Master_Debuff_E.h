@@ -17,6 +17,8 @@ class INSERTNAMEV2_API AMaster_Debuff_E : public AActor
 	
 public:
 
+  AMaster_Debuff_E();
+
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable , Category = "Enemy Debuffs")
   void StartDamageTimer(AMaster_Debuff_E* DebuffToApply, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo);
   void StartDamageTimer_Implementation(AMaster_Debuff_E* DebuffToApply, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo);
@@ -25,13 +27,10 @@ public:
   EDebuffType DebuffType;
 
   UFUNCTION(BlueprintCallable, Category = "Enemy Debuffs")
-  void RemoveDebuff(AMaster_Debuff_E* DebuffToRemove);
+  void RemoveDebuff(AMaster_Debuff_E* DebuffToRemove, AMaster_Enemy* CurrentActor);
 
   UFUNCTION(BlueprintCallable, Category = "Enemy Debuffs")
   void SpawnEffect(AMaster_Enemy* CurrentActor);
-
-  UFUNCTION(BlueprintCallable, Category = "Enemy Debuffs")
-  AMaster_Debuff_E* FindDebuffByID(AMaster_Debuff_E* Debuff);
 
   UFUNCTION(BlueprintPure, Category = "Enemy Debuffs")
   const float GetTotalTime();
@@ -43,6 +42,9 @@ public:
   void StartDebuff();
   void StartDebuff_Implementation();
 
+  UFUNCTION(BlueprintImplementableEvent, Category = "Enemy Debuffs")
+  void OnDebuffStop();
+
   UFUNCTION(BlueprintPure, Category = "Enemy Debuffs")
   float GetCurrentTickCount();
 
@@ -50,22 +52,17 @@ public:
   int32 ID;
 
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
-  bool bAlreadApplied;
-
-  UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
   AMasterDamageEffect* CurrentEffect;
 
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
-  bool bTower;
-
-  UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
-  bool bRefresh;
-
-  UPROPERTY(BlueprintReadWrite, Category = "Debuff Settings")
-  AMaster_Enemy* CurrentEnemy;
+  AMaster_Enemy* TargetEnemy;
 
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
   FTimerHandle DebuffTimer;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = "!bRefresh"), Category = "Debuff Settings")
+  bool bTower;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = "!bTower"), Category = "Debuff Settings")
+  bool bRefresh;
 
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
   float Damage;
@@ -85,19 +82,22 @@ public:
   UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
   bool bUseTicks;
 
+  UPROPERTY(BlueprintReadOnly, Category = "Debuff Settings")
+  int32 CurrentStackCount;
+
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
-  const int32 GetCurrentStackCount();
+  const bool CanContinueDebuff(AMaster_Enemy* CurrentActor);
   /* Increases enemy stack by one */
   UFUNCTION(BlueprintCallable, Category = "Debuff Functions")
-  void AddToStack();
+  void AddToStack(AMaster_Debuff_E* DebuffToAddTo);
   /* Re apply the given debuff */
   UFUNCTION(BlueprintCallable, Category = "Debuff Functions")
   void RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_Enemy* CurrentActor, FDebuffData DebuffInfo);
 
 private:
 
-  int32 CurrentStackCount;
-
-  int32 FindDebuffIndex(AMaster_Debuff_E* DebuffIndex);
+  void DecrementTick();
+  /* Finds debuff in CurrentActor's debuff array and add given debuff to it's stack */
+  void AddDebuffToStack(AMaster_Debuff_E* DebuffToAdd, AMaster_Enemy* CurrentActor);
 };
 
