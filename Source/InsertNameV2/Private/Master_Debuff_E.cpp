@@ -131,25 +131,42 @@ void AMaster_Debuff_E::SpawnEffect(AMaster_Enemy* CurrentActor)
 
 const bool AMaster_Debuff_E::IsDebuffAlreadyApplied(AMaster_Debuff_E* Debuff, AMaster_Enemy* CurrentActor)
 {
-  TArray<AMaster_Debuff_E*> EnemyDebuffs = CurrentActor->CurrentDebuffs;
-
   bool LocalBool = false;
-  
-  for (AMaster_Debuff_E* LocalDebuff : EnemyDebuffs)
+
+  if (CurrentActor)
   {
-    if (LocalDebuff->DebuffType == Debuff->DebuffType)
+    if (Debuff)
     {
-      LocalBool = true;
-      break;
+      TArray<AMaster_Debuff_E*> EnemyDebuffs = CurrentActor->CurrentDebuffs;
+
+      for (AMaster_Debuff_E* LocalDebuff : EnemyDebuffs)
+      {
+        if (LocalDebuff->DebuffType == Debuff->DebuffType)
+        {
+          LocalBool = true;
+          break;
+        }
+        else
+        {
+          LocalBool = false;
+          continue;
+        }
+      }
+      return LocalBool;
     }
     else
     {
       LocalBool = false;
-      continue;
+      UE_LOG(LogTemp, Error, TEXT("Debuff in IsDebuffAlreadyApplied is not valid"))
+      return LocalBool;
     }
   }
-
-  return LocalBool;
+  else
+  {
+    LocalBool = false;
+    UE_LOG(LogTemp, Error, TEXT("Current Actor in IsDebuffAlreadyApplied is not valid"))
+    return LocalBool;
+  }
 }
 
 void AMaster_Debuff_E::RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_Enemy* CurrentActor)
@@ -170,18 +187,32 @@ void AMaster_Debuff_E::RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_
 
 void AMaster_Debuff_E::AddDebuffToStack(AMaster_Debuff_E* DebuffToAdd, AMaster_Enemy* CurrentActor)
 {
-  AMaster_Debuff_E* DebuffToFind = CurrentActor->FindDebuffByType(DebuffToAdd->DebuffType);
-
-  if (DebuffToFind)
+  if (CurrentActor)
   {
-    DebuffToFind->AddToStack(DebuffToFind);
+    if (DebuffToAdd)
+    {
+      AMaster_Debuff_E* DebuffToFind = CurrentActor->FindDebuffByType(DebuffToAdd->DebuffType);
+
+      if (DebuffToFind)
+      {
+        DebuffToFind->AddToStack(DebuffToFind);
+      }
+      else
+      {
+        UE_LOG(LogTemp, Error, TEXT("Was unable to add debuff to stack couldn't find debuff in stack"))
+      }
+
+      DebuffToAdd->Destroy();
+    }
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("Unable to add debuff to stack DebuffToAdd was not valid"))
+    }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Was unable to debuff to stack"))
+    UE_LOG(LogTemp, Error, TEXT("Unable to add debuff to stack CurrentActor was not valid"))
   }
-
-  DebuffToAdd->Destroy();
 }
 
 void AMaster_Debuff_E::AddToStack(AMaster_Debuff_E* DebuffToAddTo)

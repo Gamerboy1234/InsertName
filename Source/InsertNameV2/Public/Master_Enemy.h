@@ -113,7 +113,7 @@ public:
   AActor* ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, AActor* Target);
 
   UFUNCTION(BlueprintCallable, Category = "Buffs")
-  AActor* ApplyBuff(TSubclassOf<AMaster_Buff_E> BuffToApply, FBuffData BuffData);
+  AActor* ApplyBuff(TSubclassOf<AMaster_Buff_E> BuffToApply);
 
   UFUNCTION(BlueprintCallable, Category = "Debuffs")
   bool FireCheck(float GunDamage, bool Heal, bool Damage, float BuffAmount);

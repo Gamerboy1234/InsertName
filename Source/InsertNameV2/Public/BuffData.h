@@ -20,16 +20,10 @@ struct FBuffData
   float BuffDuration;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TSubclassOf<AMasterDamageEffect> DamageEffect;
+  TSubclassOf<AMasterDamageEffect> BuffEffect;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   FVector EffectScale = FVector(1);
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = "!bRefresh"))
-  bool bTower = true;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = "!bTower"))
-  bool bRefresh = false;
 };
 
 

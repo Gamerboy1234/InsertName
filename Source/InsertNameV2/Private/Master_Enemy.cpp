@@ -13,6 +13,7 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/SplineComponent.h"
 #include "Master_Debuff_E.h"
+#include "Master_Buff_E.h"
 #include "WarlustEffectBase.h"
 #include "AIController.h"
 #include "PaperWarden.h"
@@ -171,12 +172,12 @@ AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, 
   }
 }
 
-AActor* AMaster_Enemy::ApplyBuff(TSubclassOf<AMaster_Buff_E> BuffToApply, FBuffData BuffData)
+AActor* AMaster_Enemy::ApplyBuff(TSubclassOf<AMaster_Buff_E> BuffToApply)
 {
   AMaster_Buff_E* Buff = GetWorld()->SpawnActor<AMaster_Buff_E>(BuffToApply, FVector(0), FRotator(0));
   if (Buff)
   {
-    Buff->SetUpBuff(BuffData, this);
+    Buff->SetUpBuff(this, Buff);
     CurrentBuffs.Add(Buff);
     return Buff;
   }
