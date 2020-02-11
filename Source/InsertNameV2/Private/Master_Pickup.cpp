@@ -5,6 +5,7 @@
 #include "PaperSpriteComponent.h"
 #include "Engine/Texture2D.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "GeneralFunctions.h"
 #include "PaperWarden.h"
 
@@ -29,29 +30,46 @@ void AMaster_Pickup::BeginPlay()
 
   ID = UGeneralFunctions::GetIDFromGamemode(this, this);
 
+  PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerCharacter(this, 0));
+
   BoxTrigger->OnComponentBeginOverlap.AddDynamic(this, &AMaster_Pickup::OnOverlapBegin);
 }
 
 void AMaster_Pickup::OnInteract_Implementation()
 {
-  DestroyPickUp(this);
+  if (PlayerRef)
+  {
+    PlayerRef->AddToInventory(this);
+    PlayerRef->PrintInventory();
+    this->ShowPickup(false);
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Unable to add item to inventory player is not valid"))
+  }
 }
 
-void AMaster_Pickup::DestroyPickUp(AMaster_Pickup* PickupToDestroy)
+void AMaster_Pickup::ShowPickup(bool Show)
 {
-  UGeneralFunctions::RemoveIDFromGamemode(PickupToDestroy, PickupToDestroy->ID, PickupToDestroy);
-  PickupToDestroy->Destroy();
+  ECollisionEnabled::Type Collision = Show ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
+
+  this->PaperSprite->SetVisibility(Show);
+  this->PaperSprite->SetCollisionEnabled(Collision);
+
+  this->BoxTrigger->SetCollisionEnabled(Collision);
 }
 
 void AMaster_Pickup::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
   if (OtherActor)
   {
-    auto PlayerRef = Cast<APaperWarden>(OtherActor);
-    if (PlayerRef)
+    if (OtherActor && PlayerRef)
     {
-      PlayerRef->PickedUpItem(ItemInfo.Icon);
-      OnInteract();
+      if (OtherActor == PlayerRef)
+      {
+        PlayerRef->PickedUpItem(ItemInfo.Icon);
+        OnInteract();
+      }
     }
   }
 }

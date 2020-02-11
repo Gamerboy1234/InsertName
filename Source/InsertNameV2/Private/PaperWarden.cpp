@@ -2,6 +2,8 @@
 
 
 #include "PaperWarden.h"
+#include "Master_Pickup.h"
+#include "Engine.h"
 #include "Components/BoxComponent.h"
 
 APaperWarden::APaperWarden()
@@ -12,6 +14,14 @@ APaperWarden::APaperWarden()
   BarkInnerCollision->SetupAttachment(RootComponent);
   BarkOuterCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Bark Outer Collision"));
   BarkOuterCollision->SetupAttachment(RootComponent);
+}
+
+void APaperWarden::BeginPlay()
+{
+  Super::BeginPlay();
+
+  BarkInnerCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::OnOverlapBegin);
+  BarkOuterCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::BeginOverlap);
 }
 
 int32 APaperWarden::AddToKillCount(int32 AmountToadd)
@@ -70,10 +80,25 @@ void APaperWarden::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
   }
 }
 
-void APaperWarden::BeginPlay()
+void APaperWarden::AddToInventory(AMaster_Pickup* ItemToAdd)
 {
-  Super::BeginPlay();
+  InventoryItems.AddUnique(ItemToAdd);
+}
 
-  BarkInnerCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::OnOverlapBegin);
-  BarkOuterCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::BeginOverlap);
+void APaperWarden::PrintInventory()
+{
+  FString sInventory = "";
+
+  for (AMaster_Pickup* actor : InventoryItems)
+  {
+    sInventory.Append(actor->GetName());
+    sInventory.Append(" | ");
+  }
+
+  GEngine->AddOnScreenDebugMessage(1, 3, FColor::Blue, *sInventory);
+}
+
+const TArray<AMaster_Pickup*> APaperWarden::GetPlayerInventory()
+{
+  return InventoryItems;
 }

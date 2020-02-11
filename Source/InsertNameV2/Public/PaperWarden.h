@@ -34,19 +34,19 @@ public:
 
   UFUNCTION(BlueprintCallable, Category = "Utility")
   int32 AddToKillCount(int32 AmountToadd);
-
+  /* Returns the amount of enemies the player has killed */
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const int32 GetCurrentKillCount();
 
   UFUNCTION(BlueprintCallable, Category = "Utility")
   void LoadKillCount(int32 KillCountToLoad);
-
+  /* Event for controller bark spells inner collision setup */
   UFUNCTION(BlueprintImplementableEvent, Category = "Utility")
   void OnBarkInnerOverlap(AActor* OverlappedActor);
 
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Utility")
   void OnBarkOuterOverlap(AActor* OverlappedActor);
-
+  /* Display popup icon when player picks up an item */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
   void PickedUpItem(class UTexture2D* PickUpTexture);
   virtual void PickedUpItem_Implementation(class UTexture2D* PickUpTexture);
@@ -54,7 +54,7 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
   void HealPlayer(float HealAmount);
   virtual void HealPlayer_Implementation(float HealAmount);
-
+  /* Will kill the player instantly */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
   void KillPlayer();
   virtual void KillPlayer_Implementation();
@@ -72,6 +72,15 @@ public:
 
   UFUNCTION()
   void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+  /* Will add the given item to player's inventory */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  void AddToInventory(class AMaster_Pickup* ItemToAdd);
+  /* Inventory Debug Function prints out all current inventory items */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  void PrintInventory();
+  /* Returns all items in player's inventory */
+  UFUNCTION(BlueprintPure, Category = "Inventory Functions")
+  const TArray<class AMaster_Pickup*> GetPlayerInventory();
 
 protected:
 
@@ -81,5 +90,7 @@ protected:
 private:
 
   int32 KillCount;
+
+  TArray<class AMaster_Pickup*> InventoryItems;
 
 };

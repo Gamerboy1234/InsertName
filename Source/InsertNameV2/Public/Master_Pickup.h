@@ -24,13 +24,13 @@ public:
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   FItemData ItemInfo;
-
+  /* Called when player overlaps box trigger by default it will add the given pickup to the player's inventory */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Item Events")
   void OnInteract();
   void OnInteract_Implementation();
-
+  /* Will hide pickup and disable collision or show picked and enable collision base on show bool */
   UFUNCTION(BlueprintCallable, Category = "Pickup Functions")
-  void DestroyPickUp(AMaster_Pickup* PickupToDestroy);
+  void ShowPickup(bool Show);
 
   UFUNCTION(BlueprintPure, Category = "Pickup Functions")
   const int32 GetID();
@@ -41,6 +41,8 @@ public:
 private:
 
   int32 ID;
+
+  class APaperWarden* PlayerRef;
 
 protected:
 	// Called when the game starts or when spawned
