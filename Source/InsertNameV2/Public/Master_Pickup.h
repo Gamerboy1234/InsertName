@@ -22,17 +22,8 @@ public:
   UPROPERTY(VisibleAnywhere, Category = "Components")
   class UBoxComponent* BoxTrigger;
 
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Info")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   FItemData ItemInfo;
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Info")
-  EItemType ItemType;
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Info")
-  bool bIsSpell;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info", meta = (EditCondition = "bIsSpell"))
-  FSpellData SpellData;
 
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Item Events")
   void OnInteract();

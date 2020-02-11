@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ItemType.h"
+#include "SpellInfo.h"
 #include "ItemData.generated.h"
 
 USTRUCT(BlueprintType)
@@ -30,6 +32,9 @@ struct FItemData
   FText UseText;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
+  EItemType ItemType;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   float Damage;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
@@ -37,39 +42,10 @@ struct FItemData
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   bool bIsSpellAugment;
-};
 
-USTRUCT(BlueprintType)
-struct FSpellData
-{
-  GENERATED_USTRUCT_BODY()
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
+  bool bIsSpell;
 
-  UPROPERTY(EditDefaultsOnly, Category = "Spell Info")
-  bool bHasCastTime;
-
-  UPROPERTY(EditDefaultsOnly, Category = "Spell Info", meta = (EditCondition = "bHasCastTime"))
-  float CastTime;
-
-  UPROPERTY(EditDefaultsOnly, Category = "Spell Info")
-  float Cooldown;
-};
-
-UENUM(BlueprintType)
-enum class EItemType : uint8
-{
-  IT_Consumables UMETA(DisplayName = "Consumables"),
-
-  IT_Readable UMETA(DisplayName = "Readable"),
-
-  IT_SpellMod UMETA(DisplayName = "Spell Mod"),
-
-  IT_QuestItem UMETA(DisplayName = "Quest Item"),
-
-  IT_Equipment UMETA(DisplayName = "Equipment"),
-
-  IT_Spell UMETA(DisplayName = "Spell"),
-
-  IT_Buff UMETA(DisplayName = "Buff"),
-
-  IT_Debuff UMETA(DisplayName = "Debuff")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info", meta = (EditCondition = "bIsSpell"))
+  FSpellData SpellInfo;
 };
