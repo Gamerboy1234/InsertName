@@ -44,8 +44,12 @@ public:
   UFUNCTION(BlueprintImplementableEvent, Category = "Utility")
   void OnBarkInnerOverlap(AActor* OverlappedActor);
 
-  UFUNCTION(BlueprintImplementableEvent, Category = "Utility")
+  UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Utility")
   void OnBarkOuterOverlap(AActor* OverlappedActor);
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
+  void PickedUpItem(class UTexture2D* PickUpTexture);
+  virtual void PickedUpItem_Implementation(class UTexture2D* PickUpTexture);
 
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
   void HealPlayer(float HealAmount);

@@ -10,12 +10,12 @@ int32 ASideScrollerGamemode::GenID()
   if (DoesIDAlreadyExist(ID))
   {
     ID = UGeneralFunctions::RandomNumber(1, 100000);
-    AllIDs.Add(ID);
+    AllIDs.AddUnique(ID);
     return ID;
   }
   else
   {
-    AllIDs.Add(ID);
+    AllIDs.AddUnique(ID);
     return ID;
   }
 }
@@ -49,14 +49,5 @@ const TArray<int32> ASideScrollerGamemode::GetAllIDs()
 
 void ASideScrollerGamemode::RemoveID(int32 IDToRemove)
 {
-  auto Index = AllIDs.Find(IDToRemove);
-
-  if (Index)
-  {
-    AllIDs.RemoveAt(Index);
-  }
-  else
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Unable to find ID to remove"))
-  }
+  AllIDs.Remove(IDToRemove);
 }

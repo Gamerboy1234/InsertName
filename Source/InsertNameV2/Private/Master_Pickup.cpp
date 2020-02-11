@@ -3,6 +3,7 @@
 
 #include "Master_Pickup.h"
 #include "PaperSpriteComponent.h"
+#include "Engine/Texture2D.h"
 #include "Components/BoxComponent.h"
 #include "GeneralFunctions.h"
 #include "PaperWarden.h"
@@ -49,6 +50,7 @@ void AMaster_Pickup::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, c
     auto PlayerRef = Cast<APaperWarden>(OtherActor);
     if (PlayerRef)
     {
+      PlayerRef->PickedUpItem(ItemInfo.Icon);
       OnInteract();
     }
   }
