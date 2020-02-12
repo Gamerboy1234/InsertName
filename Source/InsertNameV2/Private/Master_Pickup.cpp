@@ -43,7 +43,6 @@ void AMaster_Pickup::OnInteract_Implementation()
   if (PlayerRef)
   {
     PlayerRef->AddToInventory(this);
-    PlayerRef->UpdateInventory();
     this->ShowPickup(false);
   }
   else

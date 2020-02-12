@@ -83,11 +83,21 @@ public:
   /* Returns all items in player's inventory */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   const TArray<class AMaster_Pickup*> GetPlayerInventory();
-  /* Sends update to player inventory widget */
+  /* Gets all items on action bar */
+  UFUNCTION(BlueprintPure, Category = "Inventory Functions")
+  const TArray<class AMaster_Pickup*> GetActionBarItems();
+  /* Places dropped item on action bar and updates ActionBarItems array */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  void DropItemsOnActionBar(class AMaster_Pickup* Pickup, int32 MaxItems);
+  /* Sends updates to Inventory widget UI */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void UpdateInventory();
+  /* Delegate that fires off every time the inventory is updated */
   UPROPERTY(BlueprintAssignable, Category = "Inventory")
   FUpdateInventoryDelegate OnUpdateInventory;
+  /* Delegate that fires off every time the actionbar is updated */
+  UPROPERTY(BlueprintAssignable, Category = "Inventory")
+  FUpdateInventoryDelegate OnUpdateActionBar;
 
 protected:
 
@@ -100,4 +110,5 @@ private:
 
   TArray<class AMaster_Pickup*> InventoryItems;
 
+  TArray<class AMaster_Pickup*> ActionBarItems;
 };

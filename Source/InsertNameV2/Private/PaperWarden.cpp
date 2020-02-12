@@ -83,6 +83,28 @@ void APaperWarden::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 void APaperWarden::AddToInventory(AMaster_Pickup* ItemToAdd)
 {
   InventoryItems.Add(ItemToAdd);
+  UpdateInventory();
+}
+
+void APaperWarden::DropItemsOnActionBar(class AMaster_Pickup* Pickup, int32 MaxItems)
+{
+  // See if hot bar is full
+  if (ActionBarItems.Num() == MaxItems)
+  {
+    return;
+  }
+  else
+  {
+    InventoryItems.Remove(Pickup);
+    ActionBarItems.Add(Pickup);
+
+    OnUpdateActionBar.Broadcast(ActionBarItems);
+  }
+}
+
+void APaperWarden::UpdateInventory()
+{
+  OnUpdateInventory.Broadcast(InventoryItems);
 }
 
 void APaperWarden::PrintInventory()
@@ -98,12 +120,12 @@ void APaperWarden::PrintInventory()
   GEngine->AddOnScreenDebugMessage(1, 3, FColor::Blue, *sInventory);
 }
 
-void APaperWarden::UpdateInventory()
-{
-  OnUpdateInventory.Broadcast(InventoryItems);
-}
-
 const TArray<AMaster_Pickup*> APaperWarden::GetPlayerInventory()
 {
   return InventoryItems;
+}
+
+const TArray<AMaster_Pickup*> APaperWarden::GetActionBarItems()
+{
+  return ActionBarItems;
 }
