@@ -16,10 +16,13 @@ public:
 	// Sets default values for this actor's properties
 	AMaster_Pickup();
 
+  bool bAddedToStack;
+
+  /* Current Item amount at index */
   UPROPERTY(BlueprintReadOnly, Category = "ItemInfo")
   int32 CurrentItemAmount;
 
-  UPROPERTY(BlueprintReadOnly, Category = "ItemInfo")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemInfo")
   int32 MaxItemAmount;
 
   UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -37,6 +40,12 @@ public:
   /* Will hide pickup and disable collision or show picked and enable collision base on show bool */
   UFUNCTION(BlueprintCallable, Category = "Pickup Functions")
   void ShowPickup(bool Show);
+  /* Add to CurrentItemAmount */
+  UFUNCTION(BlueprintCallable, Category = "Pickup Functions")
+  void AddToStack();
+
+  UFUNCTION(BlueprintCallable, Category = "Pickup Functions")
+  void DestroyPickup();
 
   UFUNCTION(BlueprintPure, Category = "Pickup Functions")
   const int32 GetID();

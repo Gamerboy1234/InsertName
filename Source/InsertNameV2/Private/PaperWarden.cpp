@@ -80,10 +80,39 @@ void APaperWarden::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
   }
 }
 
-void APaperWarden::AddToInventory(AMaster_Pickup* ItemToAdd)
+bool APaperWarden::AddToInventory(class AMaster_Pickup* ItemToAdd)
 {
-  InventoryItems.Add(ItemToAdd);
-  UpdateInventory();
+  if (ItemToAdd)
+  {
+    auto ItemToFind = FindItemByName(ItemToAdd);
+
+    if (ItemToFind)
+    {
+      if (ItemToFind->ItemInfo.bCanBeStacked && ItemToFind->CurrentItemAmount <= ItemToFind->MaxItemAmount)
+      {
+        ItemToFind->AddToStack();
+        UpdateInventory();
+        ItemToAdd->bAddedToStack = true;
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+    else
+    {
+      InventoryItems.Add(ItemToAdd);
+      ItemToAdd->bAddedToStack = false;
+      UpdateInventory();
+      return true;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Unable to add item. Item was not valid."))
+    return false;
+  }
 }
 
 void APaperWarden::DropItemsOnActionBar(class AMaster_Pickup* Pickup, int32 MaxItems)
@@ -98,6 +127,7 @@ void APaperWarden::DropItemsOnActionBar(class AMaster_Pickup* Pickup, int32 MaxI
     InventoryItems.Remove(Pickup);
     ActionBarItems.Add(Pickup);
 
+    UpdateInventory();
     OnUpdateActionBar.Broadcast(ActionBarItems);
   }
 }
@@ -105,6 +135,29 @@ void APaperWarden::DropItemsOnActionBar(class AMaster_Pickup* Pickup, int32 MaxI
 void APaperWarden::UpdateInventory()
 {
   OnUpdateInventory.Broadcast(InventoryItems);
+}
+
+AMaster_Pickup* APaperWarden::FindItemByName(AMaster_Pickup* ItemToFind)
+{
+  AMaster_Pickup* LocalItem = nullptr;
+
+  for (AMaster_Pickup* Item : InventoryItems)
+  {
+    FString Name1 = Item->ItemInfo.ItemName.ToString();
+    FString Name2 = ItemToFind->ItemInfo.ItemName.ToString();
+
+    if (Name1 == Name2)
+    {
+      LocalItem = Item;
+      break;
+    }
+    else
+    {
+      LocalItem = nullptr;
+      continue;
+    }
+  }
+  return LocalItem;
 }
 
 void APaperWarden::PrintInventory()

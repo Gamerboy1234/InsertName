@@ -76,7 +76,7 @@ public:
   void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
   /* Will add the given item to player's inventory */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-  void AddToInventory(class AMaster_Pickup* ItemToAdd);
+  bool AddToInventory(class AMaster_Pickup* ItemToAdd);
   /* Inventory Debug Function prints out all current inventory items */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void PrintInventory();
@@ -92,6 +92,9 @@ public:
   /* Sends updates to Inventory widget UI */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void UpdateInventory();
+  /* Find item in array by Name */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  class AMaster_Pickup* FindItemByName(AMaster_Pickup* ItemToFind);
   /* Delegate that fires off every time the inventory is updated */
   UPROPERTY(BlueprintAssignable, Category = "Inventory")
   FUpdateInventoryDelegate OnUpdateInventory;

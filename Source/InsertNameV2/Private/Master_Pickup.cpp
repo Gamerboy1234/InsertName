@@ -17,7 +17,7 @@ AMaster_Pickup::AMaster_Pickup()
 
   CurrentItemAmount = 1;
   MaxItemAmount = 99;
-
+  
   PaperSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
   RootComponent = PaperSprite;
 
@@ -42,8 +42,18 @@ void AMaster_Pickup::OnInteract_Implementation()
 {
   if (PlayerRef)
   {
-    PlayerRef->AddToInventory(this);
-    this->ShowPickup(false);
+    bool bAddToInventory = PlayerRef->AddToInventory(this);
+    if (bAddToInventory)
+    {
+      if (bAddedToStack)
+      {
+        this->DestroyPickup();
+      }
+      else
+      {
+        this->ShowPickup(false);
+      }
+    }
   }
   else
   {
@@ -59,6 +69,17 @@ void AMaster_Pickup::ShowPickup(bool Show)
   this->PaperSprite->SetCollisionEnabled(Collision);
 
   this->BoxTrigger->SetCollisionEnabled(Collision);
+}
+
+void AMaster_Pickup::AddToStack()
+{
+  CurrentItemAmount += ItemInfo.AmountToAddToStack;
+}
+
+void AMaster_Pickup::DestroyPickup()
+{
+  UGeneralFunctions::RemoveIDFromGamemode(this, this->ID, this);
+  this->Destroy();
 }
 
 void AMaster_Pickup::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

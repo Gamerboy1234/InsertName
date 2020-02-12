@@ -28,6 +28,9 @@ struct FItemData
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   bool bCanBeStacked = true;
 
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info", meta = (EditCondition = "bCanBeStacked"))
+  int32 AmountToAddToStack = 1;
+
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   FText UseText;
 
