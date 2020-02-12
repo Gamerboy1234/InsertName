@@ -8,6 +8,8 @@
 
 class UBoxComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateInventoryDelegate, const TArray<AMaster_Pickup*>&, InventoryItems);
+
 /**
  * 
  */
@@ -46,7 +48,7 @@ public:
 
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Utility")
   void OnBarkOuterOverlap(AActor* OverlappedActor);
-  /* Display popup icon when player picks up an item */
+  /* Display a pop up icon when player picks up an item */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Player Events")
   void PickedUpItem(class UTexture2D* PickUpTexture);
   virtual void PickedUpItem_Implementation(class UTexture2D* PickUpTexture);
@@ -81,6 +83,11 @@ public:
   /* Returns all items in player's inventory */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   const TArray<class AMaster_Pickup*> GetPlayerInventory();
+  /* Sends update to player inventory widget */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  void UpdateInventory();
+  UPROPERTY(BlueprintAssignable, Category = "Inventory")
+  FUpdateInventoryDelegate OnUpdateInventory;
 
 protected:
 

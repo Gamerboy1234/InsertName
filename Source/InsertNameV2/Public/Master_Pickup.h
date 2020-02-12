@@ -16,6 +16,12 @@ public:
 	// Sets default values for this actor's properties
 	AMaster_Pickup();
 
+  UPROPERTY(BlueprintReadOnly, Category = "ItemInfo")
+  int32 CurrentItemAmount;
+
+  UPROPERTY(BlueprintReadOnly, Category = "ItemInfo")
+  int32 MaxItemAmount;
+
   UPROPERTY(VisibleAnywhere, Category = "Components")
   class UPaperSpriteComponent* PaperSprite;
 

@@ -15,6 +15,9 @@ AMaster_Pickup::AMaster_Pickup()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+  CurrentItemAmount = 1;
+  MaxItemAmount = 99;
+
   PaperSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
   RootComponent = PaperSprite;
 
@@ -40,7 +43,7 @@ void AMaster_Pickup::OnInteract_Implementation()
   if (PlayerRef)
   {
     PlayerRef->AddToInventory(this);
-    PlayerRef->PrintInventory();
+    PlayerRef->UpdateInventory();
     this->ShowPickup(false);
   }
   else
