@@ -42,7 +42,7 @@ void AMaster_Pickup::OnInteract_Implementation()
 {
   if (PlayerRef)
   {
-    bool bAddToInventory = PlayerRef->AddItem(this->GetClass(), ItemInfo.Amount);
+    bool bAddToInventory = PlayerRef->AddItem(this, ItemInfo.Amount);
     if (bAddToInventory)
     {
       if (bAddedToStack)
@@ -110,4 +110,9 @@ FString AMaster_Pickup::ConvertItemNameToSting()
 const int32 AMaster_Pickup::GetID()
 {
   return ID;
+}
+
+const int32 AMaster_Pickup::GetAmountAtIndex()
+{
+  return AmountAtIndex;
 }

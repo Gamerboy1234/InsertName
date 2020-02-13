@@ -16,7 +16,6 @@ APaperWarden::APaperWarden()
   BarkOuterCollision->SetupAttachment(RootComponent);
 
   AmountofInventorySlots = 8;
-  CurrentItemCount = 1;
 }
 
 void APaperWarden::BeginPlay()
@@ -25,6 +24,8 @@ void APaperWarden::BeginPlay()
 
   BarkInnerCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::OnOverlapBegin);
   BarkOuterCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::BeginOverlap);
+
+  InventoryItems.Empty();
 }
 
 int32 APaperWarden::AddToKillCount(int32 AmountToadd)
@@ -83,70 +84,59 @@ void APaperWarden::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
   }
 }
 
-bool APaperWarden::AddItem(TSubclassOf<AMaster_Pickup> ItemToAdd, int32 Amount)
+bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
 {
   if (!IsInventoryFull())
   {
     if (ItemToAdd)
     {
-      AMaster_Pickup* LocalItem = Cast<AMaster_Pickup>(ItemToAdd->GetDefaultObject());
-
-      if (LocalItem)
+      if (ItemToAdd->ItemInfo.bCanBeStacked)
       {
-        if (LocalItem->ItemInfo.bCanBeStacked)
-        {
-          AMaster_Pickup* StackToAddTo = SearchForFreeStack(ItemToAdd);
+        AMaster_Pickup* StackToAddTo = SearchForFreeStack(ItemToAdd);
 
-          if (StackToAddTo)
-          {
-            StackToAddTo->AddToStack();
-            LocalItem->bAddedToStack = true;
-            UpdateInventory();
-            return true;
-          }
-          else
-          {
-            if (Amount > LocalItem->MaxItemAmount)
-            {
-              int32 Overflow = Amount - LocalItem->MaxItemAmount;
-              LocalItem->AmountAtIndex = LocalItem->MaxItemAmount;
-              InventoryItems.Add(LocalItem);
-              LocalItem->bAddedToStack = false;
-              UpdateInventory();
-              AddItem(ItemToAdd, Overflow);
-              return true;
-            }
-            else
-            {
-              InventoryItems.Add(LocalItem);
-              LocalItem->bAddedToStack = false;
-              UpdateInventory();
-              return true;
-            }
-          }
+        if (StackToAddTo)
+        {
+          StackToAddTo->AddToStack();
+          ItemToAdd->bAddedToStack = true;
+          UpdateInventory();
+          return true;
         }
         else
         {
-          InventoryItems.Add(LocalItem);
-          LocalItem->bAddedToStack = false;
-          UpdateInventory();
-
-          if (Amount > 1)
+          if (Amount > ItemToAdd->MaxItemAmount)
           {
-            Amount--;
-            AddItem(ItemToAdd, Amount);
+            int32 Overflow = Amount - ItemToAdd->MaxItemAmount;
+            InventoryItems.Add(ItemToAdd);
+            ItemToAdd->bAddedToStack = false;
+            UpdateInventory();
+            AddItem(ItemToAdd, Overflow);
             return true;
           }
           else
           {
+            InventoryItems.Add(ItemToAdd);
+            ItemToAdd->bAddedToStack = false;
+            UpdateInventory();
             return true;
           }
         }
       }
       else
       {
-        UE_LOG(LogTemp, Error, TEXT("Cast to AMaster_Pickup failed couldn't add item"))
-        return false;
+        InventoryItems.Add(ItemToAdd);
+        ItemToAdd->bAddedToStack = false;
+        UpdateInventory();
+
+        if (Amount > 1)
+        {
+          Amount--;
+          AddItem(ItemToAdd, Amount);
+          return true;
+        }
+        else
+        {
+          return true;
+        }
       }
     }
     else
@@ -186,7 +176,7 @@ void APaperWarden::UpdateInventory()
 
 bool APaperWarden::IsInventoryFull()
 {
-  if (InventoryItems.Num() <= AmountofInventorySlots)
+  if (InventoryItems.Num() >= AmountofInventorySlots)
   {
     return true;
   }
@@ -222,7 +212,7 @@ AMaster_Pickup* APaperWarden::FindItemByName(AMaster_Pickup* ItemToFind)
   return LocalItem;
 }
 
-AMaster_Pickup* APaperWarden::SearchForFreeStack(TSubclassOf<AMaster_Pickup> ItemClass)
+AMaster_Pickup* APaperWarden::SearchForFreeStack(AMaster_Pickup* ItemClass)
 {
   if (ItemClass)
   {
@@ -234,9 +224,9 @@ AMaster_Pickup* APaperWarden::SearchForFreeStack(TSubclassOf<AMaster_Pickup> Ite
       {
         auto CurrentPickup = FindItemByName(Pickup);
 
-        if (CurrentPickup->GetClass() == ItemClass)
+        if (CurrentPickup->GetClass() == ItemClass->GetClass())
         {
-          if (CurrentPickup->AmountAtIndex < CurrentPickup->MaxItemAmount)
+          if (CurrentPickup->GetAmountAtIndex() < CurrentPickup->MaxItemAmount)
           {
             LocalPickUp = CurrentPickup;
             break;
@@ -252,6 +242,11 @@ AMaster_Pickup* APaperWarden::SearchForFreeStack(TSubclassOf<AMaster_Pickup> Ite
           LocalPickUp = nullptr;
           continue;
         }
+      }
+      else
+      {
+        LocalPickUp = nullptr;
+        continue;
       }
     }
     return LocalPickUp;

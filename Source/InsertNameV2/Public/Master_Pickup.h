@@ -53,6 +53,9 @@ public:
   UFUNCTION(BlueprintPure, Category = "Pickup Functions")
   const int32 GetID();
 
+  UFUNCTION(BlueprintPure, Category = "Pickup Functions")
+  const int32 GetAmountAtIndex();
+
   UFUNCTION()
   void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

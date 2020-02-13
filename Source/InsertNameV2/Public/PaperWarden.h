@@ -76,7 +76,7 @@ public:
   void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
   /* Will add the given item to player's inventory */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-  bool AddItem(TSubclassOf<class AMaster_Pickup> ItemToAdd, int32 Amount);
+  bool AddItem(AMaster_Pickup* ItemToAdd, int32 Amount);
   /* Inventory Debug Function prints out all current inventory items */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void PrintInventory();
@@ -108,9 +108,7 @@ public:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InventorySettings")
   int32 AmountofInventorySlots;
   /* If item can stack then this searches for a free stack to add items to */
-  AMaster_Pickup* SearchForFreeStack(TSubclassOf<AMaster_Pickup> ItemClass);
-  /* Will find a empty slot in the inventory to place a new item */
-  int32 FindEmptySlot();
+  AMaster_Pickup* SearchForFreeStack(AMaster_Pickup* ItemClass);
 
 protected:
 
