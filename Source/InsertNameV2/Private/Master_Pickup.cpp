@@ -111,8 +111,3 @@ const int32 AMaster_Pickup::GetID()
 {
   return ID;
 }
-
-const int32 AMaster_Pickup::GetAmountAtIndex()
-{
-  return AmountAtIndex;
-}

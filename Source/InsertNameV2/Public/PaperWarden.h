@@ -77,6 +77,9 @@ public:
   /* Will add the given item to player's inventory */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool AddItem(AMaster_Pickup* ItemToAdd, int32 Amount);
+  /* Will try and find given item in inventory and remove it */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  bool RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount);
   /* Inventory Debug Function prints out all current inventory items */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void PrintInventory();

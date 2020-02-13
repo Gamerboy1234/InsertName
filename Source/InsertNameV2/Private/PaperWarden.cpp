@@ -147,7 +147,42 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
   }
   else
   {
-    UE_LOG(LogTemp, Log, TEXT("Inventory Full"))
+    return false;
+  }
+}
+
+bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount)
+{
+  if (ItemToRemove)
+  {
+    AMaster_Pickup* LocalItem = FindItemByName(ItemToRemove);
+
+    if (LocalItem)
+    {
+      LocalItem->AmountAtIndex -= Amount;
+
+      if (LocalItem->AmountAtIndex <= 0)
+      {
+        InventoryItems.Remove(LocalItem);
+        LocalItem->DestroyPickup();
+        UpdateInventory();
+        return true;
+      }
+      else
+      {
+        UpdateInventory();
+        return true;
+      }
+    }
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("failed to find item in Inventory"))
+      return false;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Item to remove was not valid"))
     return false;
   }
 }
@@ -226,7 +261,7 @@ AMaster_Pickup* APaperWarden::SearchForFreeStack(AMaster_Pickup* ItemClass)
 
         if (CurrentPickup->GetClass() == ItemClass->GetClass())
         {
-          if (CurrentPickup->GetAmountAtIndex() < CurrentPickup->MaxItemAmount)
+          if (CurrentPickup->AmountAtIndex < CurrentPickup->MaxItemAmount)
           {
             LocalPickUp = CurrentPickup;
             break;
