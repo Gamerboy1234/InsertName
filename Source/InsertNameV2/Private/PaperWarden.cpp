@@ -14,6 +14,9 @@ APaperWarden::APaperWarden()
   BarkInnerCollision->SetupAttachment(RootComponent);
   BarkOuterCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Bark Outer Collision"));
   BarkOuterCollision->SetupAttachment(RootComponent);
+
+  AmountofInventorySlots = 8;
+  CurrentItemCount = 1;
 }
 
 void APaperWarden::BeginPlay()
@@ -80,37 +83,81 @@ void APaperWarden::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
   }
 }
 
-bool APaperWarden::AddToInventory(class AMaster_Pickup* ItemToAdd)
+bool APaperWarden::AddItem(TSubclassOf<AMaster_Pickup> ItemToAdd, int32 Amount)
 {
-  if (ItemToAdd)
+  if (!IsInventoryFull())
   {
-    auto ItemToFind = FindItemByName(ItemToAdd);
-
-    if (ItemToFind)
+    if (ItemToAdd)
     {
-      if (ItemToFind->ItemInfo.bCanBeStacked && ItemToFind->CurrentItemAmount <= ItemToFind->MaxItemAmount)
+      AMaster_Pickup* LocalItem = Cast<AMaster_Pickup>(ItemToAdd->GetDefaultObject());
+
+      if (LocalItem)
       {
-        ItemToFind->AddToStack();
-        UpdateInventory();
-        ItemToAdd->bAddedToStack = true;
-        return true;
+        if (LocalItem->ItemInfo.bCanBeStacked)
+        {
+          AMaster_Pickup* StackToAddTo = SearchForFreeStack(ItemToAdd);
+
+          if (StackToAddTo)
+          {
+            StackToAddTo->AddToStack();
+            LocalItem->bAddedToStack = true;
+            UpdateInventory();
+            return true;
+          }
+          else
+          {
+            if (Amount > LocalItem->MaxItemAmount)
+            {
+              int32 Overflow = Amount - LocalItem->MaxItemAmount;
+              LocalItem->AmountAtIndex = LocalItem->MaxItemAmount;
+              InventoryItems.Add(LocalItem);
+              LocalItem->bAddedToStack = false;
+              UpdateInventory();
+              AddItem(ItemToAdd, Overflow);
+              return true;
+            }
+            else
+            {
+              InventoryItems.Add(LocalItem);
+              LocalItem->bAddedToStack = false;
+              UpdateInventory();
+              return true;
+            }
+          }
+        }
+        else
+        {
+          InventoryItems.Add(LocalItem);
+          LocalItem->bAddedToStack = false;
+          UpdateInventory();
+
+          if (Amount > 1)
+          {
+            Amount--;
+            AddItem(ItemToAdd, Amount);
+            return true;
+          }
+          else
+          {
+            return true;
+          }
+        }
       }
       else
       {
+        UE_LOG(LogTemp, Error, TEXT("Cast to AMaster_Pickup failed couldn't add item"))
         return false;
       }
     }
     else
     {
-      InventoryItems.Add(ItemToAdd);
-      ItemToAdd->bAddedToStack = false;
-      UpdateInventory();
-      return true;
+      UE_LOG(LogTemp, Error, TEXT("Cast to AMaster_Pickup failed couldn't add item"))
+      return false;
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Unable to add item. Item was not valid."))
+    UE_LOG(LogTemp, Log, TEXT("Inventory Full"))
     return false;
   }
 }
@@ -137,27 +184,83 @@ void APaperWarden::UpdateInventory()
   OnUpdateInventory.Broadcast(InventoryItems);
 }
 
+bool APaperWarden::IsInventoryFull()
+{
+  if (InventoryItems.Num() <= AmountofInventorySlots)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
 AMaster_Pickup* APaperWarden::FindItemByName(AMaster_Pickup* ItemToFind)
 {
   AMaster_Pickup* LocalItem = nullptr;
 
   for (AMaster_Pickup* Item : InventoryItems)
   {
-    FString Name1 = Item->ItemInfo.ItemName.ToString();
-    FString Name2 = ItemToFind->ItemInfo.ItemName.ToString();
+    if (Item)
+    {
+      FString Name1 = Item->ConvertItemNameToSting();
+      FString Name2 = ItemToFind->ConvertItemNameToSting();
 
-    if (Name1 == Name2)
-    {
-      LocalItem = Item;
-      break;
-    }
-    else
-    {
-      LocalItem = nullptr;
-      continue;
+      if (Name1 == Name2)
+      {
+        LocalItem = Item;
+        break;
+      }
+      else
+      {
+        LocalItem = nullptr;
+        continue;
+      }
     }
   }
   return LocalItem;
+}
+
+AMaster_Pickup* APaperWarden::SearchForFreeStack(TSubclassOf<AMaster_Pickup> ItemClass)
+{
+  if (ItemClass)
+  {
+    AMaster_Pickup* LocalPickUp = nullptr;
+
+    for (AMaster_Pickup* Pickup : InventoryItems)
+    {
+      if (Pickup)
+      {
+        auto CurrentPickup = FindItemByName(Pickup);
+
+        if (CurrentPickup->GetClass() == ItemClass)
+        {
+          if (CurrentPickup->AmountAtIndex < CurrentPickup->MaxItemAmount)
+          {
+            LocalPickUp = CurrentPickup;
+            break;
+          }
+          else
+          {
+            LocalPickUp = nullptr;
+            continue;
+          }
+        }
+        else
+        {
+          LocalPickUp = nullptr;
+          continue;
+        }
+      }
+    }
+    return LocalPickUp;
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("SearchForFreeStack failed ItemClass was not vailded"))
+    return false;
+  }
 }
 
 void APaperWarden::PrintInventory()

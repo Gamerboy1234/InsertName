@@ -76,7 +76,7 @@ public:
   void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
   /* Will add the given item to player's inventory */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-  bool AddToInventory(class AMaster_Pickup* ItemToAdd);
+  bool AddItem(TSubclassOf<class AMaster_Pickup> ItemToAdd, int32 Amount);
   /* Inventory Debug Function prints out all current inventory items */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void PrintInventory();
@@ -92,6 +92,9 @@ public:
   /* Sends updates to Inventory widget UI */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void UpdateInventory();
+  /* Checks to see if inventoryItems array is >= to AmountofInventorySlots */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  bool IsInventoryFull();
   /* Find item in array by Name */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   class AMaster_Pickup* FindItemByName(AMaster_Pickup* ItemToFind);
@@ -101,6 +104,13 @@ public:
   /* Delegate that fires off every time the actionbar is updated */
   UPROPERTY(BlueprintAssignable, Category = "Inventory")
   FUpdateInventoryDelegate OnUpdateActionBar;
+  /* Amount of inventory slots in inventory menu */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InventorySettings")
+  int32 AmountofInventorySlots;
+  /* If item can stack then this searches for a free stack to add items to */
+  AMaster_Pickup* SearchForFreeStack(TSubclassOf<AMaster_Pickup> ItemClass);
+  /* Will find a empty slot in the inventory to place a new item */
+  int32 FindEmptySlot();
 
 protected:
 
@@ -110,6 +120,8 @@ protected:
 private:
 
   int32 KillCount;
+
+  bool bFoundSlot;
 
   TArray<class AMaster_Pickup*> InventoryItems;
 

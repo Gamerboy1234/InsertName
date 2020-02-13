@@ -12,24 +12,24 @@ USTRUCT(BlueprintType)
 struct FItemData
 {
   GENERATED_USTRUCT_BODY()
-
+  /* The name of the item */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   FText ItemName;
-
+  /* Description of what the item does */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
    FText Description;
-
+  /* Image displayed in the inventory */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   class UTexture2D* Icon;
-
+  
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   bool bCanBeUsed = true;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   bool bCanBeStacked = true;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info", meta = (EditCondition = "bCanBeStacked"))
-  int32 AmountToAddToStack = 1;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
+  int32 Amount = 1;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   FText UseText;

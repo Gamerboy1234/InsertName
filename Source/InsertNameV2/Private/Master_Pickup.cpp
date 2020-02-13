@@ -15,8 +15,8 @@ AMaster_Pickup::AMaster_Pickup()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-  CurrentItemAmount = 1;
   MaxItemAmount = 99;
+  AmountAtIndex = 1;
   
   PaperSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
   RootComponent = PaperSprite;
@@ -42,7 +42,7 @@ void AMaster_Pickup::OnInteract_Implementation()
 {
   if (PlayerRef)
   {
-    bool bAddToInventory = PlayerRef->AddToInventory(this);
+    bool bAddToInventory = PlayerRef->AddItem(this->GetClass(), ItemInfo.Amount);
     if (bAddToInventory)
     {
       if (bAddedToStack)
@@ -73,7 +73,12 @@ void AMaster_Pickup::ShowPickup(bool Show)
 
 void AMaster_Pickup::AddToStack()
 {
-  CurrentItemAmount += ItemInfo.AmountToAddToStack;
+  AmountAtIndex += ItemInfo.Amount;
+}
+
+void AMaster_Pickup::UseItem_Implementation()
+{
+  UE_LOG(LogTemp, Log, TEXT("Do a thing"))
 }
 
 void AMaster_Pickup::DestroyPickup()
@@ -95,6 +100,11 @@ void AMaster_Pickup::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, c
       }
     }
   }
+}
+
+FString AMaster_Pickup::ConvertItemNameToSting()
+{
+  return this->ItemInfo.ItemName.ToString();
 }
 
 const int32 AMaster_Pickup::GetID()

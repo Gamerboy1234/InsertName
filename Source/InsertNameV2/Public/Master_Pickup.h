@@ -18,9 +18,8 @@ public:
 
   bool bAddedToStack;
 
-  /* Current Item amount at index */
   UPROPERTY(BlueprintReadOnly, Category = "ItemInfo")
-  int32 CurrentItemAmount;
+  int32 AmountAtIndex;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemInfo")
   int32 MaxItemAmount;
@@ -43,6 +42,10 @@ public:
   /* Add to CurrentItemAmount */
   UFUNCTION(BlueprintCallable, Category = "Pickup Functions")
   void AddToStack();
+  /* This event is called to make the item actually do things */
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Inventory Events")
+  void UseItem();
+  void UseItem_Implementation();
 
   UFUNCTION(BlueprintCallable, Category = "Pickup Functions")
   void DestroyPickup();
@@ -52,6 +55,8 @@ public:
 
   UFUNCTION()
   void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+  FString ConvertItemNameToSting();
 
 private:
 
