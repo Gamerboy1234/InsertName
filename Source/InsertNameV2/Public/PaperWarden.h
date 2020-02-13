@@ -79,7 +79,7 @@ public:
   bool AddItem(AMaster_Pickup* ItemToAdd, int32 Amount);
   /* Will try and find given item in inventory and remove it */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-  bool RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount);
+  bool RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount, bool bSpawnItem);
   /* Inventory Debug Function prints out all current inventory items */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void PrintInventory();
@@ -112,9 +112,10 @@ public:
   int32 AmountofInventorySlots;
   /* If item can stack then this searches for a free stack to add items to */
   AMaster_Pickup* SearchForFreeStack(AMaster_Pickup* ItemClass);
+  /* Looks for an empty slot in the inventory to place new item */
+  int32 FindEmptySlot();
 
 protected:
-
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;
 

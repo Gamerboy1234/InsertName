@@ -4,6 +4,7 @@
 #include "PaperWarden.h"
 #include "Master_Pickup.h"
 #include "Engine.h"
+#include "GeneralFunctions.h"
 #include "Components/BoxComponent.h"
 
 APaperWarden::APaperWarden()
@@ -26,6 +27,7 @@ void APaperWarden::BeginPlay()
   BarkOuterCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::BeginOverlap);
 
   InventoryItems.Empty();
+  InventoryItems.Init(0, AmountofInventorySlots);
 }
 
 int32 APaperWarden::AddToKillCount(int32 AmountToadd)
@@ -105,43 +107,70 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
         {
           if (Amount > ItemToAdd->MaxItemAmount)
           {
-            int32 Overflow = Amount - ItemToAdd->MaxItemAmount;
-            InventoryItems.Add(ItemToAdd);
-            ItemToAdd->bAddedToStack = false;
-            UpdateInventory();
-            AddItem(ItemToAdd, Overflow);
-            return true;
+            int32 Index = FindEmptySlot();
+
+            if (bFoundSlot)
+            {
+              int32 Overflow = Amount - ItemToAdd->MaxItemAmount;
+              InventoryItems[Index] = ItemToAdd;
+              ItemToAdd->bAddedToStack = false;
+              UpdateInventory();
+              AddItem(ItemToAdd, Overflow);
+              return true;
+            }
+            else
+            {
+              return false;
+            }
           }
           else
           {
-            InventoryItems.Add(ItemToAdd);
-            ItemToAdd->bAddedToStack = false;
-            UpdateInventory();
-            return true;
+            int32 Index = FindEmptySlot();
+
+            if (bFoundSlot)
+            {
+              InventoryItems[Index] = ItemToAdd;
+              ItemToAdd->bAddedToStack = false;
+              UpdateInventory();
+              return true;
+            }
+            else
+            {
+              return false;
+            }
           }
         }
       }
       else
       {
-        InventoryItems.Add(ItemToAdd);
-        ItemToAdd->bAddedToStack = false;
-        UpdateInventory();
+        int32 Index = FindEmptySlot();
 
-        if (Amount > 1)
+        if (bFoundSlot)
         {
-          Amount--;
-          AddItem(ItemToAdd, Amount);
-          return true;
+          InventoryItems[Index] = ItemToAdd;
+          ItemToAdd->bAddedToStack = false;
+          UpdateInventory();
+
+          if (Amount > 1)
+          {
+            Amount--;
+            AddItem(ItemToAdd, Amount);
+            return true;
+          }
+          else
+          {
+            return true;
+          }
         }
         else
         {
-          return true;
+          return false;
         }
       }
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Cast to AMaster_Pickup failed couldn't add item"))
+      UE_LOG(LogTemp, Error, TEXT("failed to add item. Item was not valid"))
       return false;
     }
   }
@@ -151,7 +180,7 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
   }
 }
 
-bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount)
+bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount, bool bSpawnItem)
 {
   if (ItemToRemove)
   {
@@ -163,10 +192,19 @@ bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 A
 
       if (LocalItem->AmountAtIndex <= 0)
       {
-        InventoryItems.Remove(LocalItem);
-        LocalItem->DestroyPickup();
-        UpdateInventory();
-        return true;
+        int32 Index = InventoryItems.Find(LocalItem);
+        if (InventoryItems.IsValidIndex(Index))
+        {
+          InventoryItems[Index] = nullptr;
+          LocalItem->DestroyPickup();
+          UpdateInventory();
+          return true;
+        }
+        else 
+        {
+          UE_LOG(LogTemp, Error, TEXT("failed to find item in Inventory not a vaild index"))
+          return false;
+        }
       }
       else
       {
@@ -211,7 +249,17 @@ void APaperWarden::UpdateInventory()
 
 bool APaperWarden::IsInventoryFull()
 {
-  if (InventoryItems.Num() >= AmountofInventorySlots)
+  int32 LocalCounter = 0;
+
+  for (AMaster_Pickup* Pickup : InventoryItems)
+  {
+    if (Pickup)
+    {
+      LocalCounter++;
+    }
+  }
+
+  if (LocalCounter >= AmountofInventorySlots)
   {
     return true;
   }
@@ -291,6 +339,32 @@ AMaster_Pickup* APaperWarden::SearchForFreeStack(AMaster_Pickup* ItemClass)
     UE_LOG(LogTemp, Error, TEXT("SearchForFreeStack failed ItemClass was not vailded"))
     return false;
   }
+}
+
+int32 APaperWarden::FindEmptySlot()
+{
+  int32 LocalIndex = 0;
+
+  for (int32 Index = 0; Index < InventoryItems.Num(); Index++)
+  {
+    AMaster_Pickup* CurrentIndex = Cast<AMaster_Pickup>(InventoryItems[Index]);
+
+    if (!CurrentIndex)
+    {
+      LocalIndex = Index;
+      bFoundSlot = true;
+      break;
+    }
+    else
+    {
+      LocalIndex = 0;
+      bFoundSlot = false;
+      continue;
+    }
+  }
+
+  return LocalIndex;
+  UE_LOG(LogTemp, Log, TEXT("Empty Slot %i"), LocalIndex)
 }
 
 void APaperWarden::PrintInventory()
