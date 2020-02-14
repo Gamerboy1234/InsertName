@@ -42,8 +42,8 @@ public:
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "RemoveActorsY_C++", CompactNodeTitle = "RemoveActorsY_C", Keywords = "RemoveActorsY_C"), Category = "Utility")
   static void RemoveActorsY(UObject* WorldContextObject, AActor* ActorRef);
 
-  template <typename T>
-  static void SetArrayElement(T item, TArray<T>& item_array, int32 index)
+  template <typename TAr>
+  static void SetArrayElement(TAr item, TArray<TAr>& item_array, int32 index)
   {
     if (item_array.Num() - 1 < index)
       item_array.SetNum(index);

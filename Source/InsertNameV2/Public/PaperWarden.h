@@ -109,30 +109,31 @@ public:
   bool IsActionBarFull();
   /* Find item in array by Name */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-  class AMaster_Pickup* FindItemByName(AMaster_Pickup* ItemToFind);
+  class AMaster_Pickup* FindItemByName(AMaster_Pickup* ItemToFind, const TArray<AMaster_Pickup*> ArrayToUse);
   /* Delegate that fires off every time the inventory is updated */
-  UPROPERTY(BlueprintAssignable, Category = "Inventory")
+  UPROPERTY(BlueprintAssignable, Category = "Inventory Events")
   FUpdateInventoryDelegate OnUpdateInventory;
   /* Delegate that fires off every time the actionbar is updated */
-  UPROPERTY(BlueprintAssignable, Category = "Inventory")
+  UPROPERTY(BlueprintAssignable, Category = "Inventory Events")
   FUpdateInventoryDelegate OnUpdateActionBar;
   /* Amount of inventory slots in inventory menu */
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InventorySettings")
   int32 AmountofInventorySlots;
-  /* Amount of inventory slots on ActionBar */
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InventorySettings")
-  int32 AmountOfActionBarSlots;
   /* If item can stack then this searches for a free stack to add items to */
   AMaster_Pickup* SearchForFreeStack(AMaster_Pickup* ItemClass);
   /* Looks for an empty slot in the inventory to place new item */
-  int32 FindEmptySlot();
+  int32 FindEmptySlotInInventory();
   /* Looks for an empty slot in the Actionbar to place new item */
   int32 FindEmptySlotOnActionBar();
   /* Checks to see if a item is at given index on ActionBar */
+  UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   bool IsItemAtIndex(int32 Index);
-
-  UFUNCTION()
-  void RestDropItemCollision();
+  /* Will move the given index to new index in the Inventory */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  bool UpdateItemIndexInInventory(AMaster_Pickup* ItemToMove, int32 NewIndex);
+  /* Will try to find item in index in ArrayToUse */
+  UFUNCTION(BlueprintPure, Category = "Inventory Functions")
+  int32 FindArrayIndex(AMaster_Pickup* ItemToFind, const TArray<AMaster_Pickup*> ArrayToUse);
 
 protected:
   // Called when the game starts or when spawned
@@ -148,8 +149,6 @@ private:
 
   bool bFoundSlot;
 
-  /* Will try to find item in inventory items array */
-  int32 FindArrayIndex(AMaster_Pickup* ItemToFind);
   /* Contains all inventory items */
   TArray<class AMaster_Pickup*> InventoryItems;
   /* Contains all action bar items */

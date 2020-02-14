@@ -32,7 +32,6 @@ void APaperWarden::BeginPlay()
   InventoryItems.Init(0, AmountofInventorySlots);
 
   ActionBarItems.Empty();
-  ActionBarItems.Init(0, AmountOfActionBarSlots);
 }
 
 int32 APaperWarden::AddToKillCount(int32 AmountToadd)
@@ -114,7 +113,7 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
           {
             if (Amount > ItemToAdd->MaxItemAmount)
             {
-              int32 Index = FindEmptySlot();
+              int32 Index = FindEmptySlotInInventory();
 
               if (bFoundSlot)
               {
@@ -132,7 +131,7 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
             }
             else
             {
-              int32 Index = FindEmptySlot();
+              int32 Index = FindEmptySlotInInventory();
 
               if (bFoundSlot)
               {
@@ -150,7 +149,7 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
         }
         else
         {
-          int32 Index = FindEmptySlot();
+          int32 Index = FindEmptySlotInInventory();
 
           if (bFoundSlot)
           {
@@ -196,7 +195,7 @@ bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 A
 {
   if (ItemToRemove)
   {
-    AMaster_Pickup* LocalItem = FindItemByName(ItemToRemove);
+    AMaster_Pickup* LocalItem = FindItemByName(ItemToRemove, InventoryItems);
 
     if (LocalItem)
     {
@@ -243,8 +242,8 @@ bool APaperWarden::SplitItemStack(AMaster_Pickup* ItemToSplit, int32 Amount)
   {
     if (ItemToSplit->ItemInfo.bCanBeStacked && ItemToSplit->AmountAtIndex > Amount)
     {
-      int32 EmptySlot = FindEmptySlot();
-      AMaster_Pickup* LocalItem = FindItemByName(ItemToSplit);
+      int32 EmptySlot = FindEmptySlotInInventory();
+      AMaster_Pickup* LocalItem = FindItemByName(ItemToSplit, InventoryItems);
 
       if (bFoundSlot)
       {
@@ -348,31 +347,14 @@ bool APaperWarden::IsInventoryFull()
 
 bool APaperWarden::IsActionBarFull()
 {
-  int32 LocalCounter = 0;
-
-  for (AMaster_Pickup* Pickup : ActionBarItems)
-  {
-    if (Pickup)
-    {
-      LocalCounter++;
-    }
-  }
-
-  if (LocalCounter >= AmountOfActionBarSlots)
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  return false;
 }
 
-AMaster_Pickup* APaperWarden::FindItemByName(AMaster_Pickup* ItemToFind)
+class AMaster_Pickup* APaperWarden::FindItemByName(AMaster_Pickup* ItemToFind, const TArray<AMaster_Pickup*> ArrayToUse)
 {
   AMaster_Pickup* LocalItem = nullptr;
 
-  for (AMaster_Pickup* Item : InventoryItems)
+  for (AMaster_Pickup* Item : ArrayToUse)
   {
     if (Item)
     {
@@ -404,7 +386,7 @@ AMaster_Pickup* APaperWarden::SearchForFreeStack(AMaster_Pickup* ItemClass)
     {
       if (Pickup)
       {
-        auto CurrentPickup = FindItemByName(Pickup);
+        auto CurrentPickup = FindItemByName(Pickup, InventoryItems);
 
         if (CurrentPickup->GetClass() == ItemClass->GetClass())
         {
@@ -440,7 +422,7 @@ AMaster_Pickup* APaperWarden::SearchForFreeStack(AMaster_Pickup* ItemClass)
   }
 }
 
-int32 APaperWarden::FindEmptySlot()
+int32 APaperWarden::FindEmptySlotInInventory()
 {
   int32 LocalIndex = 0;
 
@@ -508,8 +490,8 @@ void APaperWarden::SwapItems(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo)
   {
     if (ItemTwo)
     {
-      int32 Index1 = FindArrayIndex(ItemOne);
-      int32 Index2 = FindArrayIndex(ItemTwo);
+      int32 Index1 = FindArrayIndex(ItemOne, InventoryItems);
+      int32 Index2 = FindArrayIndex(ItemTwo, InventoryItems);
       InventoryItems.Swap(Index1, Index2);
       UpdateInventory();
     }
@@ -524,24 +506,59 @@ void APaperWarden::SwapItems(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo)
   }
 }
 
-int32 APaperWarden::FindArrayIndex(AMaster_Pickup* ItemToFind)
+bool APaperWarden::UpdateItemIndexInInventory(AMaster_Pickup* ItemToMove, int32 NewIndex)
+{
+  if (ItemToMove)
+  {
+    int32 OldIndex = FindArrayIndex(ItemToMove, InventoryItems);
+
+    if (InventoryItems.IsValidIndex(OldIndex))
+    {
+      InventoryItems[NewIndex] = ItemToMove;
+      InventoryItems[OldIndex] = nullptr;
+      UpdateInventory();
+      return true;
+    }
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("Failed to find item ItemIndex was not found"))
+      return false;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Failed to find item IndexToMove was not vaild"))
+    return false;
+  }
+}
+
+
+int32 APaperWarden::FindArrayIndex(AMaster_Pickup* ItemToFind, const TArray<AMaster_Pickup*> ArrayToUse)
 {
   if (ItemToFind)
   {
-    AMaster_Pickup* LocalItem = FindItemByName(ItemToFind);
+    AMaster_Pickup* LocalItem = FindItemByName(ItemToFind, InventoryItems);
 
     if (LocalItem)
     {
       int32 LocalIndex = 0;
 
-      for (int32 Index = 0; Index < InventoryItems.Num(); Index++)
+      for (int32 Index = 0; Index < ArrayToUse.Num(); Index++)
       {
-        AMaster_Pickup* CurrentIndex = InventoryItems[Index];
+        AMaster_Pickup* CurrentIndex = ArrayToUse[Index];
 
-        if (CurrentIndex->ConvertItemNameToString() == LocalItem->ConvertItemNameToString())
+        if (CurrentIndex)
         {
-          LocalIndex = Index;
-          break;
+          if (CurrentIndex->ConvertItemNameToString() == LocalItem->ConvertItemNameToString())
+          {
+            LocalIndex = Index;
+            break;
+          }
+          else
+          {
+            LocalIndex = 0;
+            continue;
+          }
         }
         else
         {
@@ -553,14 +570,14 @@ int32 APaperWarden::FindArrayIndex(AMaster_Pickup* ItemToFind)
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Couldn't Find item in inventory"))
-      return 0;
+      UE_LOG(LogTemp, Error, TEXT("Couldn't Find item in Array"))
+        return 0;
     }
   }
   else
   {
     UE_LOG(LogTemp, Error, TEXT("Failed to find item ItemToFind was not vaild"))
-    return 0;
+      return 0;
   }
 }
 
@@ -572,10 +589,4 @@ const TArray<AMaster_Pickup*> APaperWarden::GetPlayerInventory()
 const TArray<AMaster_Pickup*> APaperWarden::GetActionBarItems()
 {
   return ActionBarItems;
-}
-
-void APaperWarden::RestDropItemCollision()
-{
-  ItemToRest->PaperSprite->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-  ItemToRest->BoxTrigger->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
