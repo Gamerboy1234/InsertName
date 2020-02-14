@@ -234,6 +234,58 @@ bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 A
   }
 }
 
+bool APaperWarden::SplitItemStack(AMaster_Pickup* ItemToSplit, int32 Amount)
+{
+  if (ItemToSplit)
+  {
+    if (ItemToSplit->ItemInfo.bCanBeStacked && ItemToSplit->AmountAtIndex > Amount)
+    {
+      int32 EmptySlot = FindEmptySlot();
+      AMaster_Pickup* LocalItem = FindItemByName(ItemToSplit);
+
+      if (bFoundSlot)
+      {
+        FTransform SpawnLocation = FTransform(FRotator(0), FVector(0), FVector(0));
+
+        UClass* ItemClass = LocalItem->GetClass();
+
+        AMaster_Pickup* SplitActor = GetWorld()->SpawnActor<AMaster_Pickup>(ItemClass, SpawnLocation);
+
+        if (SplitActor)
+        {
+          int32 NewAmount = LocalItem->AmountAtIndex - Amount;
+          LocalItem->AmountAtIndex = NewAmount;
+
+          SplitActor->AmountAtIndex = Amount;
+          SplitActor->ShowPickup(false);
+
+          InventoryItems[EmptySlot] = SplitActor;
+          UpdateInventory();
+          return true;
+        }
+        else
+        {
+          UE_LOG(LogTemp, Error, TEXT("Couldn't split item SplitActor was not vaild"))
+          return false;
+        }
+      }
+      else
+      {
+        return false;
+      }
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Couldn't split item ItemToSplit was not vaild"))
+    return false;
+  }
+}
+
 void APaperWarden::DropItemsOnActionBar(class AMaster_Pickup* Pickup, int32 MaxItems)
 {
   // See if hot bar is full
@@ -373,20 +425,6 @@ int32 APaperWarden::FindEmptySlot()
   }
 
   return LocalIndex;
-  UE_LOG(LogTemp, Log, TEXT("Empty Slot %i"), LocalIndex)
-}
-
-void APaperWarden::PrintInventory()
-{
-  FString sInventory = "";
-
-  for (AMaster_Pickup* actor : InventoryItems)
-  {
-    sInventory.Append(actor->GetName());
-    sInventory.Append(" | ");
-  }
-
-  GEngine->AddOnScreenDebugMessage(1, 3, FColor::Blue, *sInventory);
 }
 
 void APaperWarden::SwapItems(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo)

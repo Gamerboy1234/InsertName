@@ -80,9 +80,9 @@ public:
   /* Will try and find given item in inventory and remove it */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount);
-  /* Inventory Debug Function prints out all current inventory items */
+  /* Split's the item stack by a given amount */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-  void PrintInventory();
+  bool SplitItemStack(AMaster_Pickup* ItemToSplit, int32 Amount);
   /* Swap items at a given index */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void SwapItems(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo);
