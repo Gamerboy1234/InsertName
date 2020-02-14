@@ -137,8 +137,8 @@ private:
 
   /* Will try to find item in inventory items array */
   int32 FindArrayIndex(AMaster_Pickup* ItemToFind);
-
+  /* Contains all inventory items */
   TArray<class AMaster_Pickup*> InventoryItems;
-
+  /* Contains all action bar items */
   TArray<class AMaster_Pickup*> ActionBarItems;
 };

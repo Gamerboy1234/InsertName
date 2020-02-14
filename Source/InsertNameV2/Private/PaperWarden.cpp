@@ -205,6 +205,7 @@ bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 A
         if (InventoryItems.IsValidIndex(Index))
         {
           InventoryItems[Index] = nullptr;
+          ItemToRemove->DestroyPickup();
           UpdateInventory();
           return true;
         }
