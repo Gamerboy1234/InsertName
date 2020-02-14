@@ -30,6 +30,9 @@ void APaperWarden::BeginPlay()
 
   InventoryItems.Empty();
   InventoryItems.Init(0, AmountofInventorySlots);
+
+  ActionBarItems.Empty();
+  ActionBarItems.Init(0, AmountOfActionBarSlots);
 }
 
 int32 APaperWarden::AddToKillCount(int32 AmountToadd)
@@ -286,26 +289,39 @@ bool APaperWarden::SplitItemStack(AMaster_Pickup* ItemToSplit, int32 Amount)
   }
 }
 
-void APaperWarden::DropItemsOnActionBar(class AMaster_Pickup* Pickup, int32 MaxItems)
+bool APaperWarden::DropItemsOnActionBar(AMaster_Pickup* Pickup, int32 Index)
 {
-  // See if hot bar is full
-  if (ActionBarItems.Num() == MaxItems)
+  if (!IsActionBarFull())
   {
-    return;
+    if (!IsItemAtIndex(Index))
+    {
+      ActionBarItems[Index] = Pickup;
+      InventoryItems[Index] = nullptr;
+
+      UpdateInventory();
+      UpdateActionBar();
+
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
   else
   {
-    InventoryItems.Remove(Pickup);
-    ActionBarItems.Add(Pickup);
-
-    UpdateInventory();
-    OnUpdateActionBar.Broadcast(ActionBarItems);
+    return false;
   }
 }
 
 void APaperWarden::UpdateInventory()
 {
   OnUpdateInventory.Broadcast(InventoryItems);
+}
+
+void APaperWarden::UpdateActionBar()
+{
+  OnUpdateActionBar.Broadcast(ActionBarItems);
 }
 
 bool APaperWarden::IsInventoryFull()
@@ -321,6 +337,28 @@ bool APaperWarden::IsInventoryFull()
   }
 
   if (LocalCounter >= AmountofInventorySlots)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+bool APaperWarden::IsActionBarFull()
+{
+  int32 LocalCounter = 0;
+
+  for (AMaster_Pickup* Pickup : ActionBarItems)
+  {
+    if (Pickup)
+    {
+      LocalCounter++;
+    }
+  }
+
+  if (LocalCounter >= AmountOfActionBarSlots)
   {
     return true;
   }
@@ -425,6 +463,43 @@ int32 APaperWarden::FindEmptySlot()
   }
 
   return LocalIndex;
+}
+
+int32 APaperWarden::FindEmptySlotOnActionBar()
+{
+  int32 LocalIndex = 0;
+
+  for (int32 Index = 0; Index < ActionBarItems.Num(); Index++)
+  {
+    AMaster_Pickup* CurrentIndex = Cast<AMaster_Pickup>(ActionBarItems[Index]);
+
+    if (!CurrentIndex)
+    {
+      LocalIndex = Index;
+      bFoundSlot = true;
+      break;
+    }
+    else
+    {
+      LocalIndex = 0;
+      bFoundSlot = false;
+      continue;
+    }
+  }
+
+  return LocalIndex;
+}
+
+bool APaperWarden::IsItemAtIndex(int32 Index)
+{
+  if (ActionBarItems.IsValidIndex(Index))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 void APaperWarden::SwapItems(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo)

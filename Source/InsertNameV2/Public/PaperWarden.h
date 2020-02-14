@@ -89,18 +89,24 @@ public:
   /* Returns all items in player's inventory */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   const TArray<class AMaster_Pickup*> GetPlayerInventory();
-  /* Gets all items on action bar */
+  /* Gets all items on ActionBar */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   const TArray<class AMaster_Pickup*> GetActionBarItems();
   /* Places dropped item on action bar and updates ActionBarItems array */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-  void DropItemsOnActionBar(class AMaster_Pickup* Pickup, int32 MaxItems);
+  bool DropItemsOnActionBar(class AMaster_Pickup* Pickup, int32 Index);
   /* Sends updates to Inventory widget UI */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void UpdateInventory();
+  /* Sends updates to Actionbar widget UI */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  void UpdateActionBar();
   /* Checks to see if inventoryItems array is >= to AmountofInventorySlots */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool IsInventoryFull();
+  /* Checks to see if ActionBarItems array is >= to AmountOfActionBarSlots */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  bool IsActionBarFull();
   /* Find item in array by Name */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   class AMaster_Pickup* FindItemByName(AMaster_Pickup* ItemToFind);
@@ -113,10 +119,17 @@ public:
   /* Amount of inventory slots in inventory menu */
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InventorySettings")
   int32 AmountofInventorySlots;
+  /* Amount of inventory slots on ActionBar */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "InventorySettings")
+  int32 AmountOfActionBarSlots;
   /* If item can stack then this searches for a free stack to add items to */
   AMaster_Pickup* SearchForFreeStack(AMaster_Pickup* ItemClass);
   /* Looks for an empty slot in the inventory to place new item */
   int32 FindEmptySlot();
+  /* Looks for an empty slot in the Actionbar to place new item */
+  int32 FindEmptySlotOnActionBar();
+  /* Checks to see if a item is at given index on ActionBar */
+  bool IsItemAtIndex(int32 Index);
 
   UFUNCTION()
   void RestDropItemCollision();
