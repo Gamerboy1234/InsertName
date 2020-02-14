@@ -78,7 +78,7 @@ void AMaster_Pickup::AddToStack()
 
 void AMaster_Pickup::UseItem_Implementation()
 {
-  UE_LOG(LogTemp, Log, TEXT("Do a thing"))
+  UE_LOG(LogTemp, Log, TEXT("Item %s has no Implementation"), *this->ConvertItemNameToString())
 }
 
 void AMaster_Pickup::DestroyPickup()
@@ -102,7 +102,7 @@ void AMaster_Pickup::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, c
   }
 }
 
-FString AMaster_Pickup::ConvertItemNameToSting()
+FString AMaster_Pickup::ConvertItemNameToString()
 {
   return this->ItemInfo.ItemName.ToString();
 }

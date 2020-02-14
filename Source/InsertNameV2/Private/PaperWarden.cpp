@@ -3,8 +3,10 @@
 
 #include "PaperWarden.h"
 #include "Master_Pickup.h"
+#include "PaperSpriteComponent.h"
 #include "Engine.h"
 #include "GeneralFunctions.h"
+#include "TimerManager.h"
 #include "Components/BoxComponent.h"
 
 APaperWarden::APaperWarden()
@@ -92,80 +94,87 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
   {
     if (ItemToAdd)
     {
-      if (ItemToAdd->ItemInfo.bCanBeStacked)
+      if (!ItemToAdd->ItemInfo.bIsSpell)
       {
-        AMaster_Pickup* StackToAddTo = SearchForFreeStack(ItemToAdd);
-
-        if (StackToAddTo)
+        if (ItemToAdd->ItemInfo.bCanBeStacked)
         {
-          StackToAddTo->AddToStack();
-          ItemToAdd->bAddedToStack = true;
-          UpdateInventory();
-          return true;
+          AMaster_Pickup* StackToAddTo = SearchForFreeStack(ItemToAdd);
+
+          if (StackToAddTo)
+          {
+            StackToAddTo->AddToStack();
+            ItemToAdd->bAddedToStack = true;
+            UpdateInventory();
+            return true;
+          }
+          else
+          {
+            if (Amount > ItemToAdd->MaxItemAmount)
+            {
+              int32 Index = FindEmptySlot();
+
+              if (bFoundSlot)
+              {
+                int32 Overflow = Amount - ItemToAdd->MaxItemAmount;
+                InventoryItems[Index] = ItemToAdd;
+                ItemToAdd->bAddedToStack = false;
+                UpdateInventory();
+                AddItem(ItemToAdd, Overflow);
+                return true;
+              }
+              else
+              {
+                return false;
+              }
+            }
+            else
+            {
+              int32 Index = FindEmptySlot();
+
+              if (bFoundSlot)
+              {
+                InventoryItems[Index] = ItemToAdd;
+                ItemToAdd->bAddedToStack = false;
+                UpdateInventory();
+                return true;
+              }
+              else
+              {
+                return false;
+              }
+            }
+          }
         }
         else
         {
-          if (Amount > ItemToAdd->MaxItemAmount)
-          {
-            int32 Index = FindEmptySlot();
+          int32 Index = FindEmptySlot();
 
-            if (bFoundSlot)
+          if (bFoundSlot)
+          {
+            InventoryItems[Index] = ItemToAdd;
+            ItemToAdd->bAddedToStack = false;
+            UpdateInventory();
+
+            if (Amount > 1)
             {
-              int32 Overflow = Amount - ItemToAdd->MaxItemAmount;
-              InventoryItems[Index] = ItemToAdd;
-              ItemToAdd->bAddedToStack = false;
-              UpdateInventory();
-              AddItem(ItemToAdd, Overflow);
+              Amount--;
+              AddItem(ItemToAdd, Amount);
               return true;
             }
             else
             {
-              return false;
+              return true;
             }
           }
           else
           {
-            int32 Index = FindEmptySlot();
-
-            if (bFoundSlot)
-            {
-              InventoryItems[Index] = ItemToAdd;
-              ItemToAdd->bAddedToStack = false;
-              UpdateInventory();
-              return true;
-            }
-            else
-            {
-              return false;
-            }
+            return false;
           }
         }
       }
       else
       {
-        int32 Index = FindEmptySlot();
-
-        if (bFoundSlot)
-        {
-          InventoryItems[Index] = ItemToAdd;
-          ItemToAdd->bAddedToStack = false;
-          UpdateInventory();
-
-          if (Amount > 1)
-          {
-            Amount--;
-            AddItem(ItemToAdd, Amount);
-            return true;
-          }
-          else
-          {
-            return true;
-          }
-        }
-        else
-        {
-          return false;
-        }
+        return false;
       }
     }
     else
@@ -180,7 +189,7 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
   }
 }
 
-bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount, bool bSpawnItem)
+bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount)
 {
   if (ItemToRemove)
   {
@@ -196,11 +205,10 @@ bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 A
         if (InventoryItems.IsValidIndex(Index))
         {
           InventoryItems[Index] = nullptr;
-          LocalItem->DestroyPickup();
           UpdateInventory();
           return true;
         }
-        else 
+        else
         {
           UE_LOG(LogTemp, Error, TEXT("failed to find item in Inventory not a vaild index"))
           return false;
@@ -216,7 +224,7 @@ bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 A
     {
       UE_LOG(LogTemp, Error, TEXT("failed to find item in Inventory"))
       return false;
-    }
+    }   
   }
   else
   {
@@ -277,8 +285,8 @@ AMaster_Pickup* APaperWarden::FindItemByName(AMaster_Pickup* ItemToFind)
   {
     if (Item)
     {
-      FString Name1 = Item->ConvertItemNameToSting();
-      FString Name2 = ItemToFind->ConvertItemNameToSting();
+      FString Name1 = Item->ConvertItemNameToString();
+      FString Name2 = ItemToFind->ConvertItemNameToString();
 
       if (Name1 == Name2)
       {
@@ -388,4 +396,10 @@ const TArray<AMaster_Pickup*> APaperWarden::GetPlayerInventory()
 const TArray<AMaster_Pickup*> APaperWarden::GetActionBarItems()
 {
   return ActionBarItems;
+}
+
+void APaperWarden::RestDropItemCollision()
+{
+  ItemToRest->PaperSprite->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+  ItemToRest->BoxTrigger->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
