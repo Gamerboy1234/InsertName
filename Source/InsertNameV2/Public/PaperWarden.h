@@ -83,6 +83,9 @@ public:
   /* Inventory Debug Function prints out all current inventory items */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void PrintInventory();
+  /* Swap items at a given index */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  void SwapItems(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo);
   /* Returns all items in player's inventory */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   const TArray<class AMaster_Pickup*> GetPlayerInventory();
@@ -131,6 +134,9 @@ private:
   AMaster_Pickup* ItemToRest;
 
   bool bFoundSlot;
+
+  /* Will try to find item in inventory items array */
+  int32 FindArrayIndex(AMaster_Pickup* ItemToFind);
 
   TArray<class AMaster_Pickup*> InventoryItems;
 

@@ -388,6 +388,68 @@ void APaperWarden::PrintInventory()
   GEngine->AddOnScreenDebugMessage(1, 3, FColor::Blue, *sInventory);
 }
 
+void APaperWarden::SwapItems(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo)
+{
+  if (ItemOne)
+  {
+    if (ItemTwo)
+    {
+      int32 Index1 = FindArrayIndex(ItemOne);
+      int32 Index2 = FindArrayIndex(ItemTwo);
+      InventoryItems.Swap(Index1, Index2);
+      UpdateInventory();
+    }
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemTwo was not vaild"))
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemOne was not vaild"))
+  }
+}
+
+int32 APaperWarden::FindArrayIndex(AMaster_Pickup* ItemToFind)
+{
+  if (ItemToFind)
+  {
+    AMaster_Pickup* LocalItem = FindItemByName(ItemToFind);
+
+    if (LocalItem)
+    {
+      int32 LocalIndex = 0;
+
+      for (int32 Index = 0; Index < InventoryItems.Num(); Index++)
+      {
+        AMaster_Pickup* CurrentIndex = InventoryItems[Index];
+
+        if (CurrentIndex->ConvertItemNameToString() == LocalItem->ConvertItemNameToString())
+        {
+          LocalIndex = Index;
+          break;
+        }
+        else
+        {
+          LocalIndex = 0;
+          continue;
+        }
+      }
+      return LocalIndex;
+    }
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("Couldn't Find item in inventory"))
+      return 0;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Failed to find item ItemToFind was not vaild"))
+    return 0;
+  }
+}
+
 const TArray<AMaster_Pickup*> APaperWarden::GetPlayerInventory()
 {
   return InventoryItems;
