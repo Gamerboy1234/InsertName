@@ -247,7 +247,7 @@ bool APaperWarden::SplitItemStack(AMaster_Pickup* ItemToSplit, int32 Amount)
 
       if (bFoundSlot)
       {
-        FTransform SpawnLocation = FTransform(FRotator(0), FVector(0), FVector(0));
+        FTransform SpawnLocation = FTransform(FRotator(1), FVector(1), FVector(1));
 
         UClass* ItemClass = LocalItem->GetClass();
 
@@ -350,7 +350,7 @@ bool APaperWarden::IsActionBarFull()
   return false;
 }
 
-class AMaster_Pickup* APaperWarden::FindItemByName(AMaster_Pickup* ItemToFind, const TArray<AMaster_Pickup*> ArrayToUse)
+AMaster_Pickup* APaperWarden::FindItemByName(AMaster_Pickup* ItemToFind, const TArray<AMaster_Pickup*> ArrayToUse)
 {
   AMaster_Pickup* LocalItem = nullptr;
 
@@ -578,6 +578,47 @@ int32 APaperWarden::FindArrayIndex(AMaster_Pickup* ItemToFind, const TArray<AMas
   {
     UE_LOG(LogTemp, Error, TEXT("Failed to find item ItemToFind was not vaild"))
       return 0;
+  }
+}
+
+AMaster_Pickup* APaperWarden::FindItemByIndex(int32 Index, const TArray<AMaster_Pickup*> ArrayToUse)
+{
+  AMaster_Pickup* LocalItem = nullptr;
+
+  if (ArrayToUse.IsValidIndex(Index))
+  {
+    for (int32 LocalIndex = 0; LocalIndex < ArrayToUse.Num(); LocalIndex++)
+    {
+      AMaster_Pickup* CurrentItem = ArrayToUse[LocalIndex];
+
+      if (CurrentItem)
+      {
+        AMaster_Pickup* ItemToFind = ArrayToUse[Index];
+
+        if (CurrentItem->ConvertItemNameToString() == ItemToFind->ConvertItemNameToString())
+        {
+          LocalItem = CurrentItem;
+          break;
+        }
+        else
+        {
+          LocalItem = nullptr;
+          continue;
+        }
+      }
+      else
+      {
+        LocalItem = nullptr;
+        continue;
+      }
+    }
+
+    return LocalItem;
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Failed to find item by Index. Index was not Valid."))
+    return LocalItem;
   }
 }
 

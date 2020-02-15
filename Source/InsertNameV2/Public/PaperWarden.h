@@ -108,7 +108,7 @@ public:
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool IsActionBarFull();
   /* Find item in array by Name */
-  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   class AMaster_Pickup* FindItemByName(AMaster_Pickup* ItemToFind, const TArray<AMaster_Pickup*> ArrayToUse);
   /* Delegate that fires off every time the inventory is updated */
   UPROPERTY(BlueprintAssignable, Category = "Inventory Events")
@@ -134,6 +134,10 @@ public:
   /* Will try to find item in index in ArrayToUse */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   int32 FindArrayIndex(AMaster_Pickup* ItemToFind, const TArray<AMaster_Pickup*> ArrayToUse);
+  /* Will try to find given index in ArrayToUse */
+  UFUNCTION(BlueprintPure, Category = "Inventory Functions")
+  AMaster_Pickup* FindItemByIndex(int32 Index, const TArray<AMaster_Pickup*> ArrayToUse);
+
 
 protected:
   // Called when the game starts or when spawned
