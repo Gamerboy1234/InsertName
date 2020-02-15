@@ -85,7 +85,7 @@ public:
   bool SplitItemStack(AMaster_Pickup* ItemToSplit, int32 Amount);
   /* Swap items at a given index */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-  void SwapItems(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo);
+  void SwapItemsInInventory(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo);
   /* Returns all items in player's inventory */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   const TArray<class AMaster_Pickup*> GetPlayerInventory();
@@ -131,9 +131,6 @@ public:
   /* Will move the given index to new index in the Inventory */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool UpdateItemIndexInInventory(AMaster_Pickup* ItemToMove, int32 NewIndex);
-  /* Will try to find item in index in ArrayToUse */
-  UFUNCTION(BlueprintPure, Category = "Inventory Functions")
-  int32 FindArrayIndex(AMaster_Pickup* ItemToFind, const TArray<AMaster_Pickup*> ArrayToUse);
   /* Will try to find given index in ArrayToUse */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   AMaster_Pickup* FindItemByIndex(int32 Index, const TArray<AMaster_Pickup*> ArrayToUse);

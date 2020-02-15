@@ -484,16 +484,43 @@ bool APaperWarden::IsItemAtIndex(int32 Index)
   }
 }
 
-void APaperWarden::SwapItems(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo)
+void APaperWarden::SwapItemsInInventory(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo)
 {
   if (ItemOne)
   {
     if (ItemTwo)
     {
-      int32 Index1 = FindArrayIndex(ItemOne, InventoryItems);
-      int32 Index2 = FindArrayIndex(ItemTwo, InventoryItems);
-      InventoryItems.Swap(Index1, Index2);
-      UpdateInventory();
+      int32 Index1 = InventoryItems.Find(ItemOne);
+      
+      if (InventoryItems.IsValidIndex(Index1))
+      {
+        int32 Index2 = InventoryItems.Find(ItemTwo);
+
+        if (InventoryItems.IsValidIndex(Index2))
+        {
+
+          if (InventoryItems[Index1]->GetClass() == InventoryItems[Index2]->GetClass() && InventoryItems[Index2]->AmountAtIndex < InventoryItems[Index1]->MaxItemAmount)
+          {
+            InventoryItems[Index1]->AmountAtIndex += InventoryItems[Index2]->AmountAtIndex;
+            InventoryItems[Index2]->DestroyPickup();
+            InventoryItems[Index2] = nullptr;
+            UpdateInventory();
+          }
+          else
+          {
+            InventoryItems.Swap(Index1, Index2);
+            UpdateInventory();
+          }
+        }
+        else
+        {
+          UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemTwo was not found in Inventory"))
+        }
+      }
+      else
+      {
+        UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemOne was not found in Inventory"))
+      }
     }
     else
     {
@@ -510,7 +537,7 @@ bool APaperWarden::UpdateItemIndexInInventory(AMaster_Pickup* ItemToMove, int32 
 {
   if (ItemToMove)
   {
-    int32 OldIndex = FindArrayIndex(ItemToMove, InventoryItems);
+    int32 OldIndex = InventoryItems.Find(ItemToMove);
 
     if (InventoryItems.IsValidIndex(OldIndex))
     {
@@ -533,54 +560,6 @@ bool APaperWarden::UpdateItemIndexInInventory(AMaster_Pickup* ItemToMove, int32 
 }
 
 
-int32 APaperWarden::FindArrayIndex(AMaster_Pickup* ItemToFind, const TArray<AMaster_Pickup*> ArrayToUse)
-{
-  if (ItemToFind)
-  {
-    AMaster_Pickup* LocalItem = FindItemByName(ItemToFind, InventoryItems);
-
-    if (LocalItem)
-    {
-      int32 LocalIndex = 0;
-
-      for (int32 Index = 0; Index < ArrayToUse.Num(); Index++)
-      {
-        AMaster_Pickup* CurrentIndex = ArrayToUse[Index];
-
-        if (CurrentIndex)
-        {
-          if (CurrentIndex->ConvertItemNameToString() == LocalItem->ConvertItemNameToString())
-          {
-            LocalIndex = Index;
-            break;
-          }
-          else
-          {
-            LocalIndex = 0;
-            continue;
-          }
-        }
-        else
-        {
-          LocalIndex = 0;
-          continue;
-        }
-      }
-      return LocalIndex;
-    }
-    else
-    {
-      UE_LOG(LogTemp, Error, TEXT("Couldn't Find item in Array"))
-        return 0;
-    }
-  }
-  else
-  {
-    UE_LOG(LogTemp, Error, TEXT("Failed to find item ItemToFind was not vaild"))
-      return 0;
-  }
-}
-
 AMaster_Pickup* APaperWarden::FindItemByIndex(int32 Index, const TArray<AMaster_Pickup*> ArrayToUse)
 {
   AMaster_Pickup* LocalItem = nullptr;
@@ -595,7 +574,7 @@ AMaster_Pickup* APaperWarden::FindItemByIndex(int32 Index, const TArray<AMaster_
       {
         AMaster_Pickup* ItemToFind = ArrayToUse[Index];
 
-        if (CurrentItem->ConvertItemNameToString() == ItemToFind->ConvertItemNameToString())
+        if (CurrentItem->GetID() == ItemToFind->GetID())
         {
           LocalItem = CurrentItem;
           break;
