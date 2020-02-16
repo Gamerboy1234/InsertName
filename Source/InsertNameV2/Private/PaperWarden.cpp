@@ -107,14 +107,13 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
 
           if (StackToAddTo)
           {
-            
-            if (bDisplayItemObtained && !ItemToAdd->bAddedToStack)
-            {
-              UGeneralFunctions::DisplayItemObtainMessage(this, StackToAddTo, StackToAddTo->AmountAtIndex);
-            }
-
             StackToAddTo->AddToStack();
             ItemToAdd->bAddedToStack = true;
+
+            if (bDisplayItemObtained)
+            {
+              UGeneralFunctions::DisplayItemObtainMessage(this, StackToAddTo, Amount);
+            }
 
             UpdateInventory();
             return true;
