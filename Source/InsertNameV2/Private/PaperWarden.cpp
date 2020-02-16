@@ -6,6 +6,7 @@
 #include "PaperSpriteComponent.h"
 #include "Engine.h"
 #include "GeneralFunctions.h"
+#include "Components/InputComponent.h"
 #include "TimerManager.h"
 #include "Components/BoxComponent.h"
 
@@ -19,6 +20,7 @@ APaperWarden::APaperWarden()
   BarkOuterCollision->SetupAttachment(RootComponent);
 
   AmountofInventorySlots = 8;
+  ActionBarSlotsPerRow = 10;
 }
 
 void APaperWarden::BeginPlay()
@@ -32,6 +34,7 @@ void APaperWarden::BeginPlay()
   InventoryItems.Init(0, AmountofInventorySlots);
 
   ActionBarItems.Empty();
+  ActionBarItems.Init(0, ActionBarSlotsPerRow);
 }
 
 int32 APaperWarden::AddToKillCount(int32 AmountToadd)

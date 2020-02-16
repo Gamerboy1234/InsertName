@@ -138,6 +138,9 @@ public:
   /* Keys to use on ActionBar */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InventorySettings")
   TArray<FKey> ActionBarKeys;
+  /* Amount of ActionBarSlots per row */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InventorySettings")
+  int32 ActionBarSlotsPerRow;
 
 protected:
   // Called when the game starts or when spawned
