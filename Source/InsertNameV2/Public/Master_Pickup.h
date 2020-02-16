@@ -24,7 +24,7 @@ public:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemInfo")
   int32 MaxItemAmount;
 
-  UPROPERTY(VisibleAnywhere, Category = "Components")
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
   class UPaperSpriteComponent* PaperSprite;
 
   UPROPERTY(VisibleAnywhere, Category = "Components")

@@ -102,7 +102,7 @@ public:
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   void UpdateActionBar();
   /* Checks to see if inventoryItems array is >= to AmountofInventorySlots */
-  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   bool IsInventoryFull();
   /* Checks to see if ActionBarItems array is >= to AmountOfActionBarSlots */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
