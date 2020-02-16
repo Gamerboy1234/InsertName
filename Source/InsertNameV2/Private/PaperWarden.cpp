@@ -295,20 +295,13 @@ bool APaperWarden::DropItemsOnActionBar(AMaster_Pickup* Pickup, int32 Index)
 {
   if (!IsActionBarFull())
   {
-    if (!IsItemAtIndex(Index))
-    {
-      ActionBarItems[Index] = Pickup;
-      InventoryItems[Index] = nullptr;
+    ActionBarItems[Index] = Pickup;
+    InventoryItems[Index] = nullptr;
 
-      UpdateInventory();
-      UpdateActionBar();
+    UpdateInventory();
+    UpdateActionBar();
 
-      return true;
-    }
-    else
-    {
-      return false;
-    }
+    return true;
   }
   else
   {
