@@ -77,7 +77,7 @@ public:
   void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
   /* Will add the given item to player's inventory */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-  bool AddItem(AMaster_Pickup* ItemToAdd, int32 Amount);
+  bool AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDisplayItemObtained);
   /* Will try and find given item in inventory and remove it */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount);
@@ -132,15 +132,24 @@ public:
   /* Will move the given index to new index in the Inventory */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool UpdateItemIndexInInventory(AMaster_Pickup* ItemToMove, int32 NewIndex);
-  /* Will try to find given index in ArrayToUse */
-  UFUNCTION(BlueprintPure, Category = "Inventory Functions")
-  AMaster_Pickup* FindItemByIndex(int32 Index, const TArray<AMaster_Pickup*> ArrayToUse);
   /* Keys to use on ActionBar */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InventorySettings")
   TArray<FKey> ActionBarKeys;
   /* Amount of ActionBarSlots per row */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InventorySettings")
   int32 ActionBarSlotsPerRow;
+  /* Will move the given index to new index on the ActionBar */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  bool UpdateItemIndexOnActionbar(AMaster_Pickup* ItemToMove, int32 NewIndex);
+  /* Swap items at a given index */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  void SwapItemsOnActionbar(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo);
+  /* Will try to find item on Actionbar and use it */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  void UseItemOnActionbar(int32 ItemIndex);
+  /* Will try and find given item on the Actionbar and remove it */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  bool RemoveItemFromActionbar(AMaster_Pickup* ItemToRemove, int32 Amount);
 
 protected:
   // Called when the game starts or when spawned

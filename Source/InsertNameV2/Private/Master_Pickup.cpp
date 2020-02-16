@@ -17,6 +17,7 @@ AMaster_Pickup::AMaster_Pickup()
 
   MaxItemAmount = 99;
   AmountAtIndex = 1;
+  bOnActionBar = false;
   
   PaperSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
   RootComponent = PaperSprite;
@@ -42,7 +43,7 @@ void AMaster_Pickup::OnInteract_Implementation()
 {
   if (PlayerRef)
   {
-    bool bAddToInventory = PlayerRef->AddItem(this, ItemInfo.Amount);
+    bool bAddToInventory = PlayerRef->AddItem(this, ItemInfo.Amount, true);
     if (bAddToInventory)
     {
       if (bAddedToStack)

@@ -93,7 +93,7 @@ void APaperWarden::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
   }
 }
 
-bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
+bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDisplayItemObtained)
 {
   if (!IsInventoryFull())
   {
@@ -109,6 +109,13 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
           {
             StackToAddTo->AddToStack();
             ItemToAdd->bAddedToStack = true;
+            StackToAddTo->bOnActionBar = false;
+
+            if (bDisplayItemObtained)
+            {
+              UGeneralFunctions::DisplayItemObtainMessage(this, StackToAddTo, Amount);
+            }
+
             UpdateInventory();
             return true;
           }
@@ -123,8 +130,15 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
                 int32 Overflow = Amount - ItemToAdd->MaxItemAmount;
                 InventoryItems[Index] = ItemToAdd;
                 ItemToAdd->bAddedToStack = false;
+                ItemToAdd->bOnActionBar = false;
+
+                if (bDisplayItemObtained)
+                {
+                  UGeneralFunctions::DisplayItemObtainMessage(this, ItemToAdd, Amount);
+                }
+
                 UpdateInventory();
-                AddItem(ItemToAdd, Overflow);
+                AddItem(ItemToAdd, Overflow, bDisplayItemObtained);
                 return true;
               }
               else
@@ -140,6 +154,13 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
               {
                 InventoryItems[Index] = ItemToAdd;
                 ItemToAdd->bAddedToStack = false;
+                ItemToAdd->bOnActionBar = false;
+
+                if (bDisplayItemObtained)
+                {
+                  UGeneralFunctions::DisplayItemObtainMessage(this, ItemToAdd, Amount);
+                }
+
                 UpdateInventory();
                 return true;
               }
@@ -158,12 +179,19 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount)
           {
             InventoryItems[Index] = ItemToAdd;
             ItemToAdd->bAddedToStack = false;
+            ItemToAdd->bOnActionBar = false;
+
+            if (bDisplayItemObtained)
+            {
+              UGeneralFunctions::DisplayItemObtainMessage(this, ItemToAdd, Amount);
+            }
+
             UpdateInventory();
 
             if (Amount > 1)
             {
               Amount--;
-              AddItem(ItemToAdd, Amount);
+              AddItem(ItemToAdd, Amount, bDisplayItemObtained);
               return true;
             }
             else
@@ -297,6 +325,7 @@ bool APaperWarden::DropItemsOnActionBar(AMaster_Pickup* Pickup, int32 Index)
   {
     ActionBarItems[Index] = Pickup;
     InventoryItems[Index] = nullptr;
+    ActionBarItems[Index]->bOnActionBar = true;
 
     UpdateInventory();
     UpdateActionBar();
@@ -555,45 +584,138 @@ bool APaperWarden::UpdateItemIndexInInventory(AMaster_Pickup* ItemToMove, int32 
   }
 }
 
-
-AMaster_Pickup* APaperWarden::FindItemByIndex(int32 Index, const TArray<AMaster_Pickup*> ArrayToUse)
+bool APaperWarden::UpdateItemIndexOnActionbar(AMaster_Pickup* ItemToMove, int32 NewIndex)
 {
-  AMaster_Pickup* LocalItem = nullptr;
-
-  if (ArrayToUse.IsValidIndex(Index))
+  if (ItemToMove)
   {
-    for (int32 LocalIndex = 0; LocalIndex < ArrayToUse.Num(); LocalIndex++)
+    int32 OldIndex = ActionBarItems.Find(ItemToMove);
+
+    if (ActionBarItems.IsValidIndex(OldIndex))
     {
-      AMaster_Pickup* CurrentItem = ArrayToUse[LocalIndex];
+      ActionBarItems[NewIndex] = ItemToMove;
+      ActionBarItems[OldIndex] = nullptr;
+      UpdateActionBar();
+      return true;
+    }
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("Failed to find item ItemIndex was not found"))
+        return false;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Failed to find item IndexToMove was not vaild"))
+    return false;
+  }
+}
 
-      if (CurrentItem)
+void APaperWarden::SwapItemsOnActionbar(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo)
+{
+  if (ItemOne)
+  {
+    if (ItemTwo)
+    {
+      int32 Index1 = ActionBarItems.Find(ItemOne);
+
+      if (ActionBarItems.IsValidIndex(Index1))
       {
-        AMaster_Pickup* ItemToFind = ArrayToUse[Index];
+        int32 Index2 = ActionBarItems.Find(ItemTwo);
 
-        if (CurrentItem->GetID() == ItemToFind->GetID())
+        if (ActionBarItems.IsValidIndex(Index2))
         {
-          LocalItem = CurrentItem;
-          break;
+
+          if (ActionBarItems[Index1]->GetClass() == ActionBarItems[Index2]->GetClass() && ActionBarItems[Index2]->AmountAtIndex < ActionBarItems[Index1]->MaxItemAmount)
+          {
+            ActionBarItems[Index1]->AmountAtIndex += ActionBarItems[Index2]->AmountAtIndex;
+            ActionBarItems[Index2]->DestroyPickup();
+            ActionBarItems[Index2] = nullptr;
+            UpdateActionBar();
+          }
+          else
+          {
+            ActionBarItems.Swap(Index1, Index2);
+            UpdateActionBar();
+          }
         }
         else
         {
-          LocalItem = nullptr;
-          continue;
+          UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemTwo was not found on Actionbar"))
         }
       }
       else
       {
-        LocalItem = nullptr;
-        continue;
+        UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemOne was not found in Actionbar"))
       }
     }
-
-    return LocalItem;
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemTwo was not vaild"))
+    }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Failed to find item by Index. Index was not Valid."))
-    return LocalItem;
+    UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemOne was not vaild"))
+  }
+}
+
+void APaperWarden::UseItemOnActionbar(int32 ItemIndex)
+{
+  AMaster_Pickup* LocalIndex = ActionBarItems[ItemIndex];
+
+  if (LocalIndex)
+  {
+    LocalIndex->UseItem();
+
+    if (LocalIndex->ItemInfo.bCanBeStacked && LocalIndex->AmountAtIndex <= 0 && !LocalIndex->ItemInfo.bIsSpell)
+    {
+      RemoveItemFromActionbar(LocalIndex, 1);
+    }
+  }
+}
+
+bool APaperWarden::RemoveItemFromActionbar(AMaster_Pickup* ItemToRemove, int32 Amount)
+{
+  if (ItemToRemove)
+  {
+    AMaster_Pickup* LocalItem = FindItemByName(ItemToRemove, ActionBarItems);
+
+    if (LocalItem)
+    {
+      LocalItem->AmountAtIndex -= Amount;
+
+      if (LocalItem->AmountAtIndex <= 0)
+      {
+        int32 Index = ActionBarItems.Find(LocalItem);
+        if (ActionBarItems.IsValidIndex(Index))
+        {
+          ActionBarItems[Index] = nullptr;
+          ItemToRemove->DestroyPickup();
+          UpdateActionBar();
+          return true;
+        }
+        else
+        {
+          UE_LOG(LogTemp, Error, TEXT("failed to find item on Actionbar not a vaild index"))
+          return false;
+        }
+      }
+      else
+      {
+        UE_LOG(LogTemp, Error, TEXT("failed to find item on Actionbar"))
+          return false;
+      }
+    }
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("Couldn't remove item from Actionbar. LocalItem was not found."))
+      return false;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Couldn't remove item from Actionbar. ItemToRemove was not vaild"))
+    return false;
   }
 }
 

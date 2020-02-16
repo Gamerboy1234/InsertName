@@ -8,6 +8,8 @@
 #include "Math/UnrealMathUtility.h"
 #include "GeneralFunctions.generated.h"
 
+class AMaster_Pickup;
+
 /**
  * 
  */
@@ -38,6 +40,9 @@ public:
 
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "RemoveIDFromGamemode", CompactNodeTitle = "RemoveID", Keywords = "RemoveID"), Category = "Utility")
   static void RemoveIDFromGamemode(UObject* WorldContextObject, int32 ID, AActor* ActorToRemove);
+
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "DisplayItemObtainMessage", CompactNodeTitle = "ItemObtain", Keywords = "DisplayItemObtainMessage"), Category = "HUD")
+  static void DisplayItemObtainMessage(UObject* WorldContextObject, AMaster_Pickup* Pickup, int32 Amount);
 
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "RemoveActorsY_C++", CompactNodeTitle = "RemoveActorsY_C", Keywords = "RemoveActorsY_C"), Category = "Utility")
   static void RemoveActorsY(UObject* WorldContextObject, AActor* ActorRef);

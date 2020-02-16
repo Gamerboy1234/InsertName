@@ -5,6 +5,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
 #include "SideScrollerGamemode.h"
+#include "Master_Pickup.h"
 #include "PaperZDCharacter.h"
 #include <iostream>
 #include <random>
@@ -109,6 +110,20 @@ void UGeneralFunctions::RemoveIDFromGamemode(UObject* WorldContextObject, int32 
   else
   {
     UE_LOG(LogTemp, Warning, TEXT("Unable to assing ID cast to ASideScrollerGamemode failed to remove ID from : %s"), *ActorToRemove->GetName())
+  }
+}
+
+void UGeneralFunctions::DisplayItemObtainMessage(UObject* WorldContextObject, AMaster_Pickup* Pickup, int32 Amount)
+{
+  ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(WorldContextObject->GetWorld()->GetAuthGameMode());
+
+  if (LocalGameMode)
+  {
+    LocalGameMode->DisplayItemObtainedMessage(Pickup, Amount);
+  }
+  else
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Unable to create message cast to ASideScrollerGamemode failed to display item : %s"), *Pickup->GetName())
   }
 }
 

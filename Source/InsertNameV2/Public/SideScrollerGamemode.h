@@ -6,6 +6,8 @@
 #include "GameFramework/GameMode.h"
 #include "SideScrollerGamemode.generated.h"
 
+class AMaster_Pickup;
+
 /**
  * 
  */
@@ -19,6 +21,16 @@ public:
   /* Generates a random number to be assigned to an actor as a ID */
   UFUNCTION(BlueprintCallable, Category = "ID Function")
   int32 GenID();
+
+  /* Create an Item obtained message and add to screen */
+  UFUNCTION(BlueprintNativeEvent, Category = "HUD Events")
+  void DisplayItemObtainedMessage(AMaster_Pickup* Pickup, int32 Amount);
+  void DisplayItemObtainedMessage_Implementation(AMaster_Pickup* Pickup, int32 Amount);
+
+  /* Create a text message and add it to screen */
+  UFUNCTION(BlueprintNativeEvent, Category = "HUD Events")
+  void DisplayTextMessage(FText& Message);
+  void DisplayTextMessage_Implementation(FText& Message);
 
   /* Removes given ID from AllIDs Array */
   UFUNCTION(BlueprintCallable, Category = "ID Function")

@@ -40,6 +40,17 @@ bool ASideScrollerGamemode::DoesIDAlreadyExist(int32 ID)
   return bExist;
 }
 
+
+void ASideScrollerGamemode::DisplayItemObtainedMessage_Implementation(AMaster_Pickup* Pickup, int32 Amount)
+{
+  UE_LOG(LogTemp, Warning, TEXT("DisplayItemObtainedMessage has no implementation"))
+}
+
+void ASideScrollerGamemode::DisplayTextMessage_Implementation(FText& Message)
+{
+  UE_LOG(LogTemp, Warning, TEXT("DisplayTextMessage has no implementation"))
+}
+
 const TArray<int32> ASideScrollerGamemode::GetAllIDs()
 {
   TArray<int32> LocalIDs = AllIDs;
