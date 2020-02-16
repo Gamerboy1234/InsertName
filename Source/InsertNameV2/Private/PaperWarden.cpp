@@ -107,14 +107,14 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
 
           if (StackToAddTo)
           {
+            
+            if (bDisplayItemObtained && !ItemToAdd->bAddedToStack)
+            {
+              UGeneralFunctions::DisplayItemObtainMessage(this, StackToAddTo, StackToAddTo->AmountAtIndex);
+            }
+
             StackToAddTo->AddToStack();
             ItemToAdd->bAddedToStack = true;
-            StackToAddTo->bOnActionBar = false;
-
-            if (bDisplayItemObtained)
-            {
-              UGeneralFunctions::DisplayItemObtainMessage(this, StackToAddTo, Amount);
-            }
 
             UpdateInventory();
             return true;
@@ -130,7 +130,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
                 int32 Overflow = Amount - ItemToAdd->MaxItemAmount;
                 InventoryItems[Index] = ItemToAdd;
                 ItemToAdd->bAddedToStack = false;
-                ItemToAdd->bOnActionBar = false;
 
                 if (bDisplayItemObtained)
                 {
@@ -154,7 +153,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
               {
                 InventoryItems[Index] = ItemToAdd;
                 ItemToAdd->bAddedToStack = false;
-                ItemToAdd->bOnActionBar = false;
 
                 if (bDisplayItemObtained)
                 {
@@ -179,7 +177,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
           {
             InventoryItems[Index] = ItemToAdd;
             ItemToAdd->bAddedToStack = false;
-            ItemToAdd->bOnActionBar = false;
 
             if (bDisplayItemObtained)
             {
@@ -325,7 +322,6 @@ bool APaperWarden::DropItemsOnActionBar(AMaster_Pickup* Pickup, int32 Index)
   {
     ActionBarItems[Index] = Pickup;
     InventoryItems[Index] = nullptr;
-    ActionBarItems[Index]->bOnActionBar = true;
 
     UpdateInventory();
     UpdateActionBar();
@@ -666,11 +662,6 @@ void APaperWarden::UseItemOnActionbar(int32 ItemIndex)
   if (LocalIndex)
   {
     LocalIndex->UseItem();
-
-    if (LocalIndex->ItemInfo.bCanBeStacked && LocalIndex->AmountAtIndex <= 0 && !LocalIndex->ItemInfo.bIsSpell)
-    {
-      RemoveItemFromActionbar(LocalIndex, 1);
-    }
   }
 }
 
@@ -682,6 +673,7 @@ bool APaperWarden::RemoveItemFromActionbar(AMaster_Pickup* ItemToRemove, int32 A
 
     if (LocalItem)
     {
+      
       LocalItem->AmountAtIndex -= Amount;
 
       if (LocalItem->AmountAtIndex <= 0)
@@ -702,8 +694,8 @@ bool APaperWarden::RemoveItemFromActionbar(AMaster_Pickup* ItemToRemove, int32 A
       }
       else
       {
-        UE_LOG(LogTemp, Error, TEXT("failed to find item on Actionbar"))
-          return false;
+        UpdateActionBar();
+        return true;
       }
     }
     else
@@ -717,6 +709,70 @@ bool APaperWarden::RemoveItemFromActionbar(AMaster_Pickup* ItemToRemove, int32 A
     UE_LOG(LogTemp, Error, TEXT("Couldn't remove item from Actionbar. ItemToRemove was not vaild"))
     return false;
   }
+}
+
+bool APaperWarden::RemoveItemFromPlayerInventory(AMaster_Pickup* ItemToRemove, int32 Amount)
+{
+  if (ItemToRemove)
+  {
+    AMaster_Pickup* PickToFindInInventory = FindItemByName(ItemToRemove, InventoryItems);
+    AMaster_Pickup* PickToFindOnActionBar = FindItemByName(ItemToRemove, ActionBarItems);
+
+    if (PickToFindInInventory)
+    {
+      RemoveItemFromInventory(PickToFindInInventory, Amount);
+      return true;
+    }
+    else if (PickToFindOnActionBar)
+    {
+      RemoveItemFromActionbar(PickToFindOnActionBar, Amount);
+      return true;
+    }
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("Couldn't remove item from Player. ItemToRemove was not found on player"))
+      return false;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Couldn't remove item from Player. ItemToRemove was not vaild"))
+    return false;
+  }
+}
+
+AMaster_Pickup* APaperWarden::FindIteminWorld(int32 ID)
+{
+  TArray<AActor*> FoundActors;
+
+  UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMaster_Pickup::StaticClass(), FoundActors);
+
+  AMaster_Pickup* LocalPickup = nullptr;
+
+  for (AActor* CurrentActor : FoundActors)
+  {
+    AMaster_Pickup* CurrentPickup = Cast<AMaster_Pickup>(CurrentActor->GetClass());
+
+    if (CurrentPickup)
+    {
+      if (CurrentPickup->GetID() == ID)
+      {
+        LocalPickup = CurrentPickup;
+        break;
+      }
+      else
+      {
+        LocalPickup = nullptr;
+        continue;
+      }
+    }
+    else
+    {
+      LocalPickup = nullptr;
+      continue;
+    }
+  }
+  return LocalPickup;
 }
 
 const TArray<AMaster_Pickup*> APaperWarden::GetPlayerInventory()

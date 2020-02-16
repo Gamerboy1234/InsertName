@@ -150,6 +150,11 @@ public:
   /* Will try and find given item on the Actionbar and remove it */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool RemoveItemFromActionbar(AMaster_Pickup* ItemToRemove, int32 Amount);
+  /* Will look through both the Inventory array and Actionbar array to try and find the item to remove */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  bool RemoveItemFromPlayerInventory(AMaster_Pickup* ItemToRemove, int32 Amount);
+  /* Will find item in world by ID */
+  AMaster_Pickup* FindIteminWorld(int32 ID);
 
 protected:
   // Called when the game starts or when spawned

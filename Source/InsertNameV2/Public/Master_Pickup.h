@@ -21,9 +21,6 @@ public:
   UPROPERTY(BlueprintReadOnly, Category = "ItemInfo")
   int32 AmountAtIndex;
 
-  UPROPERTY(BlueprintReadOnly, Category = "ItemInfo")
-  bool bOnActionBar;
-
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemInfo")
   int32 MaxItemAmount;
 

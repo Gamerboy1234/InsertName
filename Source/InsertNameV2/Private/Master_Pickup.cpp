@@ -17,7 +17,6 @@ AMaster_Pickup::AMaster_Pickup()
 
   MaxItemAmount = 99;
   AmountAtIndex = 1;
-  bOnActionBar = false;
   
   PaperSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
   RootComponent = PaperSprite;
