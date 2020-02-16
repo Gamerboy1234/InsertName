@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PaperZDCharacter.h"
+#include "InputCoreTypes.h"
 #include "PaperWarden.generated.h"
 
 class UBoxComponent;
@@ -134,7 +135,9 @@ public:
   /* Will try to find given index in ArrayToUse */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   AMaster_Pickup* FindItemByIndex(int32 Index, const TArray<AMaster_Pickup*> ArrayToUse);
-
+  /* Keys to use on ActionBar */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InventorySettings")
+  TArray<FKey> ActionBarKeys;
 
 protected:
   // Called when the game starts or when spawned
