@@ -17,13 +17,14 @@ AMaster_Pickup::AMaster_Pickup()
 
   MaxItemAmount = 99;
   AmountAtIndex = 1;
-  
-  PaperSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
-  RootComponent = PaperSprite;
+  UPROPERTY(VisibleAnywhere, Category = "Components")
 
   BoxTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxTrigger"));
   if (!ensure(BoxTrigger != nullptr)) { return; }
-  BoxTrigger->SetupAttachment(RootComponent);
+  RootComponent = BoxTrigger;
+
+  Sprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("ItemSprite"));
+  Sprite->SetupAttachment(BoxTrigger);
 }
 
 // Called when the game starts or when spawned
@@ -65,8 +66,7 @@ void AMaster_Pickup::ShowPickup(bool Show)
 {
   ECollisionEnabled::Type Collision = Show ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
 
-  this->PaperSprite->SetVisibility(Show);
-  this->PaperSprite->SetCollisionEnabled(Collision);
+  this->SetActorHiddenInGame(Show);
 
   this->BoxTrigger->SetCollisionEnabled(Collision);
 }

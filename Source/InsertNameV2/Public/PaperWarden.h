@@ -126,7 +126,7 @@ public:
   int32 FindEmptySlotInInventory();
   /* Looks for an empty slot in the Actionbar to place new item */
   int32 FindEmptySlotOnActionBar();
-  /* Checks to see if a item is at given index on ActionBar */
+  /* Checks to see if a item is at given index in ArrayToUse */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   bool IsItemAtIndex(int32 Index, const TArray<AMaster_Pickup*> ArrayToUse);
   /* Will move the given index to new index in the Inventory */
