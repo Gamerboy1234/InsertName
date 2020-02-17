@@ -218,7 +218,7 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
   }
 }
 
-bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount)
+bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount, bool bDestroyPickup)
 {
   if (ItemToRemove)
   {
@@ -234,7 +234,12 @@ bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 A
         if (InventoryItems.IsValidIndex(Index))
         {
           InventoryItems[Index] = nullptr;
-          ItemToRemove->DestroyPickup();
+          
+          if (bDestroyPickup)
+          {
+            ItemToRemove->DestroyPickup();
+          }
+
           UpdateInventory();
           return true;
         }
@@ -319,13 +324,30 @@ bool APaperWarden::DropItemsOnActionBar(AMaster_Pickup* Pickup, int32 Index)
 {
   if (!IsActionBarFull())
   {
-    ActionBarItems[Index] = Pickup;
-    InventoryItems[Index] = nullptr;
+    AMaster_Pickup* LocalPickup = FindItemByName(Pickup, InventoryItems);
 
-    UpdateInventory();
-    UpdateActionBar();
-
-    return true;
+    if (LocalPickup)
+    {
+      ActionBarItems[Index] = LocalPickup;
+      UpdateActionBar();
+      int32 InventoryIndex = InventoryItems.Find(LocalPickup);
+      if (InventoryItems.IsValidIndex(InventoryIndex))
+      {
+        InventoryItems[InventoryIndex] = nullptr;
+        UpdateInventory();
+        return true;
+      }
+      else
+      {
+        UE_LOG(LogTemp, Error, TEXT("Was unable to find Item in inventory to move"))
+        return false;
+      }
+    }
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("Couldn't remove item from Inventory when moving item. Local Item was not vaild."))
+      return false;
+    }
   }
   else
   {
@@ -710,21 +732,21 @@ bool APaperWarden::RemoveItemFromActionbar(AMaster_Pickup* ItemToRemove, int32 A
   }
 }
 
-bool APaperWarden::RemoveItemFromPlayerInventory(AMaster_Pickup* ItemToRemove, int32 Amount)
+bool APaperWarden::RemoveItemFromPlayer(AMaster_Pickup* ItemToRemove, int32 Amount)
 {
   if (ItemToRemove)
   {
-    AMaster_Pickup* PickToFindInInventory = FindItemByName(ItemToRemove, InventoryItems);
-    AMaster_Pickup* PickToFindOnActionBar = FindItemByName(ItemToRemove, ActionBarItems);
+    int32 InventoryIndex = InventoryItems.Find(ItemToRemove);
+    int32 ActionbarIndex = ActionBarItems.Find(ItemToRemove);
 
-    if (PickToFindInInventory)
+    if (InventoryItems.IsValidIndex(InventoryIndex))
     {
-      RemoveItemFromInventory(PickToFindInInventory, Amount);
+      RemoveItemFromInventory(InventoryItems[InventoryIndex], Amount, true);
       return true;
     }
-    else if (PickToFindOnActionBar)
+    else if (ActionBarItems.IsValidIndex(ActionbarIndex))
     {
-      RemoveItemFromActionbar(PickToFindOnActionBar, Amount);
+      RemoveItemFromActionbar(ActionBarItems[ActionbarIndex], Amount);
       return true;
     }
     else
@@ -750,7 +772,7 @@ AMaster_Pickup* APaperWarden::FindIteminWorld(int32 ID)
 
   for (AActor* CurrentActor : FoundActors)
   {
-    AMaster_Pickup* CurrentPickup = Cast<AMaster_Pickup>(CurrentActor->GetClass());
+    AMaster_Pickup* CurrentPickup = Cast<AMaster_Pickup>(CurrentActor);
 
     if (CurrentPickup)
     {
@@ -772,6 +794,71 @@ AMaster_Pickup* APaperWarden::FindIteminWorld(int32 ID)
     }
   }
   return LocalPickup;
+}
+
+bool APaperWarden::MoveActionbarItemsToInventory(AMaster_Pickup* ItemToMove)
+{
+  if (ItemToMove)
+  {
+    if (!ItemToMove->ItemInfo.bIsSpell)
+    {
+      AMaster_Pickup* LocalItem = FindItemByName(ItemToMove, ActionBarItems);
+
+      if (LocalItem)
+      {
+        AddItem(LocalItem, LocalItem->AmountAtIndex, false);
+        int32 ActionBarIndex = ActionBarItems.Find(LocalItem);
+        if (ActionBarItems.IsValidIndex(ActionBarIndex))
+        {
+          ActionBarItems[ActionBarIndex] = nullptr;
+          UpdateActionBar();
+          return true;
+        }
+        else
+        {
+          UE_LOG(LogTemp, Error, TEXT("Failed to remove item from Actionbar ActionBarIndex was not valid"))
+          return false;
+        }
+      }
+      else
+      {
+        UE_LOG(LogTemp, Error, TEXT("Failed to move item to Inventory could not find item on Actionbar"))
+        return false;
+      }
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Failed to move item to Inventory ItemToMove was not valid"))
+    return false;
+  }
+}
+
+int32 APaperWarden::FindItemIndexByID(int32 ID, const TArray<AMaster_Pickup*> ArrayToUse)
+{
+  int32 OutIndex = 0;
+
+  for (int32 Index = 0; Index < ArrayToUse.Num(); Index++)
+  {
+    int32 CurrentID = ArrayToUse[Index]->GetID();
+
+    if (CurrentID == ID)
+    {
+      OutIndex = Index;
+      break;
+    }
+    else
+    {
+      OutIndex = 0;
+      continue;
+    }
+  }
+
+  return OutIndex;
 }
 
 const TArray<AMaster_Pickup*> APaperWarden::GetPlayerInventory()

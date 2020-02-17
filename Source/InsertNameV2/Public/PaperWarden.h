@@ -80,7 +80,7 @@ public:
   bool AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDisplayItemObtained);
   /* Will try and find given item in inventory and remove it */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-  bool RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount);
+  bool RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 Amount, bool bDestroyPickup);
   /* Split's the item stack by a given amount */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool SplitItemStack(AMaster_Pickup* ItemToSplit, int32 Amount);
@@ -152,9 +152,16 @@ public:
   bool RemoveItemFromActionbar(AMaster_Pickup* ItemToRemove, int32 Amount);
   /* Will look through both the Inventory array and Actionbar array to try and find the item to remove */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-  bool RemoveItemFromPlayerInventory(AMaster_Pickup* ItemToRemove, int32 Amount);
+  bool RemoveItemFromPlayer(AMaster_Pickup* ItemToRemove, int32 Amount);
   /* Will find item in world by ID */
+  UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   AMaster_Pickup* FindIteminWorld(int32 ID);
+  /* Will move action bar items back into the players inventory */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  bool MoveActionbarItemsToInventory(AMaster_Pickup* ItemToMove);
+
+  /* Will try and find item's index in array will search by ID */
+  int32 FindItemIndexByID(int32 ID, const TArray<AMaster_Pickup*> ArrayToUse);
 
 protected:
   // Called when the game starts or when spawned
