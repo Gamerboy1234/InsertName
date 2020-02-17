@@ -128,7 +128,7 @@ public:
   int32 FindEmptySlotOnActionBar();
   /* Checks to see if a item is at given index on ActionBar */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
-  bool IsItemAtIndex(int32 Index);
+  bool IsItemAtIndex(int32 Index, const TArray<AMaster_Pickup*> ArrayToUse);
   /* Will move the given index to new index in the Inventory */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool UpdateItemIndexInInventory(AMaster_Pickup* ItemToMove, int32 NewIndex);
@@ -159,8 +159,14 @@ public:
   /* Will move action bar items back into the players inventory */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool MoveActionbarItemsToInventory(AMaster_Pickup* ItemToMove);
-
+  /* Will set the given array index to given item */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  bool SetArrayIndex(int32 Index, TArray<AMaster_Pickup*> ArrayToUse, AMaster_Pickup* ItemToSet);
+  /* Checks to see if two given items are the same */
+  UFUNCTION(BlueprintPure, Category = "Inventory Functions")
+  bool DupCheck(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo);
   /* Will try and find item's index in array will search by ID */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   int32 FindItemIndexByID(int32 ID, const TArray<AMaster_Pickup*> ArrayToUse);
 
 protected:

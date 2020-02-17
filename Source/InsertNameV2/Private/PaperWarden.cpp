@@ -514,14 +514,22 @@ int32 APaperWarden::FindEmptySlotOnActionBar()
   return LocalIndex;
 }
 
-bool APaperWarden::IsItemAtIndex(int32 Index)
+bool APaperWarden::IsItemAtIndex(int32 Index, const TArray<AMaster_Pickup*> ArrayToUse)
 {
-  if (ActionBarItems.IsValidIndex(Index))
+  if (ArrayToUse.IsValidIndex(Index))
   {
-    return true;
+    if (ArrayToUse[Index] != nullptr)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
   else
   {
+    UE_LOG(LogTemp, Error, TEXT("Could not find item at given Index. Index was not valid"))
     return false;
   }
 }
@@ -834,6 +842,48 @@ bool APaperWarden::MoveActionbarItemsToInventory(AMaster_Pickup* ItemToMove)
   else
   {
     UE_LOG(LogTemp, Error, TEXT("Failed to move item to Inventory ItemToMove was not valid"))
+    return false;
+  }
+}
+
+bool APaperWarden::SetArrayIndex(int32 Index, TArray<AMaster_Pickup*> ArrayToUse, AMaster_Pickup* ItemToSet)
+{
+  if (ItemToSet)
+  {
+    ArrayToUse[Index] = ItemToSet;
+    return true;
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Failed to set Index ItemToSet was not valid"))
+    return false;
+  }
+}
+
+bool APaperWarden::DupCheck(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo)
+{
+  if (ItemOne)
+  {
+    if (ItemTwo)
+    {
+      if (ItemOne->GetID() == ItemTwo->GetID())
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+    else
+    {
+      UE_LOG(LogTemp, Error, TEXT("DupCheck Failed ItemTwo was not valid"))
+      return false;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("DupCheck Failed ItemOne was not valid"))
     return false;
   }
 }
