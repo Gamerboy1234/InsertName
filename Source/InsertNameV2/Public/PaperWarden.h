@@ -168,6 +168,14 @@ public:
   /* Will try and find item's index in array will search by ID */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   int32 FindItemIndexByID(int32 ID, const TArray<AMaster_Pickup*> ArrayToUse);
+  /* Equips the given gun to player */
+  UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
+  void EquipGun(AMaster_Pickup* GunToEquip, FVector Offset);
+
+  UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
+  bool bIsGunEquipped;
+  UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
+  AMaster_Pickup* GunRef;
 
 protected:
   // Called when the game starts or when spawned
