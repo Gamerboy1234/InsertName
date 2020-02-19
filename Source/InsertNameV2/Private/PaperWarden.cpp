@@ -1128,6 +1128,13 @@ void APaperWarden::LoadGame()
     InventoryItems = WardenSaveGame->LoadInventory();
     ActionBarItems = WardenSaveGame->LoadActionbar();
 
+    if (WardenSaveGame->bIsGunEquipped)
+    {
+      EquipGun(WardenSaveGame->CurrentGun, WardenSaveGame->GunOffset);
+    }
+
+
+
     // Debug Message
     UE_LOG(LogTemp, Log, TEXT("Game Loaded"))
   }
