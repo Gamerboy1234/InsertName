@@ -68,7 +68,7 @@ void AMaster_Pickup::ShowPickup(bool Show)
 {
   ECollisionEnabled::Type Collision = Show ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
 
-  this->SetActorHiddenInGame(Show);
+  this->SetActorHiddenInGame(!Show);
 
   this->BoxTrigger->SetCollisionEnabled(Collision);
 }

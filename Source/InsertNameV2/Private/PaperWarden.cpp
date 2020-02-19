@@ -32,7 +32,7 @@ void APaperWarden::BeginPlay()
   BarkOuterCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::BeginOverlap);
 
   InventoryItems.Empty();
-  InventoryItems.Init(0, AmountofInventorySlots);
+  InventoryItems.Init(0, AmountofInventorySlots+1);
 
   ActionBarItems.Empty();
   ActionBarItems.Init(0, ActionBarSlotsPerRow);
@@ -122,46 +122,51 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
       {
         if (ItemToAdd->ItemInfo.bCanBeStacked)
         {
-          AMaster_Pickup* StackToAddTo = SearchForFreeStack(ItemToAdd);
-
-          if (StackToAddTo)
+          if (ItemToAdd->ItemInfo.Amount > ItemToAdd->MaxItemAmount)
           {
-            StackToAddTo->AddToStack();
-            ItemToAdd->bAddedToStack = true;
+            int32 Overflow = ItemToAdd->ItemInfo.Amount - ItemToAdd->MaxItemAmount;
+            ItemToAdd->AmountAtIndex = ItemToAdd->MaxItemAmount;
 
-            if (bDisplayItemObtained)
+            int32 Index = FindEmptySlotInInventory();
+
+            if (bFoundSlot)
             {
-              UGeneralFunctions::DisplayItemObtainMessage(this, StackToAddTo, Amount);
-            }
+              InventoryItems[Index] = ItemToAdd;
+              ItemToAdd->bAddedToStack = false;
+              LootedPickups.Add(ItemToAdd);
 
-            UpdateInventory();
-            return true;
+              if (bDisplayItemObtained)
+              {
+                UGeneralFunctions::DisplayItemObtainMessage(this, ItemToAdd, Amount);
+              }
+
+              UpdateInventory();
+
+              AddItem(ItemToAdd, Overflow, bDisplayItemObtained);
+              return true;
+            }
+            else
+            {
+              return false;
+            }
           }
           else
           {
-            if (Amount > ItemToAdd->MaxItemAmount)
+            AMaster_Pickup* StackToAddTo = SearchForFreeStack(ItemToAdd);
+
+            if (StackToAddTo)
             {
-              int32 Index = FindEmptySlotInInventory();
+              StackToAddTo->AddToStack();
+              ItemToAdd->bAddedToStack = true;
+              LootedPickups.Add(StackToAddTo);
 
-              if (bFoundSlot)
+              if (bDisplayItemObtained)
               {
-                int32 Overflow = Amount - ItemToAdd->MaxItemAmount;
-                InventoryItems[Index] = ItemToAdd;
-                ItemToAdd->bAddedToStack = false;
-
-                if (bDisplayItemObtained)
-                {
-                  UGeneralFunctions::DisplayItemObtainMessage(this, ItemToAdd, Amount);
-                }
-
-                UpdateInventory();
-                AddItem(ItemToAdd, Overflow, bDisplayItemObtained);
-                return true;
+                UGeneralFunctions::DisplayItemObtainMessage(this, StackToAddTo, Amount);
               }
-              else
-              {
-                return false;
-              }
+
+              UpdateInventory();
+              return true;
             }
             else
             {
@@ -171,6 +176,7 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
               {
                 InventoryItems[Index] = ItemToAdd;
                 ItemToAdd->bAddedToStack = false;
+                LootedPickups.Add(ItemToAdd);
 
                 if (bDisplayItemObtained)
                 {
@@ -178,7 +184,18 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
                 }
 
                 UpdateInventory();
-                return true;
+
+                if (Amount > 1)
+                {
+                  Amount--;
+                  AddItem(ItemToAdd, Amount, bDisplayItemObtained);
+                  return true;
+                }
+
+                else
+                {
+                  return true;
+                }
               }
               else
               {
@@ -195,6 +212,7 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
           {
             InventoryItems[Index] = ItemToAdd;
             ItemToAdd->bAddedToStack = false;
+            LootedPickups.Add(ItemToAdd);
 
             if (bDisplayItemObtained)
             {
@@ -388,15 +406,15 @@ bool APaperWarden::IsInventoryFull()
 {
   int32 LocalCounter = 0;
 
-  for (AMaster_Pickup* Pickup : InventoryItems)
+  for (int32 Index = 0; Index < InventoryItems.Num(); Index++)
   {
-    if (Pickup)
+    if (IsItemAtIndex(Index, InventoryItems))
     {
       LocalCounter++;
     }
   }
 
-  if (LocalCounter >= AmountofInventorySlots)
+  if (LocalCounter >= InventoryItems.Num())
   {
     return true;
   }
@@ -872,6 +890,40 @@ bool APaperWarden::MoveActionbarItemsToInventory(AMaster_Pickup* ItemToMove)
   }
 }
 
+bool APaperWarden::DropActionbarItemIntoInventory(AMaster_Pickup* ItemToMove, int32 Index)
+{
+  if (ItemToMove)
+  {
+    if (!ItemToMove->ItemInfo.bIsSpell)
+    {
+      InventoryItems[Index] = ItemToMove;
+      UpdateInventory();
+
+      int32 IndexToRemove = ActionBarItems.Find(ItemToMove);
+      if (ActionBarItems.IsValidIndex(IndexToRemove))
+      {
+        ActionBarItems[IndexToRemove] = nullptr;
+        UpdateActionBar();
+        return true;
+      }
+      else
+      {
+        UE_LOG(LogTemp, Error, TEXT("Failed to remove item from Actionbar couldn't find IndexToRemove"))
+        return false;
+      }
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Failed to move item to Inventory ItemToMove was not valid"))
+    return false;
+  }
+}
+
 bool APaperWarden::SetArrayIndex(int32 Index, TArray<AMaster_Pickup*> ArrayToUse, AMaster_Pickup* ItemToSet)
 {
   if (ItemToSet)
@@ -946,6 +998,7 @@ bool APaperWarden::AssignSpellToActionBar(AMaster_Spell* SpellToAdd)
     if (bFoundSlotOnActionbar)
     {
       ActionBarItems[ActionIndex] = SpellToAdd;
+      PlayerSpells.Add(SpellToAdd);
       UpdateActionBar();
       return true;
     }

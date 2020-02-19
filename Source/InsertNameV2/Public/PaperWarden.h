@@ -156,9 +156,12 @@ public:
   /* Will find item in world by ID */
   UFUNCTION(BlueprintPure, Category = "Inventory Functions")
   AMaster_Pickup* FindIteminWorld(int32 ID);
-  /* Will move action bar items back into the players inventory */
+  /* Will move action bar items back into the players inventory on right click */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool MoveActionbarItemsToInventory(AMaster_Pickup* ItemToMove);
+  /* Will drop Actionbar item into player's inventory */
+  UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+  bool DropActionbarItemIntoInventory(AMaster_Pickup* ItemToMove, int32 Index);
   /* Will set the given array index to given item */
   UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
   bool SetArrayIndex(int32 Index, TArray<AMaster_Pickup*> ArrayToUse, AMaster_Pickup* ItemToSet);
@@ -207,6 +210,8 @@ private:
 
   bool bFoundSlotOnActionbar;
 
+  /* Contains all looted player pickups */
+  TArray<class AMaster_Pickup*> LootedPickups;
   /* Contains all player spells */
   TArray<class AMaster_Spell*> PlayerSpells;
   /* Contains all inventory items */
