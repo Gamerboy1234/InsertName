@@ -3,6 +3,7 @@
 
 #include "PaperWarden.h"
 #include "Master_Pickup.h"
+#include "WardenSaveGame.h"
 #include "PaperSpriteComponent.h"
 #include "Engine.h"
 #include "Master_Spell.h"
@@ -32,7 +33,7 @@ void APaperWarden::BeginPlay()
   BarkOuterCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::BeginOverlap);
 
   InventoryItems.Empty();
-  InventoryItems.Init(0, AmountofInventorySlots+1);
+  InventoryItems.Init(0, AmountofInventorySlots + 1);
 
   ActionBarItems.Empty();
   ActionBarItems.Init(0, ActionBarSlotsPerRow);
@@ -1046,6 +1047,93 @@ bool APaperWarden::AssignSpellsToActionBar(TArray<AMaster_Spell*> SpellsToAdd)
   else
   {
     return true;
+  }
+}
+
+void APaperWarden::SaveGame()
+{
+  // Create and save game instance
+  UWardenSaveGame* WardenSaveGame = Cast<UWardenSaveGame>(UGameplayStatics::CreateSaveGameObject(UWardenSaveGame::StaticClass()));
+
+  if (WardenSaveGame)
+  {
+    // Set Saved var's
+    WardenSaveGame->CurrentGun = GunRef;
+    WardenSaveGame->AmountOfInventorySlots = AmountofInventorySlots;
+    WardenSaveGame->ActionBarSlotsPerRow = ActionBarSlotsPerRow;
+    WardenSaveGame->bIsGunEquipped = bIsGunEquipped;
+    WardenSaveGame->GunOffset = GunOffset;
+
+    // Save Inventory
+    for (AMaster_Pickup* Pickup : InventoryItems)
+    {
+      if (Pickup)
+      {
+        int32 Index = InventoryItems.Find(Pickup);
+
+        if (InventoryItems.IsValidIndex(Index))
+        {
+          WardenSaveGame->SaveInventoryItem(Pickup, Index);
+        }
+        else
+        {
+          UE_LOG(LogTemp, Error, TEXT("Couldn't find pickup to save in Inventory"))
+          break;
+        }
+      }
+    }
+    // Save Actionbar
+    for (AMaster_Pickup* Pickup : ActionBarItems)
+    {
+      if (Pickup)
+      {
+        int32 Index = ActionBarItems.Find(Pickup);
+
+        if (ActionBarItems.IsValidIndex(Index))
+        {
+          WardenSaveGame->SaveActionbarItem(Pickup, Index);
+        }
+        else
+        {
+          UE_LOG(LogTemp, Error, TEXT("Couldn't find pickup to save on Actionbar"))
+          break;
+        }
+      }
+    }
+
+    // Save the actual game 
+    UGameplayStatics::SaveGameToSlot(WardenSaveGame, TEXT("Slot1"), 0);
+    // Debug Message
+    UE_LOG(LogTemp, Log, TEXT("Game Saved"))
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Game failed to save game WardenSaveGame cast failed"))
+  }
+}
+
+void APaperWarden::LoadGame()
+{
+  // Create and save game instance
+  UWardenSaveGame* WardenSaveGame = Cast<UWardenSaveGame>(UGameplayStatics::CreateSaveGameObject(UWardenSaveGame::StaticClass()));
+
+  if (WardenSaveGame)
+  {
+    // Load game and get and all saved var's 
+    WardenSaveGame = Cast<UWardenSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("Slot1"), 0));
+
+    InventoryItems.Empty();
+    ActionBarItems.Empty();
+
+    InventoryItems = WardenSaveGame->LoadInventory();
+    ActionBarItems = WardenSaveGame->LoadActionbar();
+
+    // Debug Message
+    UE_LOG(LogTemp, Log, TEXT("Game Loaded"))
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Game failed to load game WardenSaveGame cast failed"))
   }
 }
 

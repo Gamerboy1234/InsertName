@@ -187,10 +187,18 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   bool bIsGunEquipped;
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
+  FVector GunOffset;
+  UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   AMaster_Pickup* GunRef;
 
   UFUNCTION(BlueprintPure, Category = "Spell Functions")
   const TArray<class AMaster_Spell*> GetPlayerSpells();
+
+  UFUNCTION(BlueprintCallable, Category = "SaveGame")
+  void SaveGame();
+
+  UFUNCTION(BlueprintCallable, Category = "SaveGame")
+  void LoadGame();
 
 protected:
   // Called when the game starts or when spawned
