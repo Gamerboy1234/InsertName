@@ -46,6 +46,8 @@ void AMaster_Pickup::OnInteract_Implementation()
     bool bAddToInventory = PlayerRef->AddItem(this, ItemInfo.Amount, true);
     if (bAddToInventory)
     {
+      PlayerRef->PickedUpItem(ItemInfo.Icon);
+
       if (bAddedToStack)
       {
         this->DestroyPickup();
@@ -95,7 +97,6 @@ void AMaster_Pickup::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, c
     {
       if (OtherActor == PlayerRef)
       {
-        PlayerRef->PickedUpItem(ItemInfo.Icon);
         OnInteract();
       }
     }
