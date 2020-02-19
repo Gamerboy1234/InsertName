@@ -171,17 +171,31 @@ public:
   /* Equips the given gun to player */
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
   void EquipGun(AMaster_Pickup* GunToEquip, FVector Offset);
+  /* Spells to Assign to the player for testing */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spells Info")
+  TArray<TSubclassOf<AMaster_Spell>> TestSpells; 
+  /* Assign a single to spell to Actionbar */
+  UFUNCTION(BlueprintCallable, Category = "Spell Functions")
+  bool AssignSpellToActionBar(class AMaster_Spell* SpellToAdd);
+  /* Assign multiple spells to Actionbar */
+  UFUNCTION(BlueprintCallable, Category = "Spell Functions")
+  bool AssignSpellsToActionBar(TArray< class AMaster_Spell* > SpellsToAdd);
 
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   bool bIsGunEquipped;
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   AMaster_Pickup* GunRef;
 
+  UFUNCTION(BlueprintPure, Category = "Spell Functions")
+  const TArray<class AMaster_Spell*> GetPlayerSpells();
+
 protected:
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;
 
 private:
+
+  void AssignTestSpells();
 
   FTimerHandle CollisionReset;
 
@@ -191,6 +205,10 @@ private:
 
   bool bFoundSlot;
 
+  bool bFoundSlotOnActionbar;
+
+  /* Contains all player spells */
+  TArray<class AMaster_Spell*> PlayerSpells;
   /* Contains all inventory items */
   TArray<class AMaster_Pickup*> InventoryItems;
   /* Contains all action bar items */

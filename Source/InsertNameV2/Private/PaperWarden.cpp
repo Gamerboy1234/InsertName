@@ -5,6 +5,7 @@
 #include "Master_Pickup.h"
 #include "PaperSpriteComponent.h"
 #include "Engine.h"
+#include "Master_Spell.h"
 #include "GeneralFunctions.h"
 #include "Components/InputComponent.h"
 #include "TimerManager.h"
@@ -35,6 +36,24 @@ void APaperWarden::BeginPlay()
 
   ActionBarItems.Empty();
   ActionBarItems.Init(0, ActionBarSlotsPerRow);
+
+  AssignTestSpells();
+}
+
+void APaperWarden::AssignTestSpells()
+{
+  for (TSubclassOf<AMaster_Spell> SpellClass : TestSpells)
+  {
+    if (SpellClass)
+    {
+      auto SpellToAssign = GetWorld()->SpawnActor<AMaster_Spell>(SpellClass, FVector(0), FRotator(0));
+
+      if (SpellToAssign)
+      {
+        AssignSpellToActionBar(SpellToAssign);
+      }
+    }
+  }
 }
 
 int32 APaperWarden::AddToKillCount(int32 AmountToadd)
@@ -500,13 +519,13 @@ int32 APaperWarden::FindEmptySlotOnActionBar()
     if (!CurrentIndex)
     {
       LocalIndex = Index;
-      bFoundSlot = true;
+      bFoundSlotOnActionbar = true;
       break;
     }
     else
     {
       LocalIndex = 0;
-      bFoundSlot = false;
+      bFoundSlotOnActionbar = false;
       continue;
     }
   }
@@ -702,29 +721,36 @@ bool APaperWarden::RemoveItemFromActionbar(AMaster_Pickup* ItemToRemove, int32 A
 
     if (LocalItem)
     {
-      
-      LocalItem->AmountAtIndex -= Amount;
-
-      if (LocalItem->AmountAtIndex <= 0)
+      if (!LocalItem->ItemInfo.bIsSpell)
       {
-        int32 Index = ActionBarItems.Find(LocalItem);
-        if (ActionBarItems.IsValidIndex(Index))
+
+        LocalItem->AmountAtIndex -= Amount;
+
+        if (LocalItem->AmountAtIndex <= 0)
         {
-          ActionBarItems[Index] = nullptr;
-          ItemToRemove->DestroyPickup();
-          UpdateActionBar();
-          return true;
+          int32 Index = ActionBarItems.Find(LocalItem);
+          if (ActionBarItems.IsValidIndex(Index))
+          {
+            ActionBarItems[Index] = nullptr;
+            ItemToRemove->DestroyPickup();
+            UpdateActionBar();
+            return true;
+          }
+          else
+          {
+            UE_LOG(LogTemp, Error, TEXT("failed to find item on Actionbar not a vaild index"))
+              return false;
+          }
         }
         else
         {
-          UE_LOG(LogTemp, Error, TEXT("failed to find item on Actionbar not a vaild index"))
-          return false;
+          UpdateActionBar();
+          return true;
         }
       }
       else
       {
-        UpdateActionBar();
-        return true;
+        return false;
       }
     }
     else
@@ -909,6 +935,70 @@ int32 APaperWarden::FindItemIndexByID(int32 ID, const TArray<AMaster_Pickup*> Ar
   }
 
   return OutIndex;
+}
+
+bool APaperWarden::AssignSpellToActionBar(AMaster_Spell* SpellToAdd)
+{
+  if (SpellToAdd)
+  {
+    int32 ActionIndex = FindEmptySlotOnActionBar();
+
+    if (bFoundSlotOnActionbar)
+    {
+      ActionBarItems[ActionIndex] = SpellToAdd;
+      UpdateActionBar();
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Couldn't add spell SpellToAdd was not valid"))
+    return false;
+  }
+}
+
+bool APaperWarden::AssignSpellsToActionBar(TArray<AMaster_Spell*> SpellsToAdd)
+{
+  bool LocalBool = false;
+
+  for (AMaster_Spell* Spell : SpellsToAdd)
+  {
+    if (Spell)
+    {
+      if (AssignSpellToActionBar(Spell))
+      {
+        LocalBool = true;
+      }
+      else
+      {
+        LocalBool = false;
+        break;
+      }
+    }
+    else
+    {
+      LocalBool = false;
+      break;
+    }
+  }
+  if (!LocalBool)
+  {
+    UE_LOG(LogTemp, Error, TEXT("Couldn't add spell. Spell was not valid"))
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+}
+
+const TArray<AMaster_Spell*> APaperWarden::GetPlayerSpells()
+{
+  return PlayerSpells;
 }
 
 const TArray<AMaster_Pickup*> APaperWarden::GetPlayerInventory()

@@ -48,7 +48,4 @@ struct FItemData
   /* Whether or not the given item is a spell if true can be added to player inventory and only be used on the actionbar */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   bool bIsSpell;
-  /* If bIsSpell is true this struct is used to edit spell settings */
-  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info", meta = (EditCondition = "bIsSpell"))
-  FSpellData SpellInfo;
 };

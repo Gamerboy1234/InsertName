@@ -45,7 +45,7 @@ public:
   /* This event is called to make the item actually do things */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Inventory Events")
   void UseItem();
-  void UseItem_Implementation();
+  virtual void UseItem_Implementation();
 
   UFUNCTION(BlueprintCallable, Category = "Pickup Functions")
   void DestroyPickup();
