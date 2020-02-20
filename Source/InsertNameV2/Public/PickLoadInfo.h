@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "PickSaveInfo.generated.h"
+#include "PickLoadInfo.generated.h"
 
 class AMaster_Pickup;
 
 USTRUCT(BlueprintType)
-struct FSavedItemInfo
+struct FLoadItemInfo
 {
   GENERATED_USTRUCT_BODY()
 
   UPROPERTY(EditDefaultsOnly, Category = "Item Save")
-  UClass* ItemToSave;
+  AMaster_Pickup* ItemToSave;
 
   UPROPERTY(EditDefaultsOnly, Category = "Item Save")
   int32 ItemIndex;

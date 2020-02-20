@@ -32,13 +32,20 @@ void APaperWarden::BeginPlay()
   BarkInnerCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::OnOverlapBegin);
   BarkOuterCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::BeginOverlap);
 
-  InventoryItems.Empty();
-  InventoryItems.Init(0, AmountofInventorySlots + 1);
+  if (UGameplayStatics::DoesSaveGameExist(TEXT("Slot1"), 0))
+  {
+    LoadGame();
+  }
+  else
+  {
+    InventoryItems.Empty();
+    InventoryItems.Init(0, AmountofInventorySlots + 1);
 
-  ActionBarItems.Empty();
-  ActionBarItems.Init(0, ActionBarSlotsPerRow);
+    ActionBarItems.Empty();
+    ActionBarItems.Init(0, ActionBarSlotsPerRow);
 
-  AssignTestSpells();
+    AssignTestSpells();
+  }
 }
 
 void APaperWarden::AssignTestSpells()
@@ -1058,11 +1065,19 @@ void APaperWarden::SaveGame()
   if (WardenSaveGame)
   {
     // Set Saved var's
-    WardenSaveGame->CurrentGun = GunRef;
-    WardenSaveGame->AmountOfInventorySlots = AmountofInventorySlots;
-    WardenSaveGame->ActionBarSlotsPerRow = ActionBarSlotsPerRow;
-    WardenSaveGame->bIsGunEquipped = bIsGunEquipped;
-    WardenSaveGame->GunOffset = GunOffset;
+    WardenSaveGame->SavedAmountOfInventorySlots = AmountofInventorySlots;
+    WardenSaveGame->SavedActionBarSlotsPerRow = ActionBarSlotsPerRow;
+
+    if (bIsGunEquipped)
+    {
+      if (GunRef)
+      {
+        WardenSaveGame->SavedGunClass = GunRef->GetClass();
+        WardenSaveGame->SavedbIsGunEquipped = bIsGunEquipped;
+        WardenSaveGame->SavedGunOffset = GunOffset;
+        WardenSaveGame->SavedGunScale = GunScale;
+      }
+    }
 
     // Save Inventory
     for (AMaster_Pickup* Pickup : InventoryItems)
@@ -1122,18 +1137,22 @@ void APaperWarden::LoadGame()
     // Load game and get and all saved var's 
     WardenSaveGame = Cast<UWardenSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("Slot1"), 0));
 
+    SpawnInventory(WardenSaveGame);
+    SpawnActionbar(WardenSaveGame);
+
     InventoryItems.Empty();
     ActionBarItems.Empty();
 
-    InventoryItems = WardenSaveGame->LoadInventory();
-    ActionBarItems = WardenSaveGame->LoadActionbar();
+    InventoryItems = LoadInventory(WardenSaveGame);
+    ActionBarItems = LoadActionbar(WardenSaveGame);
 
-    if (WardenSaveGame->bIsGunEquipped)
+    UpdateInventory();
+    UpdateActionBar();
+
+    if (WardenSaveGame->SavedbIsGunEquipped)
     {
-      EquipGun(WardenSaveGame->CurrentGun, WardenSaveGame->GunOffset);
+
     }
-
-
 
     // Debug Message
     UE_LOG(LogTemp, Log, TEXT("Game Loaded"))
@@ -1141,6 +1160,104 @@ void APaperWarden::LoadGame()
   else
   {
     UE_LOG(LogTemp, Error, TEXT("Game failed to load game WardenSaveGame cast failed"))
+  }
+}
+
+void APaperWarden::SpawnInventory(UWardenSaveGame* SaveGameObject)
+{
+  if (SaveGameObject)
+  {
+    for (FSavedItemInfo PickupToSpawn : SaveGameObject->SavedInventory)
+    {
+      if (PickupToSpawn.ItemToSave)
+      {
+        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
+        SpawnedItem->ShowPickup(false);
+
+        ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
+        ItemLoadInfo.ItemToSave = SpawnedItem;
+
+        InventoryToLoad.Add(ItemLoadInfo);
+      }
+    }
+  }
+}
+
+void APaperWarden::SpawnActionbar(UWardenSaveGame* SaveGameObject)
+{
+  if (SaveGameObject)
+  {
+    for (FSavedItemInfo PickupToSpawn : SaveGameObject->SavedActionBar)
+    {
+      if (PickupToSpawn.ItemToSave)
+      {
+        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
+        SpawnedItem->ShowPickup(false);
+
+        ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
+        ItemLoadInfo.ItemToSave = SpawnedItem;
+
+        ActionbarToLoad.Add(ItemLoadInfo);
+      }
+    }
+  }
+}
+
+TArray<AMaster_Pickup*> APaperWarden::LoadInventory(UWardenSaveGame* SaveGameObject)
+{
+  if (SaveGameObject)
+  {
+    TArray<AMaster_Pickup*> LocalInventory;
+
+    LocalInventory.Empty();
+
+    LocalInventory.Init(0, SaveGameObject->SavedAmountOfInventorySlots + 1);
+
+    for (int32 Index = 0; Index < InventoryToLoad.Num(); Index++)
+    {
+      FLoadItemInfo CurrentIndex = InventoryToLoad[Index];
+
+      if (CurrentIndex.ItemToSave)
+      {
+        LocalInventory[CurrentIndex.ItemIndex] = CurrentIndex.ItemToSave;
+      }
+    }
+    return LocalInventory;
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Unable to load Inventory SaveGameObject not vaild"))
+    TArray<AMaster_Pickup*> LocalInventory;
+    return LocalInventory;
+  }
+}
+
+TArray<AMaster_Pickup*> APaperWarden::LoadActionbar(UWardenSaveGame* SaveGameObject)
+{
+  if (SaveGameObject)
+  {
+    TArray<AMaster_Pickup*> LocalActionbar;
+
+    LocalActionbar.Empty();
+
+    LocalActionbar.Init(0, SaveGameObject->SavedActionBarSlotsPerRow);
+
+    for (int32 Index = 0; Index < ActionbarToLoad.Num(); Index++)
+    {
+      FLoadItemInfo CurrentIndex = ActionbarToLoad[Index];
+
+      if (CurrentIndex.ItemToSave)
+      {
+        LocalActionbar[CurrentIndex.ItemIndex] = CurrentIndex.ItemToSave;
+      }
+    }
+    return LocalActionbar;
+  }
+  else
+  {
+    UE_LOG(LogTemp, Error, TEXT("Unable to load Actionbar SaveGameObject not vaild"))
+    TArray<AMaster_Pickup*> LocalActionbar;
+    return LocalActionbar;
   }
 }
 

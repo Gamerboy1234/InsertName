@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "PaperZDCharacter.h"
+#include "PickSaveInfo.h"
+#include "PickLoadInfo.h"
 #include "InputCoreTypes.h"
 #include "PaperWarden.generated.h"
 
@@ -173,7 +175,7 @@ public:
   int32 FindItemIndexByID(int32 ID, const TArray<AMaster_Pickup*> ArrayToUse);
   /* Equips the given gun to player */
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
-  void EquipGun(AMaster_Pickup* GunToEquip, FVector Offset);
+  void EquipGun(AMaster_Pickup* GunToEquip, FVector Offset, FVector GunScale);
   /* Spells to Assign to the player for testing */
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spells Info")
   TArray<TSubclassOf<AMaster_Spell>> TestSpells; 
@@ -190,6 +192,9 @@ public:
   FVector GunOffset;
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   AMaster_Pickup* GunRef;
+  UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
+  FVector GunScale;
+
 
   UFUNCTION(BlueprintPure, Category = "Spell Functions")
   const TArray<class AMaster_Spell*> GetPlayerSpells();
@@ -208,6 +213,14 @@ private:
 
   void AssignTestSpells();
 
+  void SpawnInventory(class UWardenSaveGame* SaveGameObject);
+
+  void SpawnActionbar(class UWardenSaveGame* SaveGameObject);
+
+  TArray<AMaster_Pickup*> LoadInventory(class UWardenSaveGame* SaveGameObject);
+
+  TArray<AMaster_Pickup*> LoadActionbar(class UWardenSaveGame* SaveGameObject);
+
   FTimerHandle CollisionReset;
 
   int32 KillCount;
@@ -217,6 +230,12 @@ private:
   bool bFoundSlot;
 
   bool bFoundSlotOnActionbar;
+
+  FLoadItemInfo ItemLoadInfo;
+
+  TArray<FLoadItemInfo> InventoryToLoad;
+
+  TArray<FLoadItemInfo> ActionbarToLoad;
 
   /* Contains all looted player pickups */
   TArray<class AMaster_Pickup*> LootedPickups;

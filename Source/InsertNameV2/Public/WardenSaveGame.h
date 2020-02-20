@@ -27,29 +27,29 @@ public:
   void SaveActionbarItem(AMaster_Pickup* ItemToSave, int32 Index);
 
   UPROPERTY(EditAnywhere, Category = "Save Game")
-  TArray<FSavedItemInfo> PlayerInventory;
+  TArray<FSavedItemInfo> SavedInventory;
 
   UPROPERTY(EditAnywhere, Category = "Save Game")
-  TArray<FSavedItemInfo> PlayerActionbar;
+  TArray<FSavedItemInfo> SavedActionBar;
 	
   UPROPERTY(EditAnywhere, Category = "Save Game")
-  AMaster_Pickup* CurrentGun;
+  UClass* SavedGunClass;
 
   UPROPERTY(EditAnywhere, Category = "Save Game")
-  bool bIsGunEquipped;
+  FVector SavedGunScale;
 
   UPROPERTY(EditAnywhere, Category = "Save Game")
-  FVector GunOffset;
+  bool SavedbIsGunEquipped;
 
   UPROPERTY(EditAnywhere, Category = "Save Game")
-  int32 AmountOfInventorySlots;
+  FVector SavedGunOffset;
 
   UPROPERTY(EditAnywhere, Category = "Save Game")
-  int32 ActionBarSlotsPerRow;
+  int32 SavedAmountOfInventorySlots;
+
+  UPROPERTY(EditAnywhere, Category = "Save Game")
+  int32 SavedActionBarSlotsPerRow;
 
   FSavedItemInfo ItemInfo;
 
-  TArray<AMaster_Pickup*> LoadInventory();
-
-  TArray<AMaster_Pickup*> LoadActionbar();
 };
