@@ -18,4 +18,7 @@ struct FLoadItemInfo
 
   UPROPERTY(EditDefaultsOnly, Category = "Item Save")
   int32 ItemIndex;
+
+  UPROPERTY(EditDefaultsOnly, Category = "Item Save")
+  int32 AmountAtIndex;
 };

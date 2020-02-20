@@ -239,9 +239,9 @@ private:
 
   FLoadItemInfo ItemLoadInfo;
   /* When game is loaded this is a temp container for Inventory Items */
-  TArray<FLoadItemInfo> InventoryToLoad; // TODO clear array before adding to it
+  TArray<FLoadItemInfo> InventoryToLoad;
   /* When game is loaded this is a temp container for Actionbar Items */
-  TArray<FLoadItemInfo> ActionbarToLoad; // TODO clear array before adding to it
+  TArray<FLoadItemInfo> ActionbarToLoad;
   /* Contains all looted player pickups */
   TArray<class AMaster_Pickup*> LootedPickups;
   /* Contains all player spells */

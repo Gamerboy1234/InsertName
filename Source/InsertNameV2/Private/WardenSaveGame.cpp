@@ -23,6 +23,7 @@ void UWardenSaveGame::SaveInventoryItem(AMaster_Pickup* ItemToSave, int32 Index)
   {
     ItemInfo.ItemToSave = ItemToSave->GetClass();
     ItemInfo.ItemIndex = Index;
+    ItemInfo.AmountAtIndex = ItemToSave->AmountAtIndex;
     SavedInventory.Add(ItemInfo);
   }
   else
@@ -37,6 +38,7 @@ void UWardenSaveGame::SaveActionbarItem(AMaster_Pickup* ItemToSave, int32 Index)
   {
     ItemInfo.ItemToSave = ItemToSave->GetClass();
     ItemInfo.ItemIndex = Index;
+    ItemInfo.AmountAtIndex = ItemToSave->AmountAtIndex;
     SavedActionBar.Add(ItemInfo);
   }
   else

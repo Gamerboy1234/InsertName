@@ -1195,6 +1195,7 @@ void APaperWarden::SpawnInventory(UWardenSaveGame* SaveGameObject)
 
         ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
         ItemLoadInfo.ItemToSave = SpawnedItem;
+        ItemLoadInfo.AmountAtIndex = PickupToSpawn.AmountAtIndex;
 
         InventoryToLoad.Add(ItemLoadInfo);
       }
@@ -1217,6 +1218,7 @@ void APaperWarden::SpawnActionbar(UWardenSaveGame* SaveGameObject)
 
         ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
         ItemLoadInfo.ItemToSave = SpawnedItem;
+        ItemLoadInfo.AmountAtIndex = PickupToSpawn.AmountAtIndex;
 
         ActionbarToLoad.Add(ItemLoadInfo);
       }
@@ -1241,6 +1243,7 @@ TArray<AMaster_Pickup*> APaperWarden::LoadInventory(UWardenSaveGame* SaveGameObj
       if (CurrentIndex.ItemToSave)
       {
         LocalInventory[CurrentIndex.ItemIndex] = CurrentIndex.ItemToSave;
+        LocalInventory[CurrentIndex.ItemIndex]->AmountAtIndex = CurrentIndex.AmountAtIndex;
       }
     }
     return LocalInventory;
@@ -1270,6 +1273,7 @@ TArray<AMaster_Pickup*> APaperWarden::LoadActionbar(UWardenSaveGame* SaveGameObj
       if (CurrentIndex.ItemToSave)
       {
         LocalActionbar[CurrentIndex.ItemIndex] = CurrentIndex.ItemToSave;
+        LocalActionbar[CurrentIndex.ItemIndex]->AmountAtIndex = CurrentIndex.AmountAtIndex;
       }
     }
     return LocalActionbar;
