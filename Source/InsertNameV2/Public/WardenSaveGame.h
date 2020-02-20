@@ -50,6 +50,13 @@ public:
   UPROPERTY(EditAnywhere, Category = "Save Game")
   int32 SavedActionBarSlotsPerRow;
 
+  UPROPERTY(EditAnywhere, Category = "Save Game")
+  float SavedPlayerCurrentHP;
+
+  UPROPERTY(EditAnywhere, Category = "Save Game")
+  float SavedPlayerMaxHP;
+
+
   FSavedItemInfo ItemInfo;
 
 };

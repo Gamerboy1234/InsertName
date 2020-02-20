@@ -185,7 +185,7 @@ public:
   /* Assign multiple spells to Actionbar */
   UFUNCTION(BlueprintCallable, Category = "Spell Functions")
   bool AssignSpellsToActionBar(TArray< class AMaster_Spell* > SpellsToAdd);
-
+  /* Gun values */
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   bool bIsGunEquipped;
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
@@ -195,6 +195,12 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   FVector CurrentGunScale;
 
+  /* The current value of player HP */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player HP Settings")
+  float PlayerCurrentHP;
+  /* The max value player HP can be */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player HP Settings")
+  float PlayerMaxHP;
 
   UFUNCTION(BlueprintPure, Category = "Spell Functions")
   const TArray<class AMaster_Spell*> GetPlayerSpells();
@@ -233,9 +239,9 @@ private:
 
   FLoadItemInfo ItemLoadInfo;
   /* When game is loaded this is a temp container for Inventory Items */
-  TArray<FLoadItemInfo> InventoryToLoad;
+  TArray<FLoadItemInfo> InventoryToLoad; // TODO clear array before adding to it
   /* When game is loaded this is a temp container for Actionbar Items */
-  TArray<FLoadItemInfo> ActionbarToLoad;
+  TArray<FLoadItemInfo> ActionbarToLoad; // TODO clear array before adding to it
   /* Contains all looted player pickups */
   TArray<class AMaster_Pickup*> LootedPickups;
   /* Contains all player spells */

@@ -10,6 +10,11 @@ UWardenSaveGame::UWardenSaveGame()
 {
   SavedbIsGunEquipped = false;
   SavedGunClass = nullptr;
+
+  SavedActionBarSlotsPerRow = 0;
+  SavedAmountOfInventorySlots = 0;
+  SavedPlayerCurrentHP = 0;
+  SavedPlayerMaxHP = 0;
 }
 
 void UWardenSaveGame::SaveInventoryItem(AMaster_Pickup* ItemToSave, int32 Index)

@@ -23,6 +23,9 @@ APaperWarden::APaperWarden()
 
   AmountofInventorySlots = 8;
   ActionBarSlotsPerRow = 10;
+
+  PlayerCurrentHP = 10.0f;
+  PlayerMaxHP = 10.0f;
 }
 
 void APaperWarden::BeginPlay()
@@ -1067,6 +1070,8 @@ void APaperWarden::SaveGame()
     // Set Saved var's
     WardenSaveGame->SavedAmountOfInventorySlots = AmountofInventorySlots;
     WardenSaveGame->SavedActionBarSlotsPerRow = ActionBarSlotsPerRow;
+    WardenSaveGame->SavedPlayerCurrentHP = PlayerCurrentHP;
+    WardenSaveGame->SavedPlayerMaxHP = PlayerMaxHP;
 
     if (bIsGunEquipped)
     {
@@ -1137,6 +1142,9 @@ void APaperWarden::LoadGame()
     // Load game and get and all saved var's 
     WardenSaveGame = Cast<UWardenSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("Slot1"), 0));
 
+    PlayerCurrentHP = WardenSaveGame->SavedPlayerCurrentHP;
+    PlayerMaxHP = WardenSaveGame->SavedPlayerMaxHP;
+
     SpawnInventory(WardenSaveGame);
     SpawnActionbar(WardenSaveGame);
 
@@ -1176,6 +1184,8 @@ void APaperWarden::SpawnInventory(UWardenSaveGame* SaveGameObject)
 {
   if (SaveGameObject)
   {
+    InventoryToLoad.Empty();
+
     for (FSavedItemInfo PickupToSpawn : SaveGameObject->SavedInventory)
     {
       if (PickupToSpawn.ItemToSave)
@@ -1196,6 +1206,8 @@ void APaperWarden::SpawnActionbar(UWardenSaveGame* SaveGameObject)
 {
   if (SaveGameObject)
   {
+    ActionBarItems.Empty();
+
     for (FSavedItemInfo PickupToSpawn : SaveGameObject->SavedActionBar)
     {
       if (PickupToSpawn.ItemToSave)
