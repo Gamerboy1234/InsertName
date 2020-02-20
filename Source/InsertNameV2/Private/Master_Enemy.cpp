@@ -87,6 +87,10 @@ void AMaster_Enemy::Stun(float Duration)
     FTimerHandle StunTimer;
     GetWorldTimerManager().SetTimer(StunTimer, this, &AMaster_Enemy::ResetStun, StunDuration, false);
   }
+  else
+  {
+    UGeneralFunctions::CreateOnScreenMessage(this, TEXT("This enemy can't be stunned"));
+  }
 }
 
 void AMaster_Enemy::GravityCheck(float NewGravityScale)

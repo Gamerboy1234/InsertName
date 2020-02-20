@@ -18,3 +18,7 @@ DEFINE_LOG_CATEGORY(LogMasterEnemy);
 DEFINE_LOG_CATEGORY(LogEnemyBuffs);
 
 DEFINE_LOG_CATEGORY(LogEnemyDebuffs);
+
+DEFINE_LOG_CATEGORY(LogSideScrollerGameMode);
+
+DEFINE_LOG_CATEGORY(LogGeneralFunctions);

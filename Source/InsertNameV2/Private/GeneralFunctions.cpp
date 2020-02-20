@@ -6,6 +6,7 @@
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
 #include "SideScrollerGamemode.h"
 #include "Master_Pickup.h"
+#include "InsertNameV2.h"
 #include "PaperZDCharacter.h"
 #include <iostream>
 #include <random>
@@ -94,7 +95,7 @@ int32 UGeneralFunctions::GetIDFromGamemode(UObject* WorldContextObject, AActor* 
   }
   else
   {
-    UE_LOG(LogTemp, Warning, TEXT("Unable to assing ID cast to ASideScrollerGamemode failed assign ID to : %s"), *ActorToAssign->GetName())
+    UE_LOG(LogGeneralFunctions, Warning, TEXT("Unable to assing ID cast to ASideScrollerGamemode failed assign ID to : %s"), *ActorToAssign->GetName())
     return 0;
   }
 }
@@ -109,7 +110,7 @@ void UGeneralFunctions::RemoveIDFromGamemode(UObject* WorldContextObject, int32 
   }
   else
   {
-    UE_LOG(LogTemp, Warning, TEXT("Unable to assing ID cast to ASideScrollerGamemode failed to remove ID from : %s"), *ActorToRemove->GetName())
+    UE_LOG(LogGeneralFunctions, Warning, TEXT("Unable to assing ID cast to ASideScrollerGamemode failed to remove ID from : %s"), *ActorToRemove->GetName())
   }
 }
 
@@ -123,7 +124,23 @@ void UGeneralFunctions::DisplayItemObtainMessage(UObject* WorldContextObject, AM
   }
   else
   {
-    UE_LOG(LogTemp, Warning, TEXT("Unable to create message cast to ASideScrollerGamemode failed to display item : %s"), *Pickup->GetName())
+    UE_LOG(LogGeneralFunctions, Warning, TEXT("Unable to create message cast to ASideScrollerGamemode failed to display item : %s"), *Pickup->GetName())
+  }
+}
+
+void UGeneralFunctions::CreateOnScreenMessage(UObject* WorldContextObject, const FString& Message)
+{
+  ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(WorldContextObject->GetWorld()->GetAuthGameMode());
+
+  if (LocalGameMode)
+  {
+    FText localizedText = FText::FromString(Message);
+
+    LocalGameMode->DisplayTextMessage(localizedText);
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Warning, TEXT("Unable to create on screen message cast ASideScrollerGamemode failed"))
   }
 }
 

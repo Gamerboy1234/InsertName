@@ -29,8 +29,8 @@ public:
 
   /* Create a text message and add it to screen */
   UFUNCTION(BlueprintNativeEvent, Category = "HUD Events")
-  void DisplayTextMessage(FText& Message);
-  void DisplayTextMessage_Implementation(FText& Message);
+  void DisplayTextMessage(const FText& Message);
+  void DisplayTextMessage_Implementation(const FText& Message);
 
   /* Removes given ID from AllIDs Array */
   UFUNCTION(BlueprintCallable, Category = "ID Function")

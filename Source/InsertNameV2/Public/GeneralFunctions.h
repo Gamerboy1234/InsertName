@@ -44,6 +44,9 @@ public:
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "DisplayItemObtainMessage", CompactNodeTitle = "ItemObtain", Keywords = "DisplayItemObtainMessage"), Category = "HUD")
   static void DisplayItemObtainMessage(UObject* WorldContextObject, AMaster_Pickup* Pickup, int32 Amount);
 
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "CreateOnScreenMessage", CompactNodeTitle = "ScreenMessage", Keywords = "CreateOnScreenMessage"), Category = "HUD")
+  static void CreateOnScreenMessage(UObject* WorldContextObject, const FString& Message);
+
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "RemoveActorsY_C++", CompactNodeTitle = "RemoveActorsY_C", Keywords = "RemoveActorsY_C"), Category = "Utility")
   static void RemoveActorsY(UObject* WorldContextObject, AActor* ActorRef);
 
