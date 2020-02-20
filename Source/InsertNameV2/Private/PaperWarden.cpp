@@ -1075,7 +1075,7 @@ void APaperWarden::SaveGame()
         WardenSaveGame->SavedGunClass = GunRef->GetClass();
         WardenSaveGame->SavedbIsGunEquipped = bIsGunEquipped;
         WardenSaveGame->SavedGunOffset = GunOffset;
-        WardenSaveGame->SavedGunScale = GunScale;
+        WardenSaveGame->SavedGunScale = CurrentGunScale;
       }
     }
 
@@ -1151,7 +1151,16 @@ void APaperWarden::LoadGame()
 
     if (WardenSaveGame->SavedbIsGunEquipped)
     {
+      AMaster_Pickup* SpawnedPickup = GetWorld()->SpawnActor<AMaster_Pickup>(WardenSaveGame->SavedGunClass, FVector(0), FRotator(0));
 
+      if (SpawnedPickup)
+      {
+        EquipGun(SpawnedPickup, WardenSaveGame->SavedGunOffset, WardenSaveGame->SavedGunScale);
+      }
+      else
+      {
+        UE_LOG(LogTemp, Error, TEXT("Game failed to load game was unable to spawn gun"))
+      }
     }
 
     // Debug Message

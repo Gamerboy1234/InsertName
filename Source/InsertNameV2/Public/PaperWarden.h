@@ -193,7 +193,7 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   AMaster_Pickup* GunRef;
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
-  FVector GunScale;
+  FVector CurrentGunScale;
 
 
   UFUNCTION(BlueprintPure, Category = "Spell Functions")
@@ -232,11 +232,10 @@ private:
   bool bFoundSlotOnActionbar;
 
   FLoadItemInfo ItemLoadInfo;
-
+  /* When game is loaded this is a temp container for Inventory Items */
   TArray<FLoadItemInfo> InventoryToLoad;
-
+  /* When game is loaded this is a temp container for Actionbar Items */
   TArray<FLoadItemInfo> ActionbarToLoad;
-
   /* Contains all looted player pickups */
   TArray<class AMaster_Pickup*> LootedPickups;
   /* Contains all player spells */
