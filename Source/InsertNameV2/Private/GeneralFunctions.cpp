@@ -137,3 +137,32 @@ void UGeneralFunctions::RemoveActorsY(UObject* WorldContextObject, AActor* Actor
     ActorRef->SetActorLocation(FilterdLocation);
   }
 }
+
+AMaster_Pickup* UGeneralFunctions::IsPickupAtLocation(UObject* WorldContextObject, FVector Location)
+{
+  TArray<AActor*> FoundActors;
+
+  UGameplayStatics::GetAllActorsOfClass(WorldContextObject->GetWorld(), AMaster_Pickup::StaticClass(), FoundActors);
+
+  AMaster_Pickup* LocalPickup = nullptr;
+
+  for (AActor* CurrentActor : FoundActors)
+  {
+    if (CurrentActor)
+    {
+      if (CurrentActor->GetActorLocation() == Location)
+      {
+        AMaster_Pickup* PickupToSet = Cast<AMaster_Pickup>(CurrentActor);
+        LocalPickup = PickupToSet;
+        break;
+      }
+      else
+      {
+        LocalPickup = nullptr;
+        continue;
+      }
+    }
+  }
+  return LocalPickup;
+}
+

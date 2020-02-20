@@ -10,6 +10,7 @@
 #include "PaperWarden.generated.h"
 
 class UBoxComponent;
+class UWardenSaveGame;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateInventoryDelegate, const TArray<AMaster_Pickup*>&, InventoryItems);
 
@@ -242,8 +243,6 @@ private:
   TArray<FLoadItemInfo> InventoryToLoad;
   /* When game is loaded this is a temp container for Actionbar Items */
   TArray<FLoadItemInfo> ActionbarToLoad;
-  /* Contains all looted player pickups */
-  TArray<class AMaster_Pickup*> LootedPickups;
   /* Contains all player spells */
   TArray<class AMaster_Spell*> PlayerSpells;
   /* Contains all inventory items */

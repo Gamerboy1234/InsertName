@@ -47,6 +47,10 @@ public:
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "RemoveActorsY_C++", CompactNodeTitle = "RemoveActorsY_C", Keywords = "RemoveActorsY_C"), Category = "Utility")
   static void RemoveActorsY(UObject* WorldContextObject, AActor* ActorRef);
 
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "IsActorAtLocation", CompactNodeTitle = "ActorAtLocation", Keywords = "IsActorAtLocation"), Category = "Utility")
+  static AMaster_Pickup* IsPickupAtLocation(UObject* WorldContextObject, FVector Location);
+
+
   template <typename TAr>
   static void SetArrayElement(TAr item, TArray<TAr>& item_array, int32 index)
   {

@@ -26,37 +26,35 @@ public:
 
   void SaveActionbarItem(AMaster_Pickup* ItemToSave, int32 Index);
 
-  UPROPERTY(EditAnywhere, Category = "Save Game")
+  UPROPERTY(EditAnywhere, BlueprintReadOnly,  Category = "Save Game")
   TArray<FSavedItemInfo> SavedInventory;
 
-  UPROPERTY(EditAnywhere, Category = "Save Game")
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   TArray<FSavedItemInfo> SavedActionBar;
 	
-  UPROPERTY(EditAnywhere, Category = "Save Game")
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   UClass* SavedGunClass;
 
-  UPROPERTY(EditAnywhere, Category = "Save Game")
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   FVector SavedGunScale;
 
-  UPROPERTY(EditAnywhere, Category = "Save Game")
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   bool SavedbIsGunEquipped;
 
-  UPROPERTY(EditAnywhere, Category = "Save Game")
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   FVector SavedGunOffset;
 
-  UPROPERTY(EditAnywhere, Category = "Save Game")
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   int32 SavedAmountOfInventorySlots;
 
-  UPROPERTY(EditAnywhere, Category = "Save Game")
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   int32 SavedActionBarSlotsPerRow;
 
-  UPROPERTY(EditAnywhere, Category = "Save Game")
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   float SavedPlayerCurrentHP;
 
-  UPROPERTY(EditAnywhere, Category = "Save Game")
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   float SavedPlayerMaxHP;
 
-
   FSavedItemInfo ItemInfo;
-
 };

@@ -21,4 +21,7 @@ struct FLoadItemInfo
 
   UPROPERTY(EditDefaultsOnly, Category = "Item Save")
   int32 AmountAtIndex;
+
+  UPROPERTY(EditDefaultsOnly, Category = "Item Save")
+  FVector PickupLocation;
 };

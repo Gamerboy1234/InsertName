@@ -144,7 +144,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
             {
               InventoryItems[Index] = ItemToAdd;
               ItemToAdd->bAddedToStack = false;
-              LootedPickups.Add(ItemToAdd);
 
               if (bDisplayItemObtained)
               {
@@ -169,7 +168,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
             {
               StackToAddTo->AddToStack();
               ItemToAdd->bAddedToStack = true;
-              LootedPickups.Add(StackToAddTo);
 
               if (bDisplayItemObtained)
               {
@@ -187,7 +185,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
               {
                 InventoryItems[Index] = ItemToAdd;
                 ItemToAdd->bAddedToStack = false;
-                LootedPickups.Add(ItemToAdd);
 
                 if (bDisplayItemObtained)
                 {
@@ -223,7 +220,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
           {
             InventoryItems[Index] = ItemToAdd;
             ItemToAdd->bAddedToStack = false;
-            LootedPickups.Add(ItemToAdd);
 
             if (bDisplayItemObtained)
             {
@@ -1180,40 +1176,77 @@ void APaperWarden::LoadGame()
   }
 }
 
-void APaperWarden::SpawnInventory(UWardenSaveGame* SaveGameObject)
+void APaperWarden::SpawnInventory(UWardenSaveGame* LocalSaveGameObject)
 {
-  if (SaveGameObject)
+  if (LocalSaveGameObject)
   {
     InventoryToLoad.Empty();
 
-    for (FSavedItemInfo PickupToSpawn : SaveGameObject->SavedInventory)
+    for (FSavedItemInfo PickupToSpawn : LocalSaveGameObject->SavedInventory)
     {
       if (PickupToSpawn.ItemToSave)
       {
-        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
+        ItemLoadInfo.PickupLocation = PickupToSpawn.PickupLocation;
+
+        AMaster_Pickup* PickupAtLocation = UGeneralFunctions::IsPickupAtLocation(this, ItemLoadInfo.PickupLocation);
+
+        if (PickupAtLocation)
+        {
+          PickupAtLocation->DestroyPickup();
+
+          AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
+          SpawnedItem->ShowPickup(false);
+
+          ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
+          ItemLoadInfo.ItemToSave = SpawnedItem;
+          ItemLoadInfo.AmountAtIndex = PickupToSpawn.AmountAtIndex;
+
+          InventoryToLoad.Add(ItemLoadInfo);
+        }
+        else
+        {
+          AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, PickupToSpawn.PickupLocation, FRotator(0));
+          SpawnedItem->ShowPickup(false);
+
+          ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
+          ItemLoadInfo.ItemToSave = SpawnedItem;
+          ItemLoadInfo.AmountAtIndex = PickupToSpawn.AmountAtIndex;
+
+          InventoryToLoad.Add(ItemLoadInfo);
+        }
+      }
+    }
+  }
+}
+
+void APaperWarden::SpawnActionbar(UWardenSaveGame* LocalSaveGameObject)
+{
+  if (LocalSaveGameObject)
+  {
+    ActionBarItems.Empty();
+
+    for (FSavedItemInfo PickupToSpawn : LocalSaveGameObject->SavedActionBar)
+    {
+      ItemLoadInfo.PickupLocation = PickupToSpawn.PickupLocation;
+
+      AMaster_Pickup* PickupAtLocation = UGeneralFunctions::IsPickupAtLocation(this, ItemLoadInfo.PickupLocation);
+
+      if (PickupAtLocation && !PickupAtLocation->ItemInfo.bIsSpell)
+      {
+        PickupAtLocation->DestroyPickup();
+
+        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, PickupToSpawn.PickupLocation, FRotator(0));
         SpawnedItem->ShowPickup(false);
 
         ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
         ItemLoadInfo.ItemToSave = SpawnedItem;
         ItemLoadInfo.AmountAtIndex = PickupToSpawn.AmountAtIndex;
 
-        InventoryToLoad.Add(ItemLoadInfo);
+        ActionbarToLoad.Add(ItemLoadInfo);
       }
-    }
-  }
-}
-
-void APaperWarden::SpawnActionbar(UWardenSaveGame* SaveGameObject)
-{
-  if (SaveGameObject)
-  {
-    ActionBarItems.Empty();
-
-    for (FSavedItemInfo PickupToSpawn : SaveGameObject->SavedActionBar)
-    {
-      if (PickupToSpawn.ItemToSave)
+      else
       {
-        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
+        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, PickupToSpawn.PickupLocation, FRotator(0));
         SpawnedItem->ShowPickup(false);
 
         ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
@@ -1226,15 +1259,15 @@ void APaperWarden::SpawnActionbar(UWardenSaveGame* SaveGameObject)
   }
 }
 
-TArray<AMaster_Pickup*> APaperWarden::LoadInventory(UWardenSaveGame* SaveGameObject)
+TArray<AMaster_Pickup*> APaperWarden::LoadInventory(UWardenSaveGame* LocalSaveGameObject)
 {
-  if (SaveGameObject)
+  if (LocalSaveGameObject)
   {
     TArray<AMaster_Pickup*> LocalInventory;
 
     LocalInventory.Empty();
 
-    LocalInventory.Init(0, SaveGameObject->SavedAmountOfInventorySlots + 1);
+    LocalInventory.Init(0, LocalSaveGameObject->SavedAmountOfInventorySlots + 1);
 
     for (int32 Index = 0; Index < InventoryToLoad.Num(); Index++)
     {
@@ -1256,15 +1289,15 @@ TArray<AMaster_Pickup*> APaperWarden::LoadInventory(UWardenSaveGame* SaveGameObj
   }
 }
 
-TArray<AMaster_Pickup*> APaperWarden::LoadActionbar(UWardenSaveGame* SaveGameObject)
+TArray<AMaster_Pickup*> APaperWarden::LoadActionbar(UWardenSaveGame* LocalSaveGameObject)
 {
-  if (SaveGameObject)
+  if (LocalSaveGameObject)
   {
     TArray<AMaster_Pickup*> LocalActionbar;
 
     LocalActionbar.Empty();
 
-    LocalActionbar.Init(0, SaveGameObject->SavedActionBarSlotsPerRow);
+    LocalActionbar.Init(0, LocalSaveGameObject->SavedActionBarSlotsPerRow);
 
     for (int32 Index = 0; Index < ActionbarToLoad.Num(); Index++)
     {
