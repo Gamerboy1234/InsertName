@@ -41,7 +41,7 @@ public:
   void ShowPickup(bool Show);
   /* Add to CurrentItemAmount */
   UFUNCTION(BlueprintCallable, Category = "Pickup Functions")
-  void AddToStack();
+  void AddToStack(int32 AmountToAdd);
   /* This event is called to make the item actually do things */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Inventory Events")
   void UseItem();

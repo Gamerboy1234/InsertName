@@ -6,6 +6,7 @@
 #include "Engine/Texture2D.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "InsertNameV2.h"
 #include "GeneralFunctions.h"
 #include "PaperWarden.h"
 
@@ -66,21 +67,21 @@ void AMaster_Pickup::OnInteract_Implementation()
 
 void AMaster_Pickup::ShowPickup(bool Show)
 {
-  ECollisionEnabled::Type Collision = Show ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
-
   this->SetActorHiddenInGame(!Show);
 
-  this->BoxTrigger->SetCollisionEnabled(Collision);
+  this->SetActorEnableCollision(Show);
+
+  this->SetActorTickEnabled(Show);
 }
 
-void AMaster_Pickup::AddToStack()
+void AMaster_Pickup::AddToStack(int32 AmountToAdd)
 {
-  AmountAtIndex += ItemInfo.Amount;
+  AmountAtIndex += AmountToAdd;
 }
 
 void AMaster_Pickup::UseItem_Implementation()
 {
-  UE_LOG(LogTemp, Log, TEXT("Item %s has no Implementation"), *this->ConvertItemNameToString())
+  UE_LOG(LogInventorySystem, Log, TEXT("Item %s has no Implementation"), *this->ConvertItemNameToString())
 }
 
 void AMaster_Pickup::DestroyPickup()

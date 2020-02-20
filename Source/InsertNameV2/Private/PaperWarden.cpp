@@ -167,8 +167,12 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
 
             if (StackToAddTo)
             {
-              StackToAddTo->AddToStack();
-              ItemToAdd->bAddedToStack = true;
+              StackToAddTo->AddToStack(Amount);
+              
+              if (ItemToAdd != ItemToAdd)
+              {
+                ItemToAdd->bAddedToStack = true;
+              }
 
               if (bDisplayItemObtained)
               {
@@ -231,7 +235,7 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
 
             if (Amount > 1)
             {
-              Amount--;
+               Amount--;
               AddItem(ItemToAdd, Amount, bDisplayItemObtained);
               return true;
             }
@@ -253,7 +257,7 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("failed to add item. Item was not valid"))
+      UE_LOG(LogInventorySystem, Error, TEXT("failed to add item. Item was not valid"))
       return false;
     }
   }
@@ -1206,7 +1210,7 @@ void APaperWarden::SpawnInventory(UWardenSaveGame* LocalSaveGameObject)
         }
         else
         {
-          AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, PickupToSpawn.PickupLocation, FRotator(0));
+          AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
           SpawnedItem->ShowPickup(false);
 
           ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
@@ -1236,7 +1240,7 @@ void APaperWarden::SpawnActionbar(UWardenSaveGame* LocalSaveGameObject)
       {
         PickupAtLocation->DestroyPickup();
 
-        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, PickupToSpawn.PickupLocation, FRotator(0));
+        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
         SpawnedItem->ShowPickup(false);
 
         ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
@@ -1247,7 +1251,7 @@ void APaperWarden::SpawnActionbar(UWardenSaveGame* LocalSaveGameObject)
       }
       else
       {
-        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, PickupToSpawn.PickupLocation, FRotator(0));
+        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
         SpawnedItem->ShowPickup(false);
 
         ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
