@@ -8,6 +8,7 @@
 #include "Engine.h"
 #include "Master_Spell.h"
 #include "GeneralFunctions.h"
+#include "InsertNameV2.h"
 #include "Components/InputComponent.h"
 #include "TimerManager.h"
 #include "Components/BoxComponent.h"
@@ -84,27 +85,27 @@ void APaperWarden::LoadKillCount(int32 KillCountToLoad)
 
 void APaperWarden::PickedUpItem_Implementation(class UTexture2D* PickUpTexture)
 {
-  UE_LOG(LogTemp, Warning, TEXT("Player Pickup event has no Implementation"))
+  UE_LOG(LogPlayerEvents, Warning, TEXT("Player Pickup event has no Implementation"))
 }
 
 void APaperWarden::HealPlayer_Implementation(float HealAmount)
 {
-  UE_LOG(LogTemp, Warning, TEXT("Player Heal event has no Implementation"))
+  UE_LOG(LogPlayerEvents, Warning, TEXT("Player Heal event has no Implementation"))
 }
 
 void APaperWarden::KillPlayer_Implementation()
 {
-  UE_LOG(LogTemp, Warning, TEXT("Kill Player event has no Implementation"))
+  UE_LOG(LogPlayerEvents, Warning, TEXT("Kill Player event has no Implementation"))
 }
 
 void APaperWarden::UpgradeHP_Implementation(float UpgradeAmount, float NewMaxHP)
 {
-  UE_LOG(LogTemp, Warning, TEXT("Upgrade HP event has no Implementation"))
+  UE_LOG(LogPlayerEvents, Warning, TEXT("Upgrade HP event has no Implementation"))
 }
 
 void APaperWarden::Damage_Implementation(float DamageAmount, bool bShowCombatText, AActor* DamageInstigator)
 {
-  UE_LOG(LogTemp, Warning, TEXT("Damage event has no Implementation"))
+  UE_LOG(LogPlayerEvents, Warning, TEXT("Damage event has no Implementation"))
 }
 
 void APaperWarden::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -289,7 +290,7 @@ bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 A
         }
         else
         {
-          UE_LOG(LogTemp, Error, TEXT("failed to find item in Inventory not a vaild index"))
+          UE_LOG(LogInventorySystem, Error, TEXT("failed to find item in Inventory not a vaild index"))
           return false;
         }
       }
@@ -301,13 +302,13 @@ bool APaperWarden::RemoveItemFromInventory(AMaster_Pickup* ItemToRemove, int32 A
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("failed to find item in Inventory"))
+      UE_LOG(LogInventorySystem, Error, TEXT("failed to find item in Inventory"))
       return false;
     }   
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Item to remove was not valid"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Item to remove was not valid"))
     return false;
   }
 }
@@ -343,7 +344,7 @@ bool APaperWarden::SplitItemStack(AMaster_Pickup* ItemToSplit, int32 Amount)
         }
         else
         {
-          UE_LOG(LogTemp, Error, TEXT("Couldn't split item SplitActor was not vaild"))
+          UE_LOG(LogInventorySystem, Error, TEXT("Couldn't split item SplitActor was not vaild"))
           return false;
         }
       }
@@ -359,7 +360,7 @@ bool APaperWarden::SplitItemStack(AMaster_Pickup* ItemToSplit, int32 Amount)
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Couldn't split item ItemToSplit was not vaild"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Couldn't split item ItemToSplit was not vaild"))
     return false;
   }
 }
@@ -383,13 +384,13 @@ bool APaperWarden::DropItemsOnActionBar(AMaster_Pickup* Pickup, int32 Index)
       }
       else
       {
-        UE_LOG(LogTemp, Error, TEXT("Was unable to find Item in inventory to move"))
+        UE_LOG(LogInventorySystem, Error, TEXT("Was unable to find Item in inventory to move"))
         return false;
       }
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Couldn't remove item from Inventory when moving item. Local Item was not vaild."))
+      UE_LOG(LogInventorySystem, Error, TEXT("Couldn't remove item from Inventory when moving item. Local Item was not vaild."))
       return false;
     }
   }
@@ -503,7 +504,7 @@ AMaster_Pickup* APaperWarden::SearchForFreeStack(AMaster_Pickup* ItemClass)
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("SearchForFreeStack failed ItemClass was not vailded"))
+    UE_LOG(LogInventorySystem, Error, TEXT("SearchForFreeStack failed ItemClass was not vailded"))
     return false;
   }
 }
@@ -573,7 +574,7 @@ bool APaperWarden::IsItemAtIndex(int32 Index, const TArray<AMaster_Pickup*> Arra
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Could not find item at given Index. Index was not valid"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Could not find item at given Index. Index was not valid"))
     return false;
   }
 }
@@ -608,22 +609,22 @@ void APaperWarden::SwapItemsInInventory(AMaster_Pickup* ItemOne, AMaster_Pickup*
         }
         else
         {
-          UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemTwo was not found in Inventory"))
+          UE_LOG(LogInventorySystem, Error, TEXT("Couldn't swap items ItemTwo was not found in Inventory"))
         }
       }
       else
       {
-        UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemOne was not found in Inventory"))
+        UE_LOG(LogInventorySystem, Error, TEXT("Couldn't swap items ItemOne was not found in Inventory"))
       }
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemTwo was not vaild"))
+      UE_LOG(LogInventorySystem, Error, TEXT("Couldn't swap items ItemTwo was not vaild"))
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemOne was not vaild"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Couldn't swap items ItemOne was not vaild"))
   }
 }
 
@@ -642,13 +643,13 @@ bool APaperWarden::UpdateItemIndexInInventory(AMaster_Pickup* ItemToMove, int32 
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Failed to find item ItemIndex was not found"))
+      UE_LOG(LogInventorySystem, Error, TEXT("Failed to find item ItemIndex was not found"))
       return false;
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Failed to find item IndexToMove was not vaild"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Failed to find item IndexToMove was not vaild"))
     return false;
   }
 }
@@ -668,13 +669,13 @@ bool APaperWarden::UpdateItemIndexOnActionbar(AMaster_Pickup* ItemToMove, int32 
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Failed to find item ItemIndex was not found"))
+      UE_LOG(LogInventorySystem, Error, TEXT("Failed to find item ItemIndex was not found"))
         return false;
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Failed to find item IndexToMove was not vaild"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Failed to find item IndexToMove was not vaild"))
     return false;
   }
 }
@@ -709,22 +710,22 @@ void APaperWarden::SwapItemsOnActionbar(AMaster_Pickup* ItemOne, AMaster_Pickup*
         }
         else
         {
-          UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemTwo was not found on Actionbar"))
+          UE_LOG(LogInventorySystem, Error, TEXT("Couldn't swap items ItemTwo was not found on Actionbar"))
         }
       }
       else
       {
-        UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemOne was not found in Actionbar"))
+        UE_LOG(LogInventorySystem, Error, TEXT("Couldn't swap items ItemOne was not found in Actionbar"))
       }
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemTwo was not vaild"))
+      UE_LOG(LogInventorySystem, Error, TEXT("Couldn't swap items ItemTwo was not vaild"))
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Couldn't swap items ItemOne was not vaild"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Couldn't swap items ItemOne was not vaild"))
   }
 }
 
@@ -763,7 +764,7 @@ bool APaperWarden::RemoveItemFromActionbar(AMaster_Pickup* ItemToRemove, int32 A
           }
           else
           {
-            UE_LOG(LogTemp, Error, TEXT("failed to find item on Actionbar not a vaild index"))
+            UE_LOG(LogInventorySystem, Error, TEXT("failed to find item on Actionbar not a vaild index"))
               return false;
           }
         }
@@ -780,13 +781,13 @@ bool APaperWarden::RemoveItemFromActionbar(AMaster_Pickup* ItemToRemove, int32 A
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Couldn't remove item from Actionbar. LocalItem was not found."))
+      UE_LOG(LogInventorySystem, Error, TEXT("Couldn't remove item from Actionbar. LocalItem was not found."))
       return false;
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Couldn't remove item from Actionbar. ItemToRemove was not vaild"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Couldn't remove item from Actionbar. ItemToRemove was not vaild"))
     return false;
   }
 }
@@ -810,13 +811,13 @@ bool APaperWarden::RemoveItemFromPlayer(AMaster_Pickup* ItemToRemove, int32 Amou
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Couldn't remove item from Player. ItemToRemove was not found on player"))
+      UE_LOG(LogInventorySystem, Error, TEXT("Couldn't remove item from Player. ItemToRemove was not found on player"))
       return false;
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Couldn't remove item from Player. ItemToRemove was not vaild"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Couldn't remove item from Player. ItemToRemove was not vaild"))
     return false;
   }
 }
@@ -875,13 +876,13 @@ bool APaperWarden::MoveActionbarItemsToInventory(AMaster_Pickup* ItemToMove)
         }
         else
         {
-          UE_LOG(LogTemp, Error, TEXT("Failed to remove item from Actionbar ActionBarIndex was not valid"))
+          UE_LOG(LogInventorySystem, Error, TEXT("Failed to remove item from Actionbar ActionBarIndex was not valid"))
           return false;
         }
       }
       else
       {
-        UE_LOG(LogTemp, Error, TEXT("Failed to move item to Inventory could not find item on Actionbar"))
+        UE_LOG(LogInventorySystem, Error, TEXT("Failed to move item to Inventory could not find item on Actionbar"))
         return false;
       }
     }
@@ -892,7 +893,7 @@ bool APaperWarden::MoveActionbarItemsToInventory(AMaster_Pickup* ItemToMove)
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Failed to move item to Inventory ItemToMove was not valid"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Failed to move item to Inventory ItemToMove was not valid"))
     return false;
   }
 }
@@ -915,7 +916,7 @@ bool APaperWarden::DropActionbarItemIntoInventory(AMaster_Pickup* ItemToMove, in
       }
       else
       {
-        UE_LOG(LogTemp, Error, TEXT("Failed to remove item from Actionbar couldn't find IndexToRemove"))
+        UE_LOG(LogInventorySystem, Error, TEXT("Failed to remove item from Actionbar couldn't find IndexToRemove"))
         return false;
       }
     }
@@ -926,7 +927,7 @@ bool APaperWarden::DropActionbarItemIntoInventory(AMaster_Pickup* ItemToMove, in
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Failed to move item to Inventory ItemToMove was not valid"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Failed to move item to Inventory ItemToMove was not valid"))
     return false;
   }
 }
@@ -940,7 +941,7 @@ bool APaperWarden::SetArrayIndex(int32 Index, TArray<AMaster_Pickup*> ArrayToUse
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Failed to set Index ItemToSet was not valid"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Failed to set Index ItemToSet was not valid"))
     return false;
   }
 }
@@ -962,13 +963,13 @@ bool APaperWarden::DupCheck(AMaster_Pickup* ItemOne, AMaster_Pickup* ItemTwo)
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("DupCheck Failed ItemTwo was not valid"))
+      UE_LOG(LogInventorySystem, Error, TEXT("DupCheck Failed ItemTwo was not valid"))
       return false;
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("DupCheck Failed ItemOne was not valid"))
+    UE_LOG(LogInventorySystem, Error, TEXT("DupCheck Failed ItemOne was not valid"))
     return false;
   }
 }
@@ -1016,7 +1017,7 @@ bool APaperWarden::AssignSpellToActionBar(AMaster_Spell* SpellToAdd)
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Couldn't add spell SpellToAdd was not valid"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Couldn't add spell SpellToAdd was not valid"))
     return false;
   }
 }
@@ -1047,7 +1048,7 @@ bool APaperWarden::AssignSpellsToActionBar(TArray<AMaster_Spell*> SpellsToAdd)
   }
   if (!LocalBool)
   {
-    UE_LOG(LogTemp, Error, TEXT("Couldn't add spell. Spell was not valid"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Couldn't add spell. Spell was not valid"))
     return false;
   }
   else
@@ -1093,7 +1094,7 @@ void APaperWarden::SaveGame()
         }
         else
         {
-          UE_LOG(LogTemp, Error, TEXT("Couldn't find pickup to save in Inventory"))
+          UE_LOG(LogSaveGame, Error, TEXT("Couldn't find pickup to save in Inventory"))
           break;
         }
       }
@@ -1111,7 +1112,7 @@ void APaperWarden::SaveGame()
         }
         else
         {
-          UE_LOG(LogTemp, Error, TEXT("Couldn't find pickup to save on Actionbar"))
+          UE_LOG(LogSaveGame, Error, TEXT("Couldn't find pickup to save on Actionbar"))
           break;
         }
       }
@@ -1120,11 +1121,11 @@ void APaperWarden::SaveGame()
     // Save the actual game 
     UGameplayStatics::SaveGameToSlot(WardenSaveGame, TEXT("Slot1"), 0);
     // Debug Message
-    UE_LOG(LogTemp, Log, TEXT("Game Saved"))
+    UE_LOG(LogSaveGame, Log, TEXT("Game Saved"))
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Game failed to save game WardenSaveGame cast failed"))
+    UE_LOG(LogSaveGame, Error, TEXT("Game failed to save game WardenSaveGame cast failed"))
   }
 }
 
@@ -1163,16 +1164,16 @@ void APaperWarden::LoadGame()
       }
       else
       {
-        UE_LOG(LogTemp, Error, TEXT("Game failed to load game was unable to spawn gun"))
+        UE_LOG(LogSaveGame, Error, TEXT("Game failed to load game was unable to spawn gun"))
       }
     }
 
     // Debug Message
-    UE_LOG(LogTemp, Log, TEXT("Game Loaded"))
+    UE_LOG(LogSaveGame, Log, TEXT("Game Loaded"))
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Game failed to load game WardenSaveGame cast failed"))
+    UE_LOG(LogSaveGame, Error, TEXT("Game failed to load game WardenSaveGame cast failed"))
   }
 }
 
@@ -1283,7 +1284,7 @@ TArray<AMaster_Pickup*> APaperWarden::LoadInventory(UWardenSaveGame* LocalSaveGa
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Unable to load Inventory SaveGameObject not vaild"))
+    UE_LOG(LogSaveGame, Error, TEXT("Unable to load Inventory SaveGameObject not vaild"))
     TArray<AMaster_Pickup*> LocalInventory;
     return LocalInventory;
   }
@@ -1313,7 +1314,7 @@ TArray<AMaster_Pickup*> APaperWarden::LoadActionbar(UWardenSaveGame* LocalSaveGa
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Unable to load Actionbar SaveGameObject not vaild"))
+    UE_LOG(LogSaveGame, Error, TEXT("Unable to load Actionbar SaveGameObject not vaild"))
     TArray<AMaster_Pickup*> LocalActionbar;
     return LocalActionbar;
   }

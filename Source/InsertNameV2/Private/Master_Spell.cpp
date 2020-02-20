@@ -2,6 +2,7 @@
 
 
 #include "Master_Spell.h"
+#include "InsertNameV2.h"
 
 AMaster_Spell::AMaster_Spell()
 {
@@ -32,7 +33,7 @@ void AMaster_Spell::OnSpellCastStart_Implementation()
 
 void AMaster_Spell::BeginSpellCast_Implementation()
 {
-  UE_LOG(LogTemp, Log, TEXT("Spell %s Casted"), *this->GetName())
+  UE_LOG(LogSpellEvents, Log, TEXT("Spell %s Casted"), *this->GetName())
 
   OnCastComplete();
 }

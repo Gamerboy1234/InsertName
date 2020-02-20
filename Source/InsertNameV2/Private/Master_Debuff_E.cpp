@@ -6,6 +6,7 @@
 #include "GeneralFunctions.h"
 #include "Master_Enemy.h"
 #include "Kismet/GameplayStatics.h"
+#include "InsertNameV2.h"
 #include "MasterDamageEffect.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
@@ -120,12 +121,12 @@ void AMaster_Debuff_E::SpawnEffect(AMaster_Enemy* CurrentActor)
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Unable to spawn debuff Effect"))
+      UE_LOG(LogEnemyDebuffs, Error, TEXT("Unable to spawn debuff Effect"))
     }
   }
   else
   {
-    UE_LOG(LogTemp, Warning, TEXT("No debuff effect was selected"))
+    UE_LOG(LogEnemyDebuffs, Warning, TEXT("No debuff effect was selected"))
   }
 }
 
@@ -157,14 +158,14 @@ const bool AMaster_Debuff_E::IsDebuffAlreadyApplied(AMaster_Debuff_E* Debuff, AM
     else
     {
       LocalBool = false;
-      UE_LOG(LogTemp, Error, TEXT("Debuff in IsDebuffAlreadyApplied is not valid"))
+      UE_LOG(LogEnemyDebuffs, Error, TEXT("Debuff in IsDebuffAlreadyApplied is not valid"))
       return LocalBool;
     }
   }
   else
   {
     LocalBool = false;
-    UE_LOG(LogTemp, Error, TEXT("Current Actor in IsDebuffAlreadyApplied is not valid"))
+    UE_LOG(LogEnemyDebuffs, Error, TEXT("Current Actor in IsDebuffAlreadyApplied is not valid"))
     return LocalBool;
   }
 }
@@ -181,7 +182,7 @@ void AMaster_Debuff_E::RefreshDebuff(AMaster_Debuff_E* DebuffToRefresh, AMaster_
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Was unable to refresh debuff. Debuff was not found in enemy CurrentDebuffs."))
+    UE_LOG(LogEnemyDebuffs, Error, TEXT("Was unable to refresh debuff. Debuff was not found in enemy CurrentDebuffs."))
   }
 }
 
@@ -199,19 +200,19 @@ void AMaster_Debuff_E::AddDebuffToStack(AMaster_Debuff_E* DebuffToAdd, AMaster_E
       }
       else
       {
-        UE_LOG(LogTemp, Error, TEXT("Was unable to add debuff to stack couldn't find debuff in stack"))
+        UE_LOG(LogEnemyDebuffs, Error, TEXT("Was unable to add debuff to stack couldn't find debuff in stack"))
       }
 
       DebuffToAdd->Destroy();
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Unable to add debuff to stack DebuffToAdd was not valid"))
+      UE_LOG(LogEnemyDebuffs, Error, TEXT("Unable to add debuff to stack DebuffToAdd was not valid"))
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Unable to add debuff to stack CurrentActor was not valid"))
+    UE_LOG(LogEnemyDebuffs, Error, TEXT("Unable to add debuff to stack CurrentActor was not valid"))
   }
 }
 
@@ -222,7 +223,7 @@ void AMaster_Debuff_E::AddToStack(AMaster_Debuff_E* DebuffToAddTo)
 
 void AMaster_Debuff_E::StartDebuff_Implementation()
 {
-  UE_LOG(LogTemp, Warning, TEXT("Debuff %s has no implementation"), *this->GetName())
+  UE_LOG(LogEnemyDebuffs, Warning, TEXT("Debuff %s has no implementation"), *this->GetName())
 }
 
 float AMaster_Debuff_E::GetCurrentTickCount()

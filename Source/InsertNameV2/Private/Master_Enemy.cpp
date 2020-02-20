@@ -18,6 +18,7 @@
 #include "AIController.h"
 #include "PaperWarden.h"
 #include "Master_Buff_E.h"
+#include "InsertNameV2.h"
 #include "Math/Color.h"
 #include "BrainComponent.h"
 #include "FloatingCombatTextComponent.h"
@@ -99,16 +100,19 @@ void AMaster_Enemy::GravityCheck(float NewGravityScale)
 void AMaster_Enemy::BarkCollisionReset()
 {
   APaperWarden* PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerPawn(this, 0));
-  if (PlayerRef && CurrentHP > 0.00f)
+  if (PlayerRef)
   {
-    // Disable Bark Collision and reset capsule collision
-    PlayerRef->BarkInnerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    PlayerRef->BarkOuterCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    PlayerRef->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    if (CurrentHP > 0.00f)
+    {
+      // Disable Bark Collision and reset capsule collision
+      PlayerRef->BarkInnerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+      PlayerRef->BarkOuterCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+      PlayerRef->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Unable to get PlayerRef"))
+    UE_LOG(LogMasterEnemy, Error, TEXT("Unable to get PlayerRef"))
   }
 }
 
@@ -161,13 +165,13 @@ AActor* AMaster_Enemy::ApplyDebuff(TSubclassOf<AMaster_Debuff_E> DebuffToApply, 
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Was unable to apply Debuff"))
+      UE_LOG(LogMasterEnemy, Error, TEXT("Was unable to apply Debuff"))
       return nullptr;
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Debuff target is not valid"))
+    UE_LOG(LogMasterEnemy, Error, TEXT("Debuff target is not valid"))
     return nullptr;
   }
 }
@@ -183,7 +187,7 @@ AActor* AMaster_Enemy::ApplyBuff(TSubclassOf<AMaster_Buff_E> BuffToApply)
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Was unable to apply Buff"))
+    UE_LOG(LogMasterEnemy, Error, TEXT("Was unable to apply Buff"))
     return nullptr;
   }
 }

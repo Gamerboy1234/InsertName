@@ -3,6 +3,7 @@
 
 #include "Master_Buff_E.h"
 #include "Master_Enemy.h"
+#include "InsertNameV2.h"
 #include "GeneralFunctions.h"
 
 
@@ -26,12 +27,12 @@ AMaster_Buff_E::AMaster_Buff_E()
 
 void AMaster_Buff_E::StartBuff_Implementation()
 {
-  UE_LOG(LogTemp, Warning, TEXT("Start buff has implementation"))
+  UE_LOG(LogEnemyBuffs, Warning, TEXT("Start buff has implementation"))
 }
 
 void AMaster_Buff_E::StopBuff_Implementation()
 {
-  UE_LOG(LogTemp, Warning, TEXT("Stop buff has implementation"))
+  UE_LOG(LogEnemyBuffs, Warning, TEXT("Stop buff has implementation"))
 }
 
 void AMaster_Buff_E::SetUpBuff_Implementation(AMaster_Enemy* Target, AMaster_Buff_E* BuffToApply)
@@ -59,7 +60,7 @@ void AMaster_Buff_E::SetUpBuff_Implementation(AMaster_Enemy* Target, AMaster_Buf
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Buff target was not valid"))
+    UE_LOG(LogEnemyBuffs, Error, TEXT("Buff target was not valid"))
   }
 }
 
@@ -78,17 +79,17 @@ void AMaster_Buff_E::AddToBuffStack(AMaster_Buff_E* BuffToAddTo, AMaster_Enemy* 
       }
       else
       {
-        UE_LOG(LogTemp, Error, TEXT("Was unable to add buff to stack couldn't find buff in stack"))
+        UE_LOG(LogEnemyBuffs, Error, TEXT("Was unable to add buff to stack couldn't find buff in stack"))
       }
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Unable to add debuff to stack BuffToAddTo was not valid"))
+      UE_LOG(LogEnemyBuffs, Error, TEXT("Unable to add debuff to stack BuffToAddTo was not valid"))
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Unable to add buff to stack CurrentActor was not valid"))
+    UE_LOG(LogEnemyBuffs, Error, TEXT("Unable to add buff to stack CurrentActor was not valid"))
   }
 }
 
@@ -108,17 +109,17 @@ void AMaster_Buff_E::RefreshBuff(AMaster_Buff_E* BuffToRefresh, AMaster_Enemy* C
       }
       else
       {
-        UE_LOG(LogTemp, Error, TEXT("Was unable to refresh buff couldn't find buff in stack"))
+        UE_LOG(LogEnemyBuffs, Error, TEXT("Was unable to refresh buff couldn't find buff in stack"))
       }
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Unable to refresh buff BuffToRefresh was not valid"))
+      UE_LOG(LogEnemyBuffs, Error, TEXT("Unable to refresh buff BuffToRefresh was not valid"))
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Unable to refresh buff CurrentActor was not valid"))
+    UE_LOG(LogEnemyBuffs, Error, TEXT("Unable to refresh buff CurrentActor was not valid"))
   }
 }
 
@@ -135,12 +136,12 @@ void AMaster_Buff_E::SpawnEffect(AMaster_Enemy* CurrentActor)
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("Unable to spawn buff Effect"))
+      UE_LOG(LogEnemyBuffs, Error, TEXT("Unable to spawn buff Effect"))
     }
   }
   else
   {
-    UE_LOG(LogTemp, Warning, TEXT("No damage effect was selected"))
+    UE_LOG(LogEnemyBuffs, Warning, TEXT("No damage effect was selected"))
   }
 }
 
@@ -173,14 +174,14 @@ const bool AMaster_Buff_E::IsBuffAlreadyApplied(AMaster_Buff_E* Buff, AMaster_En
     else
     {
       LocalBool = false;
-      UE_LOG(LogTemp, Error, TEXT("Buff in IsBuffAlreadyApplied is not valid"))
+      UE_LOG(LogEnemyBuffs, Error, TEXT("Buff in IsBuffAlreadyApplied is not valid"))
       return LocalBool;
     }
   }
   else
   {
     LocalBool = false;
-    UE_LOG(LogTemp, Error, TEXT("Current Actor in IsBuffAlreadyApplied is not valid"))
+    UE_LOG(LogEnemyBuffs, Error, TEXT("Current Actor in IsBuffAlreadyApplied is not valid"))
     return LocalBool;
   }
 }

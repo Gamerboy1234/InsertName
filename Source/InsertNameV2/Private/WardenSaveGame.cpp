@@ -3,6 +3,7 @@
 
 #include "WardenSaveGame.h"
 #include "Engine/World.h"
+#include "InsertNameV2.h"
 #include "PaperWarden.h"
 #include "Master_Pickup.h"
 
@@ -29,7 +30,7 @@ void UWardenSaveGame::SaveInventoryItem(AMaster_Pickup* ItemToSave, int32 Index)
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Failed to save InventoryItem ItemToSave was not valid"))
+    UE_LOG(LogSaveGame, Error, TEXT("Failed to save InventoryItem ItemToSave was not valid"))
   }
 }
 
@@ -44,6 +45,6 @@ void UWardenSaveGame::SaveActionbarItem(AMaster_Pickup* ItemToSave, int32 Index)
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Failed to save ActionbarItem ItemToSave was not valid"))
+    UE_LOG(LogSaveGame, Error, TEXT("Failed to save ActionbarItem ItemToSave was not valid"))
   }
 }
