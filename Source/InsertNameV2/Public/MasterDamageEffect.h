@@ -22,4 +22,7 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Effect Setup")
   void RemoveEffect();
   void RemoveEffect_Implementation();
+
+  UFUNCTION(BlueprintCallable, Category = "CleanUp")
+  void CleanUpEffect(TSubclassOf<AMasterDamageEffect> EffectToCleanUp);
 };

@@ -7,6 +7,7 @@
 #include "BuffData.generated.h"
 
 class AMasterDamageEffect;
+class UTexture2D;
 
 USTRUCT(BlueprintType)
 struct FBuffData
@@ -24,6 +25,16 @@ struct FBuffData
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   FVector EffectScale = FVector(1);
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UTexture2D* BuffIcon;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  FText BuffName;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  FText BuffDescription;
+
 };
 
 

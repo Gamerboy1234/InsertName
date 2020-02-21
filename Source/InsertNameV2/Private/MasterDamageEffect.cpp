@@ -2,6 +2,7 @@
 
 
 #include "MasterDamageEffect.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void AMasterDamageEffect::SetEffect_Implementation(AActor* CurrentActor)
@@ -12,4 +13,19 @@ void AMasterDamageEffect::SetEffect_Implementation(AActor* CurrentActor)
 void AMasterDamageEffect::RemoveEffect_Implementation()
 {
   UE_LOG(LogTemp, Warning, TEXT("Remove Effect has no blueprint event"))
+}
+
+void AMasterDamageEffect::CleanUpEffect(TSubclassOf<AMasterDamageEffect> EffectToCleanUp)
+{
+  TArray<AActor*> FoundActors;
+
+  UGameplayStatics::GetAllActorsOfClass(this, EffectToCleanUp, FoundActors);
+
+  for (AActor* Actor : FoundActors)
+  {
+    if (Actor)
+    {
+      Actor->Destroy();
+    }
+  }
 }
