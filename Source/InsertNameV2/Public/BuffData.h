@@ -14,25 +14,25 @@ struct FBuffData
 {
   GENERATED_USTRUCT_BODY()
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
   float BuffAmount;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
   float BuffDuration;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
   TSubclassOf<AMasterDamageEffect> BuffEffect;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
   FVector EffectScale = FVector(1);
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
   UTexture2D* BuffIcon;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
   FText BuffName;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
   FText BuffDescription;
 
 };

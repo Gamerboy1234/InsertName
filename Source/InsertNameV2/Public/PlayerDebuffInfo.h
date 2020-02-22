@@ -3,15 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MasterDamageEffect.h"
-#include "DebuffData.generated.h"
+#include "GameFramework/Actor.h"
+#include "PlayerDebuffInfo.generated.h"
 
-class AMasterDamageEffect;
 class UTexture2D;
-class UPaperSpriteComponent;
 
 USTRUCT(BlueprintType)
-struct FDebuffData
+struct FPlayerDebuffData
 {
   GENERATED_USTRUCT_BODY()
 
@@ -31,9 +29,6 @@ struct FDebuffData
   float Occurrence = 0;
 
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
-  TSubclassOf<AMasterDamageEffect> DamageEffect;
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite)
   FVector EffectScale = FVector(1);
 
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -44,10 +39,10 @@ struct FDebuffData
 };
 
 
-UENUM(BlueprintType)		
-enum class EDebuffType : uint8
+UENUM(BlueprintType)
+enum class EPlayerDebuffType : uint8
 {
-  Fire UMETA(DisplayName = "Fire"),
+  PD_Fire UMETA(DisplayName = "Fire"),
 
-  Stun UMETA(DisplayName = "Stun")
+  PD_Stun UMETA(DisplayName = "Stun")
 };
