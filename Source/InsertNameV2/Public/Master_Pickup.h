@@ -18,8 +18,6 @@ public:
 
   bool bAddedToStack;
 
-  bool bInInventory;
-
   UPROPERTY(BlueprintReadOnly, Category = "ItemInfo")
   int32 AmountAtIndex;
 
@@ -52,9 +50,6 @@ public:
   UFUNCTION(BlueprintCallable, Category = "Pickup Functions")
   void DestroyPickup();
 
-  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ItemInfo")
-  int32 ID;
-
   UFUNCTION(BlueprintPure, Category = "Pickup Functions")
   const int32 GetID();
 
@@ -64,6 +59,8 @@ public:
   FString ConvertItemNameToString();
 
 private:
+
+  int32 ID;
 
   class APaperWarden* PlayerRef;
 

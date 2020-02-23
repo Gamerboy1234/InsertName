@@ -18,8 +18,7 @@ AMaster_Pickup::AMaster_Pickup()
 
   MaxItemAmount = 99;
   AmountAtIndex = 1;
-  
-  bInInventory = false;
+  UPROPERTY(VisibleAnywhere, Category = "Components")
 
   BoxTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxTrigger"));
   if (!ensure(BoxTrigger != nullptr)) { return; }
@@ -34,7 +33,7 @@ void AMaster_Pickup::BeginPlay()
 {
 	Super::BeginPlay();
 
-  UGeneralFunctions::AddPickupToGamemode(this, this);
+  ID = UGeneralFunctions::GetIDFromGamemode(this, this);
 
   PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerCharacter(this, 0));
 
@@ -50,7 +49,7 @@ void AMaster_Pickup::OnInteract_Implementation()
     {
       PlayerRef->PickedUpItem(ItemInfo.Icon);
 
-      if (bAddedToStack && !bInInventory)
+      if (bAddedToStack)
       {
         this->DestroyPickup();
       }

@@ -56,8 +56,5 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   float SavedPlayerMaxHP;
 
-  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
-  TArray<AMaster_Pickup*> SavedLootedPickups;
-
   FSavedItemInfo ItemInfo;
 };

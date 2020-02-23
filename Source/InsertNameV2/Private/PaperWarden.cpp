@@ -145,8 +145,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
             {
               InventoryItems[Index] = ItemToAdd;
               ItemToAdd->bAddedToStack = false;
-              ItemToAdd->bInInventory = true;
-              AddToLootedPickups(ItemToAdd);
 
               if (bDisplayItemObtained)
               {
@@ -170,8 +168,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
             if (StackToAddTo)
             {
               StackToAddTo->AddToStack(Amount);
-              StackToAddTo->bAddedToStack = true;
-              AddToLootedPickups(StackToAddTo);
               
               if (ItemToAdd != ItemToAdd)
               {
@@ -194,8 +190,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
               {
                 InventoryItems[Index] = ItemToAdd;
                 ItemToAdd->bAddedToStack = false;
-                ItemToAdd->bInInventory = true;
-                AddToLootedPickups(ItemToAdd);
 
                 if (bDisplayItemObtained)
                 {
@@ -231,8 +225,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
           {
             InventoryItems[Index] = ItemToAdd;
             ItemToAdd->bAddedToStack = false;
-            ItemToAdd->bInInventory = true;
-            AddToLootedPickups(ItemToAdd);
 
             if (bDisplayItemObtained)
             {
@@ -272,14 +264,6 @@ bool APaperWarden::AddItem(AMaster_Pickup* ItemToAdd, int32 Amount, bool bDispla
   else
   {
     return false;
-  }
-}
-
-void APaperWarden::AddToLootedPickups(AMaster_Pickup* PickupToAdd)
-{
-  if (PickupToAdd)
-  {
-    LootedPickups.AddUnique(PickupToAdd);
   }
 }
 
@@ -1089,7 +1073,6 @@ void APaperWarden::SaveGame()
     WardenSaveGame->SavedActionBarSlotsPerRow = ActionBarSlotsPerRow;
     WardenSaveGame->SavedPlayerCurrentHP = PlayerCurrentHP;
     WardenSaveGame->SavedPlayerMaxHP = PlayerMaxHP;
-    WardenSaveGame->SavedLootedPickups = LootedPickups;
 
     if (bIsGunEquipped)
     {
@@ -1163,7 +1146,6 @@ void APaperWarden::LoadGame()
     PlayerCurrentHP = WardenSaveGame->SavedPlayerCurrentHP;
     PlayerMaxHP = WardenSaveGame->SavedPlayerMaxHP;
 
-    DestroyLootedPickups(WardenSaveGame);
     SpawnInventory(WardenSaveGame);
     SpawnActionbar(WardenSaveGame);
 
@@ -1199,8 +1181,6 @@ void APaperWarden::LoadGame()
   }
 }
 
-
-
 void APaperWarden::SpawnInventory(UWardenSaveGame* LocalSaveGameObject)
 {
   if (LocalSaveGameObject)
@@ -1213,14 +1193,32 @@ void APaperWarden::SpawnInventory(UWardenSaveGame* LocalSaveGameObject)
       {
         ItemLoadInfo.PickupLocation = PickupToSpawn.PickupLocation;
 
-        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
-        SpawnedItem->ShowPickup(false);
+        AMaster_Pickup* PickupAtLocation = UGeneralFunctions::IsPickupAtLocation(this, ItemLoadInfo.PickupLocation);
 
-        ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
-        ItemLoadInfo.ItemToSave = SpawnedItem;
-        ItemLoadInfo.AmountAtIndex = PickupToSpawn.AmountAtIndex;
+        if (PickupAtLocation)
+        {
+          PickupAtLocation->DestroyPickup();
 
-        InventoryToLoad.Add(ItemLoadInfo);
+          AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
+          SpawnedItem->ShowPickup(false);
+
+          ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
+          ItemLoadInfo.ItemToSave = SpawnedItem;
+          ItemLoadInfo.AmountAtIndex = PickupToSpawn.AmountAtIndex;
+
+          InventoryToLoad.Add(ItemLoadInfo);
+        }
+        else
+        {
+          AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
+          SpawnedItem->ShowPickup(false);
+
+          ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
+          ItemLoadInfo.ItemToSave = SpawnedItem;
+          ItemLoadInfo.AmountAtIndex = PickupToSpawn.AmountAtIndex;
+
+          InventoryToLoad.Add(ItemLoadInfo);
+        }
       }
     }
   }
@@ -1236,14 +1234,32 @@ void APaperWarden::SpawnActionbar(UWardenSaveGame* LocalSaveGameObject)
     {
       ItemLoadInfo.PickupLocation = PickupToSpawn.PickupLocation;
 
-      AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
-      SpawnedItem->ShowPickup(false);
+      AMaster_Pickup* PickupAtLocation = UGeneralFunctions::IsPickupAtLocation(this, ItemLoadInfo.PickupLocation);
 
-      ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
-      ItemLoadInfo.ItemToSave = SpawnedItem;
-      ItemLoadInfo.AmountAtIndex = PickupToSpawn.AmountAtIndex;
+      if (PickupAtLocation && !PickupAtLocation->ItemInfo.bIsSpell)
+      {
+        PickupAtLocation->DestroyPickup();
 
-      ActionbarToLoad.Add(ItemLoadInfo);
+        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
+        SpawnedItem->ShowPickup(false);
+
+        ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
+        ItemLoadInfo.ItemToSave = SpawnedItem;
+        ItemLoadInfo.AmountAtIndex = PickupToSpawn.AmountAtIndex;
+
+        ActionbarToLoad.Add(ItemLoadInfo);
+      }
+      else
+      {
+        AMaster_Pickup* SpawnedItem = GetWorld()->SpawnActor<AMaster_Pickup>(PickupToSpawn.ItemToSave, FVector(0), FRotator(0));
+        SpawnedItem->ShowPickup(false);
+
+        ItemLoadInfo.ItemIndex = PickupToSpawn.ItemIndex;
+        ItemLoadInfo.ItemToSave = SpawnedItem;
+        ItemLoadInfo.AmountAtIndex = PickupToSpawn.AmountAtIndex;
+
+        ActionbarToLoad.Add(ItemLoadInfo);
+      }
     }
   }
 }
@@ -1305,61 +1321,6 @@ TArray<AMaster_Pickup*> APaperWarden::LoadActionbar(UWardenSaveGame* LocalSaveGa
     UE_LOG(LogSaveGame, Error, TEXT("Unable to load Actionbar SaveGameObject not vaild"))
     TArray<AMaster_Pickup*> LocalActionbar;
     return LocalActionbar;
-  }
-}
-
-AMaster_Pickup* APaperWarden::DoesPickupExistInGamemode(int32 ID)
-{
-  TArray<AActor*> LocalActors = UGeneralFunctions::GetAllActorsFromGamemode(this);
-
-  AMaster_Pickup* FoundPickup = nullptr;
-
-  for (AActor* CurrentActor : LocalActors)
-  {
-    if (CurrentActor)
-    {
-      AMaster_Pickup* LocalPickup = Cast<AMaster_Pickup>(CurrentActor);
-
-      if (LocalPickup)
-      {
-        if (LocalPickup->GetID() == ID && !LocalPickup->bInInventory)
-        {
-          FoundPickup = LocalPickup;
-          break;
-        }
-        else
-        {
-          FoundPickup = nullptr;
-          continue;
-        }
-      }
-      else
-      {
-        FoundPickup = nullptr;
-        continue;
-      }
-    }
-  }
-  return FoundPickup; 
-}
-
-void APaperWarden::DestroyLootedPickups(UWardenSaveGame* SaveGameObject)
-{
-  if (SaveGameObject)
-  {
-    for (AMaster_Pickup* CurrentPickup : SaveGameObject->SavedLootedPickups)
-    {
-      AMaster_Pickup* LocalPickup = DoesPickupExistInGamemode(CurrentPickup->GetID());
-
-      if (LocalPickup)
-      {
-        LocalPickup->DestroyPickup();
-      }
-    }
-  }
-  else
-  {
-    UE_LOG(LogSaveGame, Error, TEXT("Unable to DestroyLootedPickups SaveGameObject not vaild"))
   }
 }
 

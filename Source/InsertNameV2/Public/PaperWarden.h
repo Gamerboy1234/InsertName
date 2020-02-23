@@ -224,12 +224,6 @@ private:
 
   void SpawnActionbar(class UWardenSaveGame* SaveGameObject);
 
-  AMaster_Pickup* DoesPickupExistInGamemode(int32 ID);
-
-  void AddToLootedPickups(AMaster_Pickup* PickupToAdd);
-
-  void DestroyLootedPickups(class UWardenSaveGame* SaveGameObject);
-
   TArray<AMaster_Pickup*> LoadInventory(class UWardenSaveGame* SaveGameObject);
 
   TArray<AMaster_Pickup*> LoadActionbar(class UWardenSaveGame* SaveGameObject);
@@ -247,8 +241,6 @@ private:
   FLoadItemInfo ItemLoadInfo;
   /* When game is loaded this is a temp container for Inventory Items */
   TArray<FLoadItemInfo> InventoryToLoad;
-  /* Contains all looted IDs */
-  TArray<AMaster_Pickup*> LootedPickups;
   /* When game is loaded this is a temp container for Actionbar Items */
   TArray<FLoadItemInfo> ActionbarToLoad;
   /* Contains all player spells */
