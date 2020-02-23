@@ -38,6 +38,12 @@ public:
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetIDFromGameMode", CompactNodeTitle = "GetID", Keywords = "GetID"), Category = "Utility")
   static int32 GetIDFromGamemode(UObject* WorldContextObject, AActor* ActorToAssign);
 
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "AddActorToGamemode", CompactNodeTitle = "AddActorToGM", Keywords = "AddActorToGamemode"), Category = "Utility")
+  static void AddPickupToGamemode(UObject* WorldContextObject, AMaster_Pickup* PickupToAdd);
+
+  UFUNCTION(BlueprintPure, meta = (DisplayName = "GetAllActorsFromGamemode", CompactNodeTitle = "GetActorsFromGM", Keywords = "GetAllActorsFromGamemode"), Category = "Utility")
+  static TArray<AActor*> GetAllActorsFromGamemode(UObject* WorldContextObject);
+
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "RemoveIDFromGamemode", CompactNodeTitle = "RemoveID", Keywords = "RemoveID"), Category = "Utility")
   static void RemoveIDFromGamemode(UObject* WorldContextObject, int32 ID, AActor* ActorToRemove);
 

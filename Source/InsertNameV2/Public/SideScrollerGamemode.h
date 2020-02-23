@@ -20,7 +20,18 @@ public:
 
   /* Generates a random number to be assigned to an actor as a ID */
   UFUNCTION(BlueprintCallable, Category = "ID Function")
-  int32 GenID();
+  int32 GenID(AActor* ActorToAdd);
+
+  /* Manually add an Actor to gamemode */
+  UFUNCTION(BlueprintCallable, Category = "Actor Function")
+  void AddActorToGamemode(AActor* ActorToAdd, int32 IDToAdd);
+
+  /* Remove a given pickup from AllActors array */
+  UFUNCTION(BlueprintCallable, Category = "Actor Function")
+  void RemovePickupFromGamemode(AMaster_Pickup* PickupToRemove);
+
+  UFUNCTION(BlueprintCallable, Category = "Actor Function")
+  void RemoveActorFromGamemode(AActor* ActorToRemove);
 
   /* Create an Item obtained message and add to screen */
   UFUNCTION(BlueprintNativeEvent, Category = "HUD Events")
@@ -40,9 +51,26 @@ public:
   UFUNCTION(Blueprintpure, Category = "ID Function")
   const TArray<int32> GetAllIDs();
 
+  /* Returns an array of all actors in gamemode */
+  UFUNCTION(Blueprintpure, Category = "Actor Function")
+  const TArray<AActor*> GetAllActors();
+
+  /* Find the Index of given ID in AllIDs array */
+  UFUNCTION(BlueprintCallable, Category = "ID Function")
+  int32 FindIDInArray(int32 ID);
+
+  /* Find the index of Actor in AllActors array */
+  UFUNCTION(BlueprintCallable, Category = "Actor Function")
+  int32 FindPickupByID(int32 ID);
+
+
+
 private:
   /* A list of all actor IDs */
   TArray<int32> AllIDs;
+
+  /* A list of all actors with ID's in the world */
+  TArray<AActor*> AllActors;
 
   /* Looks to see if given ID is already assigned to an actor */
   bool DoesIDAlreadyExist(int32 ID);

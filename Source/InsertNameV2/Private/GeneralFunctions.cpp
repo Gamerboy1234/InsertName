@@ -87,16 +87,63 @@ int32 UGeneralFunctions::RandomNumber(int32 max, int32 min)
 
 int32 UGeneralFunctions::GetIDFromGamemode(UObject* WorldContextObject, AActor* ActorToAssign)
 {
-  ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(WorldContextObject->GetWorld()->GetAuthGameMode());
-
-  if (LocalGameMode)
+  if (ActorToAssign)
   {
-    return LocalGameMode->GenID();
+    ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(WorldContextObject->GetWorld()->GetAuthGameMode());
+
+    if (LocalGameMode)
+    {
+      return LocalGameMode->GenID(ActorToAssign);
+    }
+    else
+    {
+      UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to assing ID cast to ASideScrollerGamemode failed to assign ID to : %s"), *ActorToAssign->GetName())
+      return 0;
+    }
   }
   else
   {
-    UE_LOG(LogGeneralFunctions, Warning, TEXT("Unable to assing ID cast to ASideScrollerGamemode failed assign ID to : %s"), *ActorToAssign->GetName())
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to GetIDFromGamemode ActorToAssign was not valid"))
     return 0;
+  }
+}
+
+void UGeneralFunctions::AddPickupToGamemode(UObject* WorldContextObject, AMaster_Pickup* PickupToAdd)
+{
+  if (PickupToAdd)
+  {
+    ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(WorldContextObject->GetWorld()->GetAuthGameMode());
+
+    if (LocalGameMode)
+    {
+      LocalGameMode->AddActorToGamemode(PickupToAdd, PickupToAdd->GetID());
+    }
+    else
+    {
+      UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to AddActorToGamemode cast to ASideScrollerGamemode failed to add Pickup : %s"), *PickupToAdd->GetName())
+    }
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to AddActorToGamemode ActorToAdd was not valid"))
+  }
+}
+
+TArray<AActor*> UGeneralFunctions::GetAllActorsFromGamemode(UObject* WorldContextObject)
+{
+  ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(WorldContextObject->GetWorld()->GetAuthGameMode());
+
+  TArray<AActor*> LocalActors;
+
+  if (LocalGameMode)
+  {
+    LocalActors = LocalGameMode->GetAllActors();
+    return LocalActors;
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to get actors from gamemode cast to ASideScrollerGamemode failed"))
+    return LocalActors;
   }
 }
 
@@ -107,6 +154,17 @@ void UGeneralFunctions::RemoveIDFromGamemode(UObject* WorldContextObject, int32 
   if (LocalGameMode)
   {
     LocalGameMode->RemoveID(ID);
+    
+    AMaster_Pickup* PickupToRemove = Cast<AMaster_Pickup>(ActorToRemove);
+
+    if (PickupToRemove)
+    {
+      LocalGameMode->RemovePickupFromGamemode(PickupToRemove);
+    }
+    else
+    {
+      LocalGameMode->RemoveActorFromGamemode(ActorToRemove);
+    }
   }
   else
   {
