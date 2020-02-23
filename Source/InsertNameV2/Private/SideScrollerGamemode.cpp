@@ -3,8 +3,6 @@
 
 #include "SideScrollerGamemode.h"
 #include "InsertNameV2.h"
-#include "WardenSaveGame.h"
-#include "Master_Pickup.h"
 #include "GeneralFunctions.h"
 
 int32 ASideScrollerGamemode::GenID()
@@ -63,45 +61,4 @@ const TArray<int32> ASideScrollerGamemode::GetAllIDs()
 void ASideScrollerGamemode::RemoveID(int32 IDToRemove)
 {
   AllIDs.Remove(IDToRemove);
-}
-
-void ASideScrollerGamemode::AddToLootedPickups(AMaster_Pickup* PickupToAdd)
-{
-  if (PickupToAdd)
-  {
-    LootedPickups.Add(PickupToAdd);
-  }
-  else
-  {
-    UE_LOG(LogSideScrollerGameMode, Error, TEXT("Was unable to add pickup to looted items PickupToAdd to add was not vaild"))
-  }
-}
-
-void ASideScrollerGamemode::SaveGamemode(UWardenSaveGame* SaveGameObject)
-{
-  SaveGameObject->SavedLootedPickups = LootedPickups;
-}
-
-void ASideScrollerGamemode::LoadGamemode(UWardenSaveGame* SaveGameObject)
-{
-  LootedPickups = SaveGameObject->SavedLootedPickups;
-}
-
-void ASideScrollerGamemode::DestroyLootedPickups()
-{
-  for (AMaster_Pickup* Pickup : LootedPickups)
-  {
-    if (Pickup)
-    {
-      AMaster_Pickup* FoundPickup = UGeneralFunctions::DoesPickupExistInWorld(Pickup, Pickup);
-
-      if (FoundPickup)
-      {
-        if (!FoundPickup->bInInventory)
-        {
-          FoundPickup->DestroyPickup();
-        }
-      }
-    }
-  }
 }

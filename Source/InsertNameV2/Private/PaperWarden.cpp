@@ -7,7 +7,6 @@
 #include "PaperSpriteComponent.h"
 #include "Engine.h"
 #include "Master_Spell.h"
-#include "SideScrollerGamemode.h"
 #include "GeneralFunctions.h"
 #include "InsertNameV2.h"
 #include "Components/InputComponent.h"
@@ -1074,18 +1073,7 @@ void APaperWarden::SaveGame()
     WardenSaveGame->SavedActionBarSlotsPerRow = ActionBarSlotsPerRow;
     WardenSaveGame->SavedPlayerCurrentHP = PlayerCurrentHP;
     WardenSaveGame->SavedPlayerMaxHP = PlayerMaxHP;
-
-    ASideScrollerGamemode* LocalGamemode = UGeneralFunctions::GetGamemode(this);
-
-    if (LocalGamemode)
-    {
-      LocalGamemode->SaveGamemode(WardenSaveGame);
-    }
-    else
-    {
-      UE_LOG(LogSaveGame, Error, TEXT("Was unable to save gamemode LocalGamemode was not valid"))
-    }
-    
+    WardenSaveGame->SavedLootedPickups = LootedPickups;
 
     if (bIsGunEquipped)
     {
@@ -1171,6 +1159,8 @@ void APaperWarden::LoadGame()
     UpdateInventory();
     UpdateActionBar();
 
+    WardenSaveGame->DestroyLootedPickups();
+
     if (WardenSaveGame->SavedbIsGunEquipped)
     {
       AMaster_Pickup* SpawnedPickup = GetWorld()->SpawnActor<AMaster_Pickup>(WardenSaveGame->SavedGunClass, FVector(0), FRotator(0));
@@ -1183,18 +1173,6 @@ void APaperWarden::LoadGame()
       {
         UE_LOG(LogSaveGame, Error, TEXT("Game failed to load game was unable to spawn gun"))
       }
-    }
-
-    ASideScrollerGamemode* LocalGamemode = UGeneralFunctions::GetGamemode(this);
-
-    if (LocalGamemode)
-    {
-      LocalGamemode->LoadGamemode(WardenSaveGame);
-      LocalGamemode->DestroyLootedPickups();
-    }
-    else
-    {
-      UE_LOG(LogSaveGame, Error, TEXT("Was unable to load gamemode LocalGamemode was not valid"))
     }
 
     // Debug Message

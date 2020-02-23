@@ -26,6 +26,8 @@ public:
 
   void SaveActionbarItem(AMaster_Pickup* ItemToSave, int32 Index);
 
+  void DestroyLootedPickups();
+
   UPROPERTY(EditAnywhere, BlueprintReadOnly,  Category = "Save Game")
   TArray<FSavedItemInfo> SavedInventory;
 
