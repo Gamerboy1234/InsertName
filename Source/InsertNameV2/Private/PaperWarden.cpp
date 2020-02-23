@@ -1213,7 +1213,7 @@ void APaperWarden::SpawnActionbar(UWardenSaveGame* LocalSaveGameObject)
 {
   if (LocalSaveGameObject)
   {
-    ActionBarItems.Empty();
+    ActionbarToLoad.Empty();
 
     for (FSavedItemInfo PickupToSpawn : LocalSaveGameObject->SavedActionBar)
     {
