@@ -4,6 +4,7 @@
 #include "WardenSaveGame.h"
 #include "Engine/World.h"
 #include "InsertNameV2.h"
+#include "GeneralFunctions.h"
 #include "PaperWarden.h"
 #include "Master_Pickup.h"
 
@@ -46,5 +47,24 @@ void UWardenSaveGame::SaveActionbarItem(AMaster_Pickup* ItemToSave, int32 Index)
   else
   {
     UE_LOG(LogSaveGame, Error, TEXT("Failed to save ActionbarItem ItemToSave was not valid"))
+  }
+}
+
+void UWardenSaveGame::DestroyLootedPickups()
+{
+  for (AMaster_Pickup* Pickup : SavedLootedPickups)
+  {
+    if (Pickup)
+    {
+      AMaster_Pickup* FoundPickup = UGeneralFunctions::DoesPickupExistInWorld(Pickup, Pickup);
+
+      if (FoundPickup)
+      {
+        if (!FoundPickup->bInInventory)
+        {
+          FoundPickup->DestroyPickup();
+        }
+      }
+    }
   }
 }

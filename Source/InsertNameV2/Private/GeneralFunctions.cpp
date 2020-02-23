@@ -183,3 +183,30 @@ AMaster_Pickup* UGeneralFunctions::IsPickupAtLocation(UObject* WorldContextObjec
   return LocalPickup;
 }
 
+AMaster_Pickup* UGeneralFunctions::DoesPickupExistInWorld(UObject* WorldContextObject, AMaster_Pickup* Pickup)
+{
+  TArray<AActor*> FoundActors;
+
+  UGameplayStatics::GetAllActorsOfClass(WorldContextObject, AMaster_Pickup::StaticClass(), FoundActors);
+
+  AMaster_Pickup* LocalPickup = nullptr;
+
+  for (AActor* CurrentActor : FoundActors)
+  {
+    if (CurrentActor)
+    {
+      AMaster_Pickup* CurrentPickup = Cast<AMaster_Pickup>(CurrentActor);
+
+      if (CurrentPickup)
+      {
+        if (CurrentPickup->GetUniqueID() == Pickup->GetUniqueID())
+        {
+          LocalPickup = CurrentPickup;
+          break;
+        }
+      }
+    }
+  }
+  return LocalPickup;
+}
+

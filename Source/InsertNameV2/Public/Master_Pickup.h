@@ -18,6 +18,8 @@ public:
 
   bool bAddedToStack;
 
+  bool bInInventory;
+
   UPROPERTY(BlueprintReadOnly, Category = "ItemInfo")
   int32 AmountAtIndex;
 

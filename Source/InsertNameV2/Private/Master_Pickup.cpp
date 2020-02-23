@@ -33,6 +33,8 @@ void AMaster_Pickup::BeginPlay()
 {
 	Super::BeginPlay();
 
+  bInInventory = false;
+
   ID = UGeneralFunctions::GetIDFromGamemode(this, this);
 
   PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerCharacter(this, 0));
@@ -55,6 +57,7 @@ void AMaster_Pickup::OnInteract_Implementation()
       }
       else
       {
+        PlayerRef->LootedPickups.Add(this);
         this->ShowPickup(false);
       }
     }
@@ -72,6 +75,8 @@ void AMaster_Pickup::ShowPickup(bool Show)
   this->SetActorEnableCollision(Show);
 
   this->SetActorTickEnabled(Show);
+
+  bInInventory = true;
 }
 
 void AMaster_Pickup::AddToStack(int32 AmountToAdd)

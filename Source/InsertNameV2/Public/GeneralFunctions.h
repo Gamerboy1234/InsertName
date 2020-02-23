@@ -53,6 +53,9 @@ public:
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "IsActorAtLocation", CompactNodeTitle = "ActorAtLocation", Keywords = "IsActorAtLocation"), Category = "Utility")
   static AMaster_Pickup* IsPickupAtLocation(UObject* WorldContextObject, FVector Location);
 
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "DoesPickupExistInWorld", CompactNodeTitle = "DoesPickExist", Keywords = "DoesPickupExistInWorld"), Category = "Utility")
+  static AMaster_Pickup* DoesPickupExistInWorld(UObject* WorldContextObject, AMaster_Pickup* Pickup);
+
 
   template <typename TAr>
   static void SetArrayElement(TAr item, TArray<TAr>& item_array, int32 index)
