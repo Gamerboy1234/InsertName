@@ -210,3 +210,18 @@ AMaster_Pickup* UGeneralFunctions::DoesPickupExistInWorld(UObject* WorldContextO
   return LocalPickup;
 }
 
+ASideScrollerGamemode* UGeneralFunctions::GetGamemode(UObject* WorldContextObject)
+{
+  ASideScrollerGamemode* LocalGameMode = Cast<ASideScrollerGamemode>(WorldContextObject->GetWorld()->GetAuthGameMode());
+
+  if (LocalGameMode)
+  {
+    return LocalGameMode;
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Warning, TEXT("Failed to get gamemode cast failed"))
+    return nullptr;
+  }
+}
+

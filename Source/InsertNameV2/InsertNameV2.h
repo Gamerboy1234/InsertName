@@ -21,3 +21,5 @@ DECLARE_LOG_CATEGORY_EXTERN(LogEnemyDebuffs, All, All)
 DECLARE_LOG_CATEGORY_EXTERN(LogSideScrollerGameMode, All, All)
 
 DECLARE_LOG_CATEGORY_EXTERN(LogGeneralFunctions, All, All)
+
+DECLARE_LOG_CATEGORY_EXTERN(LogPickup, All, All)

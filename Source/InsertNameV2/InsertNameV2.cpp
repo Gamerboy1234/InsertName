@@ -22,3 +22,5 @@ DEFINE_LOG_CATEGORY(LogEnemyDebuffs);
 DEFINE_LOG_CATEGORY(LogSideScrollerGameMode);
 
 DEFINE_LOG_CATEGORY(LogGeneralFunctions);
+
+DEFINE_LOG_CATEGORY(LogPickup);

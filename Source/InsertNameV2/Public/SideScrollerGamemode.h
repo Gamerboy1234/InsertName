@@ -7,6 +7,7 @@
 #include "SideScrollerGamemode.generated.h"
 
 class AMaster_Pickup;
+class UWardenSaveGame;
 
 /**
  * 
@@ -40,9 +41,23 @@ public:
   UFUNCTION(Blueprintpure, Category = "ID Function")
   const TArray<int32> GetAllIDs();
 
+  /* Add to looted pickups array */
+  UFUNCTION(BlueprintCallable, Category = "Pickup Function")
+  void AddToLootedPickups(AMaster_Pickup* PickupToAdd);
+
+  void SaveGamemode(UWardenSaveGame* SaveGameObject);
+
+  void LoadGamemode(UWardenSaveGame* SaveGameObject);
+
+  void DestroyLootedPickups();
+
+
 private:
   /* A list of all actor IDs */
   TArray<int32> AllIDs;
+
+  /* A list of all looted pickups */
+  TArray<AMaster_Pickup*> LootedPickups;
 
   /* Looks to see if given ID is already assigned to an actor */
   bool DoesIDAlreadyExist(int32 ID);

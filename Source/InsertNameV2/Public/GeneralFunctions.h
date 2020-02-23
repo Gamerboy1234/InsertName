@@ -9,6 +9,7 @@
 #include "GeneralFunctions.generated.h"
 
 class AMaster_Pickup;
+class ASideScrollerGamemode;
 
 /**
  * 
@@ -55,6 +56,9 @@ public:
 
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "DoesPickupExistInWorld", CompactNodeTitle = "DoesPickExist", Keywords = "DoesPickupExistInWorld"), Category = "Utility")
   static AMaster_Pickup* DoesPickupExistInWorld(UObject* WorldContextObject, AMaster_Pickup* Pickup);
+
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetGamemode", CompactNodeTitle = "GetGamemode", Keywords = "GetGamemode"), Category = "Utility")
+  static ASideScrollerGamemode* GetGamemode(UObject* WorldContextObject);
 
 
   template <typename TAr>

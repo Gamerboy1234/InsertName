@@ -212,8 +212,6 @@ public:
   UFUNCTION(BlueprintCallable, Category = "SaveGame")
   void LoadGame();
 
-  TArray<AMaster_Pickup*> LootedPickups;
-
 protected:
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;

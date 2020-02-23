@@ -5,6 +5,7 @@
 #include "PaperSpriteComponent.h"
 #include "Engine/Texture2D.h"
 #include "Components/BoxComponent.h"
+#include "SideScrollerGamemode.h"
 #include "Kismet/GameplayStatics.h"
 #include "InsertNameV2.h"
 #include "GeneralFunctions.h"
@@ -57,14 +58,24 @@ void AMaster_Pickup::OnInteract_Implementation()
       }
       else
       {
-        PlayerRef->LootedPickups.Add(this);
+        ASideScrollerGamemode* LocalGamemode = UGeneralFunctions::GetGamemode(this);
+
+        if (LocalGamemode)
+        {
+          LocalGamemode->AddToLootedPickups(this);
+        }
+        else
+        {
+          UE_LOG(LogPickup, Error, TEXT("Unable to add pickup to gamemode LocalGamemode was not valid"))
+        }
+
         this->ShowPickup(false);
       }
     }
   }
   else
   {
-    UE_LOG(LogTemp, Error, TEXT("Unable to add item to inventory player is not valid"))
+    UE_LOG(LogPickup, Error, TEXT("Unable to add item to inventory player is not valid"))
   }
 }
 
