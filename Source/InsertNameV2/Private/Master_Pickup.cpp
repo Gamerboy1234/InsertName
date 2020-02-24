@@ -57,7 +57,6 @@ void AMaster_Pickup::OnInteract_Implementation()
       }
       else
       {
-        PlayerRef->LootedPickups.Add(this);
         this->ShowPickup(false);
       }
     }

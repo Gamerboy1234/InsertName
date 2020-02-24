@@ -1073,8 +1073,7 @@ void APaperWarden::SaveGame()
     WardenSaveGame->SavedActionBarSlotsPerRow = ActionBarSlotsPerRow;
     WardenSaveGame->SavedPlayerCurrentHP = PlayerCurrentHP;
     WardenSaveGame->SavedPlayerMaxHP = PlayerMaxHP;
-    WardenSaveGame->SavedLootedPickups = LootedPickups;
-
+ 
     if (bIsGunEquipped)
     {
       if (GunRef)
@@ -1158,8 +1157,6 @@ void APaperWarden::LoadGame()
 
     UpdateInventory();
     UpdateActionBar();
-
-    WardenSaveGame->DestroyLootedPickups();
 
     if (WardenSaveGame->SavedbIsGunEquipped)
     {

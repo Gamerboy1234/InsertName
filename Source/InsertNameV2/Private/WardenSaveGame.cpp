@@ -49,22 +49,3 @@ void UWardenSaveGame::SaveActionbarItem(AMaster_Pickup* ItemToSave, int32 Index)
     UE_LOG(LogSaveGame, Error, TEXT("Failed to save ActionbarItem ItemToSave was not valid"))
   }
 }
-
-void UWardenSaveGame::DestroyLootedPickups()
-{
-  for (AMaster_Pickup* Pickup : SavedLootedPickups)
-  {
-    if (Pickup)
-    {
-      AMaster_Pickup* FoundPickup = UGeneralFunctions::DoesPickupExistInWorld(Pickup, Pickup);
-
-      if (FoundPickup)
-      {
-        if (!FoundPickup->bInInventory)
-        {
-          FoundPickup->DestroyPickup();
-        }
-      }
-    }
-  }
-}

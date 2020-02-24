@@ -26,8 +26,6 @@ public:
 
   void SaveActionbarItem(AMaster_Pickup* ItemToSave, int32 Index);
 
-  void DestroyLootedPickups();
-
   UPROPERTY(EditAnywhere, BlueprintReadOnly,  Category = "Save Game")
   TArray<FSavedItemInfo> SavedInventory;
 
@@ -57,9 +55,6 @@ public:
 
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   float SavedPlayerMaxHP;
-
-  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
-  TArray<AMaster_Pickup*> SavedLootedPickups;
 
   FSavedItemInfo ItemInfo;
 };
