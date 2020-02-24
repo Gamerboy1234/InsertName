@@ -212,6 +212,14 @@ public:
   UFUNCTION(BlueprintCallable, Category = "SaveGame")
   void LoadGame();
 
+  /* Saves all player data to a checkpoint save slot */
+  UFUNCTION(BlueprintCallable, Category = "SaveGame")
+  void SaveCheckPoint();
+
+  /* Load all player data from last checkpoint */
+  UFUNCTION(BlueprintCallable, Category = "SaveGame")
+  void LoadCheckPoint();
+
 protected:
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;
@@ -227,8 +235,6 @@ private:
   TArray<AMaster_Pickup*> LoadInventory(class UWardenSaveGame* SaveGameObject);
 
   TArray<AMaster_Pickup*> LoadActionbar(class UWardenSaveGame* SaveGameObject);
-
-  FTimerHandle CollisionReset;
 
   int32 KillCount;
 

@@ -1288,6 +1288,126 @@ TArray<AMaster_Pickup*> APaperWarden::LoadActionbar(UWardenSaveGame* LocalSaveGa
   }
 }
 
+void APaperWarden::SaveCheckPoint()
+{
+    // Create and save game instance
+  UWardenSaveGame* WardenSaveGame = Cast<UWardenSaveGame>(UGameplayStatics::CreateSaveGameObject(UWardenSaveGame::StaticClass()));
+
+  if (WardenSaveGame)
+  {
+    // Set Saved var's
+    WardenSaveGame->SavedAmountOfInventorySlots = AmountofInventorySlots;
+    WardenSaveGame->SavedActionBarSlotsPerRow = ActionBarSlotsPerRow;
+    WardenSaveGame->SavedPlayerCurrentHP = PlayerCurrentHP;
+    WardenSaveGame->SavedPlayerMaxHP = PlayerMaxHP;
+ 
+    if (bIsGunEquipped)
+    {
+      if (GunRef)
+      {
+        WardenSaveGame->SavedGunClass = GunRef->GetClass();
+        WardenSaveGame->SavedbIsGunEquipped = bIsGunEquipped;
+        WardenSaveGame->SavedGunOffset = GunOffset;
+        WardenSaveGame->SavedGunScale = CurrentGunScale;
+      }
+    }
+
+    // Save Inventory
+    for (AMaster_Pickup* Pickup : InventoryItems)
+    {
+      if (Pickup)
+      {
+        int32 Index = InventoryItems.Find(Pickup);
+
+        if (InventoryItems.IsValidIndex(Index))
+        {
+          WardenSaveGame->SaveInventoryItem(Pickup, Index);
+        }
+        else
+        {
+          UE_LOG(LogSaveGame, Error, TEXT("Couldn't find pickup to save in Inventory"))
+          break;
+        }
+      }
+    }
+    // Save Actionbar
+    for (AMaster_Pickup* Pickup : ActionBarItems)
+    {
+      if (Pickup)
+      {
+        int32 Index = ActionBarItems.Find(Pickup);
+
+        if (ActionBarItems.IsValidIndex(Index))
+        {
+          WardenSaveGame->SaveActionbarItem(Pickup, Index);
+        }
+        else
+        {
+          UE_LOG(LogSaveGame, Error, TEXT("Couldn't find pickup to save on Actionbar"))
+          break;
+        }
+      }
+    }
+
+    // Save the actual game 
+    UGameplayStatics::SaveGameToSlot(WardenSaveGame, TEXT("Checkpoint"), 0);
+    // Debug Message
+    UE_LOG(LogSaveGame, Log, TEXT("Game Saved"))
+  }
+  else
+  {
+    UE_LOG(LogSaveGame, Error, TEXT("Game failed to save game WardenSaveGame cast failed"))
+  }
+}
+
+void APaperWarden::LoadCheckPoint()
+{
+  // Create and save game instance
+  UWardenSaveGame* WardenSaveGame = Cast<UWardenSaveGame>(UGameplayStatics::CreateSaveGameObject(UWardenSaveGame::StaticClass()));
+
+  if (WardenSaveGame)
+  {
+    // Load game and get and all saved var's 
+    WardenSaveGame = Cast<UWardenSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("Checkpoint"), 0));
+
+    PlayerCurrentHP = WardenSaveGame->SavedPlayerCurrentHP;
+    PlayerMaxHP = WardenSaveGame->SavedPlayerMaxHP;
+
+    SpawnInventory(WardenSaveGame);
+    SpawnActionbar(WardenSaveGame);
+
+    InventoryItems.Empty();
+    ActionBarItems.Empty();
+
+    InventoryItems = LoadInventory(WardenSaveGame);
+    ActionBarItems = LoadActionbar(WardenSaveGame);
+
+    UpdateInventory();
+    UpdateActionBar();
+
+    if (WardenSaveGame->SavedbIsGunEquipped)
+    {
+      AMaster_Pickup* SpawnedPickup = GetWorld()->SpawnActor<AMaster_Pickup>(WardenSaveGame->SavedGunClass, FVector(0), FRotator(0));
+
+      if (SpawnedPickup)
+      {
+        EquipGun(SpawnedPickup, WardenSaveGame->SavedGunOffset, WardenSaveGame->SavedGunScale);
+      }
+      else
+      {
+        UE_LOG(LogSaveGame, Error, TEXT("Game failed to load game was unable to spawn gun"))
+      }
+    }
+
+    // Debug Message
+    UE_LOG(LogSaveGame, Log, TEXT("Game Loaded"))
+  }
+  else
+  {
+    UE_LOG(LogSaveGame, Error, TEXT("Game failed to load game WardenSaveGame cast failed"))
+  }
+}
+
 const TArray<AMaster_Spell*> APaperWarden::GetPlayerSpells()
 {
   return PlayerSpells;
