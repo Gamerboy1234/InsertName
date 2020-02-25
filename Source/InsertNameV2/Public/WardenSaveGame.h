@@ -56,5 +56,11 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   float SavedPlayerMaxHP;
 
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
+  FName SavedCurrentCheckpointLevel;
+
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
+  bool SavedbWasLevelLoaded;
+
   FSavedItemInfo ItemInfo;
 };

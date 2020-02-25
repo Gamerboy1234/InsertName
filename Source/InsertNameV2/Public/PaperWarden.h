@@ -215,6 +215,13 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "SaveGame")
   bool bLoadedCheckpoint;
 
+  /* The level to respawn the player at */
+  UPROPERTY(BlueprintReadWrite, Category = "SaveGame")
+  FName CurrentCheckpointLevel;
+
+  UPROPERTY(BlueprintReadWrite, Category = "SaveGame")
+  bool bWasLevelLoaded;
+
 protected:
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;
