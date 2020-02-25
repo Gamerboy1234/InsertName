@@ -207,18 +207,13 @@ public:
   const TArray<class AMaster_Spell*> GetPlayerSpells();
 
   UFUNCTION(BlueprintCallable, Category = "SaveGame")
-  void SaveGame();
+  void SaveGame(FString SaveSlot);
 
   UFUNCTION(BlueprintCallable, Category = "SaveGame")
-  void LoadGame();
+  void LoadGame(FString SaveSlot);
 
-  /* Saves all player data to a checkpoint save slot */
-  UFUNCTION(BlueprintCallable, Category = "SaveGame")
-  void SaveCheckPoint();
-
-  /* Load all player data from last checkpoint */
-  UFUNCTION(BlueprintCallable, Category = "SaveGame")
-  void LoadCheckPoint();
+  UPROPERTY(BlueprintReadWrite, Category = "SaveGame")
+  bool bLoadedCheckpoint;
 
 protected:
   // Called when the game starts or when spawned
