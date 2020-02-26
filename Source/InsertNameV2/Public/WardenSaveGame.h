@@ -62,5 +62,8 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   bool SavedbWasLevelLoaded;
 
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
+  bool SavedbLoadedCheckpoint;
+
   FSavedItemInfo ItemInfo;
 };

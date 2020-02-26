@@ -1075,6 +1075,7 @@ void APaperWarden::SaveGame(FString SaveSlot)
     WardenSaveGame->SavedPlayerMaxHP = PlayerMaxHP;
     WardenSaveGame->SavedCurrentCheckpointLevel = CurrentCheckpointLevel;
     WardenSaveGame->SavedbWasLevelLoaded = bWasLevelLoaded;
+    WardenSaveGame->SavedbLoadedCheckpoint = bLoadedCheckpoint;
  
     if (bIsGunEquipped)
     {
@@ -1145,6 +1146,7 @@ void APaperWarden::LoadGame(FString SaveSlot)
     // Load game and get and all saved var's 
     WardenSaveGame = Cast<UWardenSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlot, 0));
 
+    bLoadedCheckpoint = WardenSaveGame->SavedbLoadedCheckpoint;
     bWasLevelLoaded = WardenSaveGame->SavedbWasLevelLoaded;
     PlayerCurrentHP = WardenSaveGame->SavedPlayerCurrentHP;
     PlayerMaxHP = WardenSaveGame->SavedPlayerMaxHP;
