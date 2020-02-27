@@ -7,6 +7,8 @@
 #include "SideScrollerGamemode.h"
 #include "Master_Pickup.h"
 #include "InsertNameV2.h"
+#include "PaperWarden.h"
+#include "Kismet/GameplayStatics.h"
 #include "PaperZDCharacter.h"
 #include <iostream>
 #include <random>
@@ -210,3 +212,32 @@ AMaster_Pickup* UGeneralFunctions::DoesPickupExistInWorld(UObject* WorldContextO
   return LocalPickup;
 }
 
+FVector UGeneralFunctions::GetUnitVector(FVector From, FVector To)
+{
+  return (To - From).GetSafeNormal();
+}
+
+APaperWarden* UGeneralFunctions::GetPlayer(UObject* WorldContextObject)
+{
+  ACharacter* Character = UGameplayStatics::GetPlayerCharacter(WorldContextObject, 0);
+
+  if (Character)
+  {
+    APaperWarden* Player = Cast<APaperWarden>(Character);
+    
+    if (Player)
+    {
+      return Player;
+    }
+    else
+    {
+      UE_LOG(LogGeneralFunctions, Error, TEXT("Cast to Character failed was unable to get player"))
+      return nullptr;
+    }
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Was unable to get player from UGameplayStatics::GetPlayerCharacter"))
+    return nullptr;
+  }
+}

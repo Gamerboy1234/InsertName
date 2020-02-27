@@ -9,6 +9,7 @@
 #include "GeneralFunctions.generated.h"
 
 class AMaster_Pickup;
+class APaperWarden;
 
 /**
  * 
@@ -55,6 +56,10 @@ public:
   /* Checks to see if the given pickup is in the current level */
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "DoesPickupExistInWorld", CompactNodeTitle = "DoesPickExist", Keywords = "DoesPickupExistInWorld"), Category = "Utility")
   static AMaster_Pickup* DoesPickupExistInWorld(UObject* WorldContextObject, AMaster_Pickup* Pickup);
+  /* Finds the direction vector from one position to another */
+  static FVector GetUnitVector(FVector From, FVector To);
+  /* Gets the player character */
+  static APaperWarden* GetPlayer(UObject* WorldContextObject);
 
   /* Will insert a item into an array at a given index */
   template <typename TAr>
