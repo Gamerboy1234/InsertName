@@ -28,9 +28,13 @@ AMaster_Magnet::AMaster_Magnet()
   CurrentSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
   CurrentSprite->SetupAttachment(RootComponent);
   CurrentSprite->SetCollisionResponseToAllChannels(ECR_Ignore);
-  CurrentSprite->SetCollisionResponseToChannel(ECC_GameTraceChannel13, ECR_Block);
-  CurrentSprite->SetCollisionResponseToChannel(ECC_GameTraceChannel17, ECR_Block);
-  CurrentSprite->SetCollisionResponseToChannel(ECC_GameTraceChannel18, ECR_Block);
+
+  InnerSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("InnerSphereCollision"));
+  InnerSphereComp->SetupAttachment(RootComponent);
+  InnerSphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+  InnerSphereComp->SetCollisionResponseToChannel(ECC_GameTraceChannel13, ECR_Block);
+  InnerSphereComp->SetCollisionResponseToChannel(ECC_GameTraceChannel17, ECR_Block);
+  InnerSphereComp->SetCollisionResponseToChannel(ECC_GameTraceChannel18, ECR_Block);
 }
 
 // Called when the game starts or when spawned

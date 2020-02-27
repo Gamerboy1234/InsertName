@@ -22,6 +22,9 @@ public:
   /* When player enters this collision will pull player if current active */
   UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
   USphereComponent* OuterSphereComp;
+  /* When player shoots this collision the magnet will deactivate */
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  USphereComponent* InnerSphereComp;
   /* The sprite to show if the magnet is currently active */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magnet Settings")
   UPaperSprite* ActiveSprite;
