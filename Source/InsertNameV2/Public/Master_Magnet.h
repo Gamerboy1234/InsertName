@@ -9,6 +9,7 @@
 class USphereComponent;
 class UPaperSpriteComponent;
 class APaperWarden;
+class UPaperSprite;
 
 UCLASS()
 class INSERTNAMEV2_API AMaster_Magnet : public AActor
@@ -20,13 +21,13 @@ public:
 	AMaster_Magnet();
   /* When player enters this collision will pull player if current active */
   UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-  USphereComponent* SphereComp;
+  USphereComponent* OuterSphereComp;
   /* The sprite to show if the magnet is currently active */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magnet Settings")
-  UPaperSpriteComponent* ActiveSprite;
+  UPaperSprite* ActiveSprite;
   /* The sprite to show if the magnet is currently deactivated */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magnet Settings")
-  UPaperSpriteComponent* DeactivatedSprite;
+  UPaperSprite* DeactivatedSprite;
   /* The magnets current sprite */
   UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
   UPaperSpriteComponent* CurrentSprite;
@@ -38,7 +39,7 @@ public:
   bool bActive;
   /* Updates the magnets current sprite to given sprite */
   UFUNCTION(BlueprintCallable, Category = "Magnet Functions")
-  void UpdateSprite(UPaperSpriteComponent* Sprite);
+  void UpdateSprite(UPaperSprite* Sprite);
   /* Called to activate the magnet and start player pull */
   UFUNCTION(BlueprintCallable, Category = "Magnet Functions")
   void Activate();
@@ -49,12 +50,18 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Magnet Functions")
   void OnPullStop();
   void OnPullStop_Implementation();
+  /* Called to stop pull timer */
+  UFUNCTION(BlueprintCallable, Category = "Magnet Functions")
+  void StopTimer();
 
   UFUNCTION()
-  void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+  void OnOuterOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
   UFUNCTION()
-  void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+  void OnOuterOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+  UFUNCTION()
+  void OnSpriteHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
   /* The actually timer that is pulling the player */
   UPROPERTY(BlueprintReadOnly, Category = "Magnet Settings")
