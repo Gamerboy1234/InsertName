@@ -15,6 +15,8 @@ void AMaster_Spell::BeginPlay()
   Super::BeginPlay();
 
   this->ShowPickup(false);
+
+  DefaultCoolDownTime = CoolDownTime;
 }
 
 void AMaster_Spell::UseItem_Implementation()
@@ -24,9 +26,9 @@ void AMaster_Spell::UseItem_Implementation()
 
 void AMaster_Spell::OnSpellCastStart_Implementation()
 {
-  if (!CurrentlyCasting && !CurrentlyOnCooldown)
+  if (!bCurrentlyCasting && !bCurrentlyOnCooldown)
   {
-    CurrentlyCasting = true;
+    bCurrentlyCasting = true;
     BeginSpellCast();
   }
 }
@@ -38,24 +40,57 @@ void AMaster_Spell::BeginSpellCast_Implementation()
   OnCastComplete();
 }
 
+void AMaster_Spell::PauseCoolDown_Implementation()
+{
+  SetupPause();
+}
+
+void AMaster_Spell::ResumeCoolDown_Implementation()
+{
+  SetupResume();
+}
+
 void AMaster_Spell::OnCastComplete_Implementation()
 {
-  CurrentlyOnCooldown = true;
-  OnCoolDown();
+  bCurrentlyOnCooldown = true;
+  OnCoolDown(false);
 }
 
 void AMaster_Spell::ResetSpell()
 {
-  CurrentlyCasting = false;
-  CurrentlyOnCooldown = false;
+  bCurrentlyCasting = false;
+  bCurrentlyOnCooldown = false;
+  bCoolDownPaused = false;
+  CoolDownTime = DefaultCoolDownTime;
 }
 
-bool AMaster_Spell::GetCurrentlyOnCooldown()
+void AMaster_Spell::SetupPause()
 {
-  return CurrentlyOnCooldown;
+  bContinueFromLastCoolDown = true;
+  bCoolDownPaused = true;
+  bCurrentlyOnCooldown = true;
+  bCurrentlyCasting = false;
 }
 
-bool AMaster_Spell::GetCurrentlyCasting()
+void AMaster_Spell::SetupResume()
 {
-  return CurrentlyCasting;
+  bCoolDownPaused = false;
+  bCurrentlyOnCooldown = true;
+  bCurrentlyCasting = false;
+  OnCoolDown(true);
+}
+
+const bool AMaster_Spell::GetCurrentlyOnCooldown()
+{
+  return bCurrentlyOnCooldown;
+}
+
+const bool AMaster_Spell::GetCurrentlyCasting()
+{
+  return bCurrentlyCasting;
+}
+
+const float AMaster_Spell::GetDefaultCoolDownTime()
+{
+  return DefaultCoolDownTime;
 }

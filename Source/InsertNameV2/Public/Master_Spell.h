@@ -31,26 +31,55 @@ public:
   void BeginSpellCast();
   void BeginSpellCast_Implementation();
 
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Spell Events")
+  void PauseCoolDown();
+  void PauseCoolDown_Implementation();
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Spell Events")
+  void ResumeCoolDown();
+  void ResumeCoolDown_Implementation();
+
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Spell Events")
-  void OnCoolDown();
+  void OnCoolDown(bool ResumeCooldown);
 
   UFUNCTION(BlueprintCallable, Category = "Spell Functions")
   void ResetSpell();
 
+  UFUNCTION(BlueprintCallable, Category = "Spell Functions")
+  void SetupPause();
+
+  UFUNCTION(BlueprintCallable, Category = "Spell Functions")
+  void SetupResume();
+
   virtual void UseItem_Implementation() override;
 
   UFUNCTION(BlueprintPure, Category = "Spell Functions")
-  bool GetCurrentlyOnCooldown();
+  const bool GetCurrentlyOnCooldown();
 
   UFUNCTION(BlueprintPure, Category = "Spell Functions")
-  bool GetCurrentlyCasting();
+  const bool GetCurrentlyCasting();
+
+  UFUNCTION(BlueprintPure, Category = "Spell Functions")
+  const float GetDefaultCoolDownTime();
   
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Info")
   float CoolDownTime;
   UPROPERTY(BlueprintReadWrite, Category = "Item Info")
-  bool CurrentlyCasting;
+  float CurrentTimeLinePostion;
   UPROPERTY(BlueprintReadWrite, Category = "Item Info")
-  bool CurrentlyOnCooldown;
+  bool bCurrentlyCasting;
+  UPROPERTY(BlueprintReadWrite, Category = "Item Info")
+  bool bCurrentlyOnCooldown;
+  UPROPERTY(BlueprintReadWrite, Category = "Item Info")
+  float CurrentScalerValue;
+  UPROPERTY(BlueprintReadWrite, Category = "Item Info")
+  bool bCoolDownPaused;
+  UPROPERTY(BlueprintReadWrite, Category = "Item Info")
+  bool bContinueFromLastCoolDown;
+
+private:
+
+  float DefaultCoolDownTime;
 
 protected:
   // Called when the game starts or when spawned
