@@ -32,7 +32,7 @@ AMaster_Magnet::AMaster_Magnet()
   InnerSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("InnerSphereCollision"));
   InnerSphereComp->SetupAttachment(RootComponent);
   InnerSphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
-  InnerSphereComp->SetCollisionResponseToChannel(ECC_GameTraceChannel13, ECR_Block);
+  InnerSphereComp->SetCollisionResponseToChannel(ECC_GameTraceChannel14, ECR_Block);
   InnerSphereComp->SetCollisionResponseToChannel(ECC_GameTraceChannel17, ECR_Block);
   InnerSphereComp->SetCollisionResponseToChannel(ECC_GameTraceChannel18, ECR_Block);
 }
@@ -53,7 +53,7 @@ void AMaster_Magnet::BeginPlay()
 
   OuterSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMaster_Magnet::OnOuterOverlapBegin);
   OuterSphereComp->OnComponentEndOverlap.AddDynamic(this, &AMaster_Magnet::OnOuterOverlapEnd);
-  CurrentSprite->OnComponentHit.AddDynamic(this, &AMaster_Magnet::OnSpriteHit);
+  InnerSphereComp->OnComponentHit.AddDynamic(this, &AMaster_Magnet::OnInnerCompHit);
 }
 
 void AMaster_Magnet::Activate()
@@ -130,6 +130,23 @@ void AMaster_Magnet::OnOuterOverlapEnd(class UPrimitiveComponent* OverlappedComp
     if (PlayerRef)
     {
       OnPullStop();
+    }
+  }
+}
+
+void AMaster_Magnet::OnInnerCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+  if (OtherActor)
+  {
+    APaperWarden* LocalPlayer = Cast<APaperWarden>(OtherActor);
+
+    if (LocalPlayer)
+    {
+      if (!bMovementStopped)
+      {
+        bMovementStopped = true;
+        LocalPlayer->GetCharacterMovement()->StopMovementImmediately();
+      }
     }
   }
 }

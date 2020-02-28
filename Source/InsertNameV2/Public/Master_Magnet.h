@@ -64,6 +64,9 @@ public:
   void OnOuterOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
   UFUNCTION()
+  void OnInnerCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+  UFUNCTION()
   void OnSpriteHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
   /* The actually timer that is pulling the player */
@@ -75,6 +78,8 @@ private:
   APaperWarden* PlayerRef;
 
   void PullPlayer();
+
+  bool bMovementStopped;
 
 protected:
 	// Called when the game starts or when spawned
