@@ -63,6 +63,7 @@ void APaperWarden::AssignTestSpells()
       if (SpellToAssign)
       {
         AssignSpellToActionBar(SpellToAssign);
+        PlayerSpells.Add(SpellToAssign);
       }
     }
   }
@@ -1291,6 +1292,34 @@ TArray<AMaster_Pickup*> APaperWarden::LoadActionbar(UWardenSaveGame* LocalSaveGa
     UE_LOG(LogSaveGame, Error, TEXT("Unable to load Actionbar SaveGameObject not vaild"))
     TArray<AMaster_Pickup*> LocalActionbar;
     return LocalActionbar;
+  }
+}
+
+void APaperWarden::PauseAllSpellCooldowns()
+{
+  for (AMaster_Spell* Spell : PlayerSpells)
+  {
+    if (Spell)
+    {
+      if (Spell->bCurrentlyOnCooldown && !Spell->bCoolDownPaused)
+      {
+        Spell->PauseCoolDown();
+      }
+    }
+  }
+}
+
+void APaperWarden::ResumeAllSpellCooldowns()
+{
+  for (AMaster_Spell* Spell : PlayerSpells)
+  {
+    if (Spell)
+    {
+      if (Spell->bCurrentlyOnCooldown && Spell->bCoolDownPaused)
+      {
+        Spell->ResumeCoolDown();
+      }
+    }
   }
 }
 

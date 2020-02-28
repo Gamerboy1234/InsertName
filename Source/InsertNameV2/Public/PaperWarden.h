@@ -196,6 +196,12 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   FVector CurrentGunScale;
 
+  UFUNCTION(BlueprintCallable, Category = "Spell Functions")
+  void PauseAllSpellCooldowns();
+
+  UFUNCTION(BlueprintCallable, Category = "Spell Functions")
+  void ResumeAllSpellCooldowns();
+
   /* The current value of player HP */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player HP Settings")
   float PlayerCurrentHP;
