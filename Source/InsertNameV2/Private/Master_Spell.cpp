@@ -24,6 +24,15 @@ void AMaster_Spell::UseItem_Implementation()
   OnSpellCastStart();
 }
 
+void AMaster_Spell::UnpackSpellInfo(FSavedPlayerSpell NewSpellInfo)
+{
+  bCurrentlyOnCooldown = NewSpellInfo.SavedbWasOnCooldown;
+  bCoolDownPaused = NewSpellInfo.SavedbWasPaused;
+  CoolDownTime = NewSpellInfo.SavedCoolDownTime;
+  CurrentTimeLinePostion = NewSpellInfo.SavedCurrentTimeLinePostion;
+  CurrentScalerValue = NewSpellInfo.SavedCurrentScalerValue;
+}
+
 void AMaster_Spell::OnSpellCastStart_Implementation()
 {
   if (!bCurrentlyCasting && !bCurrentlyOnCooldown)
@@ -53,7 +62,7 @@ void AMaster_Spell::ResumeCoolDown_Implementation()
 void AMaster_Spell::OnCastComplete_Implementation()
 {
   bCurrentlyOnCooldown = true;
-  OnCoolDown(false);
+  OnCoolDown(false, CoolDownTime);
 }
 
 void AMaster_Spell::ResetSpell()
@@ -77,7 +86,7 @@ void AMaster_Spell::SetupResume()
   bCoolDownPaused = false;
   bCurrentlyOnCooldown = true;
   bCurrentlyCasting = false;
-  OnCoolDown(true);
+  OnCoolDown(true, CoolDownTime);
 }
 
 const bool AMaster_Spell::GetCurrentlyOnCooldown()

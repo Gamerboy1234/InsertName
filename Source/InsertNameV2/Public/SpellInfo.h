@@ -12,12 +12,12 @@ struct FSpellData
 {
   GENERATED_USTRUCT_BODY()
 
-  UPROPERTY(EditDefaultsOnly, Category = "Spell Info")
+  UPROPERTY(EditAnywhere, BlueprintReadWrite,  Category = "Spell Info")
   bool bHasCastTime;
 
-  UPROPERTY(EditDefaultsOnly, Category = "Spell Info", meta = (EditCondition = "bHasCastTime"))
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell Info", meta = (EditCondition = "bHasCastTime"))
   float CastTime;
 
-  UPROPERTY(EditDefaultsOnly, Category = "Spell Info")
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell Info")
   float Cooldown;
 };

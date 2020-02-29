@@ -5,10 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "PickSaveInfo.h"
+#include "SavedSpellInfo.h"
 #include "WardenSaveGame.generated.h"
 
 class APaperWarden;
 class AMaster_Pickup;
+class AMaster_Spell;
 
 /**
  * 
@@ -26,11 +28,18 @@ public:
 
   void SaveActionbarItem(AMaster_Pickup* ItemToSave, int32 Index);
 
+  void SaveSpellCoolDowns(APaperWarden* Player);
+
+  FSavedPlayerSpell GetSavedSpellInfo(AMaster_Spell* SpellToFind);
+
   UPROPERTY(EditAnywhere, BlueprintReadOnly,  Category = "Save Game")
   TArray<FSavedItemInfo> SavedInventory;
 
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   TArray<FSavedItemInfo> SavedActionBar;
+
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
+  TArray<FSavedPlayerSpell> SavedPlayerSpells;
 	
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   UClass* SavedGunClass;
@@ -66,4 +75,8 @@ public:
   bool SavedbLoadedCheckpoint;
 
   FSavedItemInfo ItemInfo;
+
+  FSavedPlayerSpell SpellInfo;
+
+  bool bFoundSpellInfo;
 };

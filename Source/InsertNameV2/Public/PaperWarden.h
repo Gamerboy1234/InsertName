@@ -6,6 +6,7 @@
 #include "PaperZDCharacter.h"
 #include "PickSaveInfo.h"
 #include "PickLoadInfo.h"
+#include "SavedSpellInfo.h"
 #include "InputCoreTypes.h"
 #include "PaperWarden.generated.h"
 
@@ -209,9 +210,6 @@ public:
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player HP Settings")
   float PlayerMaxHP;
 
-  UFUNCTION(BlueprintPure, Category = "Spell Functions")
-  const TArray<class AMaster_Spell*> GetPlayerSpells();
-
   UFUNCTION(BlueprintCallable, Category = "SaveGame")
   void SaveGame(FString SaveSlot);
 
@@ -228,6 +226,10 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "SaveGame")
   bool bWasLevelLoaded;
 
+  /* Gets all spells on players actionbar */
+  UFUNCTION(BlueprintCallable, Category = "Spell Functions")
+  TArray<AMaster_Spell*> GetPlayerSpellsOnActionbar();
+
 protected:
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;
@@ -236,13 +238,15 @@ private:
 
   void AssignTestSpells();
 
-  void SpawnInventory(class UWardenSaveGame* SaveGameObject);
+  void SpawnInventory(class UWardenSaveGame* LocalSaveGameObject);
 
-  void SpawnActionbar(class UWardenSaveGame* SaveGameObject);
+  void SpawnActionbar(class UWardenSaveGame* LocalSaveGameObject);
 
-  TArray<AMaster_Pickup*> LoadInventory(class UWardenSaveGame* SaveGameObject);
+  TArray<AMaster_Pickup*> LoadInventory(class UWardenSaveGame* LocalSaveGameObject);
 
-  TArray<AMaster_Pickup*> LoadActionbar(class UWardenSaveGame* SaveGameObject);
+  TArray<AMaster_Pickup*> LoadActionbar(class UWardenSaveGame* LocalSaveGameObject);
+
+  void LoadSpellCoolDowns(UWardenSaveGame* LocalSaveGameObject, TArray<AMaster_Pickup*> LocalActionbarItems);
 
   int32 KillCount;
 
@@ -257,8 +261,6 @@ private:
   TArray<FLoadItemInfo> InventoryToLoad;
   /* When game is loaded this is a temp container for Actionbar Items */
   TArray<FLoadItemInfo> ActionbarToLoad;
-  /* Contains all player spells */
-  TArray<class AMaster_Spell*> PlayerSpells;
   /* Contains all inventory items */
   TArray<class AMaster_Pickup*> InventoryItems;
   /* Contains all action bar items */

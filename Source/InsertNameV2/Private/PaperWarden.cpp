@@ -63,7 +63,6 @@ void APaperWarden::AssignTestSpells()
       if (SpellToAssign)
       {
         AssignSpellToActionBar(SpellToAssign);
-        PlayerSpells.Add(SpellToAssign);
       }
     }
   }
@@ -1011,7 +1010,6 @@ bool APaperWarden::AssignSpellToActionBar(AMaster_Spell* SpellToAdd)
     if (bFoundSlotOnActionbar)
     {
       ActionBarItems[ActionIndex] = SpellToAdd;
-      PlayerSpells.Add(SpellToAdd);
       UpdateActionBar();
       return true;
     }
@@ -1077,6 +1075,7 @@ void APaperWarden::SaveGame(FString SaveSlot)
     WardenSaveGame->SavedCurrentCheckpointLevel = CurrentCheckpointLevel;
     WardenSaveGame->SavedbWasLevelLoaded = bWasLevelLoaded;
     WardenSaveGame->SavedbLoadedCheckpoint = bLoadedCheckpoint;
+    WardenSaveGame->SaveSpellCoolDowns(this);
  
     if (bIsGunEquipped)
     {
@@ -1179,6 +1178,8 @@ void APaperWarden::LoadGame(FString SaveSlot)
       }
     }
 
+    LoadSpellCoolDowns(WardenSaveGame, ActionBarItems);
+
     // Debug Message
     UE_LOG(LogSaveGame, Log, TEXT("Game Loaded"))
   }
@@ -1186,6 +1187,25 @@ void APaperWarden::LoadGame(FString SaveSlot)
   {
     UE_LOG(LogSaveGame, Error, TEXT("Game failed to load game WardenSaveGame cast failed"))
   }
+}
+
+TArray<AMaster_Spell*> APaperWarden::GetPlayerSpellsOnActionbar()
+{
+  TArray<AMaster_Spell*> LocalSpells;
+
+  for (AMaster_Pickup* CurrentPickup : ActionBarItems)
+  {
+    if (CurrentPickup)
+    {
+      AMaster_Spell* CurrentSpell = Cast<AMaster_Spell>(CurrentPickup);
+
+      if (CurrentSpell)
+      {
+        LocalSpells.Add(CurrentSpell);
+      }
+    }
+  }
+  return LocalSpells;
 }
 
 void APaperWarden::SpawnInventory(UWardenSaveGame* LocalSaveGameObject)
@@ -1295,9 +1315,49 @@ TArray<AMaster_Pickup*> APaperWarden::LoadActionbar(UWardenSaveGame* LocalSaveGa
   }
 }
 
+void APaperWarden::LoadSpellCoolDowns(UWardenSaveGame* LocalSaveGameObject, TArray<AMaster_Pickup*> LocalActionbarItems)
+{
+  if (LocalSaveGameObject)
+  {
+    for (AMaster_Pickup* CurrentPick : LocalActionbarItems)
+    {
+      if (CurrentPick)
+      {
+        AMaster_Spell* CurrentSpell = Cast<AMaster_Spell>(CurrentPick);
+
+        if (CurrentPick)
+        {
+          FSavedPlayerSpell SpellInfo = LocalSaveGameObject->GetSavedSpellInfo(CurrentSpell);
+
+          if (LocalSaveGameObject->bFoundSpellInfo)
+          {
+            CurrentSpell->UnpackSpellInfo(SpellInfo);
+
+            if (CurrentSpell->bCurrentlyOnCooldown && !CurrentSpell->bCoolDownPaused)
+            {
+              CurrentSpell->ResumeCoolDown();
+            }
+            else if (CurrentSpell->bCoolDownPaused)
+            {
+              CurrentSpell->ResumeCoolDown();
+              CurrentSpell->PauseCoolDown();
+            }
+          }
+        }
+      }
+    }
+  }
+  else
+  {
+    UE_LOG(LogSaveGame, Error, TEXT("Unable to LoadSpellCoolDown SaveGameObject not vaild"))
+  }
+}
+
 void APaperWarden::PauseAllSpellCooldowns()
 {
-  for (AMaster_Spell* Spell : PlayerSpells)
+  TArray<AMaster_Spell*> LocalSpells = GetPlayerSpellsOnActionbar();
+
+  for (AMaster_Spell* Spell : LocalSpells)
   {
     if (Spell)
     {
@@ -1311,7 +1371,9 @@ void APaperWarden::PauseAllSpellCooldowns()
 
 void APaperWarden::ResumeAllSpellCooldowns()
 {
-  for (AMaster_Spell* Spell : PlayerSpells)
+  TArray<AMaster_Spell*> LocalSpells = GetPlayerSpellsOnActionbar();
+
+  for (AMaster_Spell* Spell : LocalSpells)
   {
     if (Spell)
     {
@@ -1321,11 +1383,6 @@ void APaperWarden::ResumeAllSpellCooldowns()
       }
     }
   }
-}
-
-const TArray<AMaster_Spell*> APaperWarden::GetPlayerSpells()
-{
-  return PlayerSpells;
 }
 
 const TArray<AMaster_Pickup*> APaperWarden::GetPlayerInventory()

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Master_Pickup.h"
 #include "SpellInfo.h"
+#include "SavedSpellInfo.h"
 #include "Master_Spell.generated.h"
 
 /**
@@ -40,7 +41,7 @@ public:
   void ResumeCoolDown_Implementation();
 
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Spell Events")
-  void OnCoolDown(bool ResumeCooldown);
+  void OnCoolDown(bool ResumeCooldown, float Time);
 
   UFUNCTION(BlueprintCallable, Category = "Spell Functions")
   void ResetSpell();
@@ -76,6 +77,8 @@ public:
   bool bCoolDownPaused;
   UPROPERTY(BlueprintReadWrite, Category = "Item Info")
   bool bContinueFromLastCoolDown;
+
+  void UnpackSpellInfo(FSavedPlayerSpell NewSpellInfo);
 
 private:
 
