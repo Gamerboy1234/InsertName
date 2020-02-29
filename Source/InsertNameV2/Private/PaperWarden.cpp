@@ -25,6 +25,8 @@ APaperWarden::APaperWarden()
   AmountofInventorySlots = 8;
   ActionBarSlotsPerRow = 10;
 
+  CooldownEnemyTolerance = 0;
+
   PlayerCurrentHP = 10.0f;
   PlayerMaxHP = 10.0f;
 }
@@ -39,6 +41,8 @@ void APaperWarden::BeginPlay()
   if (UGameplayStatics::DoesSaveGameExist(TEXT("Slot1"), 0) && !bLoadedCheckpoint)
   {
     LoadGame(FString("Slot1"));
+
+    CheckSpellCooldowns();
   }
   else
   {
@@ -49,6 +53,8 @@ void APaperWarden::BeginPlay()
     ActionBarItems.Init(0, ActionBarSlotsPerRow);
 
     AssignTestSpells();
+
+    CheckSpellCooldowns();
   }
 }
 
@@ -1382,6 +1388,18 @@ void APaperWarden::ResumeAllSpellCooldowns()
         Spell->ResumeCoolDown();
       }
     }
+  }
+}
+
+void APaperWarden::CheckSpellCooldowns()
+{
+  if (!UGeneralFunctions::AreEneimesInLevel(this, CooldownEnemyTolerance))
+  {
+    PauseAllSpellCooldowns();
+  }
+  else
+  {
+    ResumeAllSpellCooldowns();
   }
 }
 

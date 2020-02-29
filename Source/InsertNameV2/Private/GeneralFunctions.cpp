@@ -6,6 +6,7 @@
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
 #include "SideScrollerGamemode.h"
 #include "Master_Pickup.h"
+#include "Master_Enemy.h"
 #include "InsertNameV2.h"
 #include "PaperWarden.h"
 #include "Kismet/GameplayStatics.h"
@@ -215,6 +216,39 @@ AMaster_Pickup* UGeneralFunctions::DoesPickupExistInWorld(UObject* WorldContextO
 FVector UGeneralFunctions::GetUnitVector(FVector From, FVector To)
 {
   return (To - From).GetSafeNormal();
+}
+
+bool UGeneralFunctions::AreEneimesInLevel(UObject* WorldContextObject, int32 EnemyTolerance)
+{
+  TArray<AActor*> FoundActors;
+
+  UGameplayStatics::GetAllActorsOfClass(WorldContextObject, AMaster_Enemy::StaticClass(), FoundActors);
+
+  int32 EnemyCounter = 0;
+
+  for (AActor* Actor : FoundActors)
+  {
+    if (Actor)
+    {
+      AMaster_Enemy* Enemy = Cast<AMaster_Enemy>(Actor);
+
+      if (Enemy)
+      {
+        EnemyCounter++;
+      }
+    }
+  }
+
+  UE_LOG(LogTemp, Log, TEXT("Amount of eneimes in level %i"), EnemyCounter)
+
+  if (EnemyCounter > EnemyTolerance)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 APaperWarden* UGeneralFunctions::GetPlayer(UObject* WorldContextObject)

@@ -181,6 +181,9 @@ public:
   /* Spells to Assign to the player for testing */
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spells Info")
   TArray<TSubclassOf<AMaster_Spell>> TestSpells; 
+  /* Amount of enemies needed in the level for cooldowns to activate */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spells Info")
+  int32 CooldownEnemyTolerance;
   /* Assign a single to spell to Actionbar */
   UFUNCTION(BlueprintCallable, Category = "Spell Functions")
   bool AssignSpellToActionBar(class AMaster_Spell* SpellToAdd);
@@ -247,6 +250,8 @@ private:
   TArray<AMaster_Pickup*> LoadActionbar(class UWardenSaveGame* LocalSaveGameObject);
 
   void LoadSpellCoolDowns(UWardenSaveGame* LocalSaveGameObject, TArray<AMaster_Pickup*> LocalActionbarItems);
+
+  void CheckSpellCooldowns();
 
   int32 KillCount;
 

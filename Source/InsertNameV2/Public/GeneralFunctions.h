@@ -58,6 +58,10 @@ public:
   static AMaster_Pickup* DoesPickupExistInWorld(UObject* WorldContextObject, AMaster_Pickup* Pickup);
   /* Finds the direction vector from one position to another */
   static FVector GetUnitVector(FVector From, FVector To);
+  /* Checks to if there are any enemies within the level if the amount of enemies is less than EnemyTolerance returns false */
+  UFUNCTION(BlueprintPure, meta = (DisplayName = "AreEneimesInLevel", CompactNodeTitle = "AreEneimesInLevel", Keywords = "AreEneimesInLevel"), Category = "Utility")
+  static bool AreEneimesInLevel(UObject* WorldContextObject, int32 EnemyTolerance);
+
   /* Gets the player character */
   static APaperWarden* GetPlayer(UObject* WorldContextObject);
 
