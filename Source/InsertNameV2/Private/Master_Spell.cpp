@@ -2,6 +2,7 @@
 
 
 #include "Master_Spell.h"
+#include "GeneralFunctions.h"
 #include "InsertNameV2.h"
 
 AMaster_Spell::AMaster_Spell()
@@ -63,6 +64,7 @@ void AMaster_Spell::OnCastComplete_Implementation()
 {
   bCurrentlyOnCooldown = true;
   OnCoolDown(false, CoolDownTime);
+  UGeneralFunctions::CheckPlayerCooldowns(this);
 }
 
 void AMaster_Spell::ResetSpell()

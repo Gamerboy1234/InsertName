@@ -61,6 +61,9 @@ public:
   /* Checks to if there are any enemies within the level if the amount of enemies is less than EnemyTolerance returns false */
   UFUNCTION(BlueprintPure, meta = (DisplayName = "AreEneimesInLevel", CompactNodeTitle = "AreEneimesInLevel", Keywords = "AreEneimesInLevel"), Category = "Utility")
   static bool AreEneimesInLevel(UObject* WorldContextObject, int32 EnemyTolerance);
+  /* Calls the players CheckCoolDowns functions */
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "CheckPlayerCooldowns", CompactNodeTitle = "CheckCD", Keywords = "CheckPlayerCooldowns"), Category = "Utility")
+  static void CheckPlayerCooldowns(UObject* WorldContextObject);
 
   /* Gets the player character */
   static APaperWarden* GetPlayer(UObject* WorldContextObject);

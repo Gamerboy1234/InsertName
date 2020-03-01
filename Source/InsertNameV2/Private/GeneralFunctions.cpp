@@ -234,12 +234,13 @@ bool UGeneralFunctions::AreEneimesInLevel(UObject* WorldContextObject, int32 Ene
 
       if (Enemy)
       {
-        EnemyCounter++;
+        if (!Enemy->GetIsDead())
+        {
+          EnemyCounter++;
+        }
       }
     }
   }
-
-  UE_LOG(LogTemp, Log, TEXT("Amount of eneimes in level %i"), EnemyCounter)
 
   if (EnemyCounter > EnemyTolerance)
   {
@@ -248,6 +249,20 @@ bool UGeneralFunctions::AreEneimesInLevel(UObject* WorldContextObject, int32 Ene
   else
   {
     return false;
+  }
+}
+
+void UGeneralFunctions::CheckPlayerCooldowns(UObject* WorldContextObject)
+{
+  APaperWarden* Player = UGeneralFunctions::GetPlayer(WorldContextObject);
+
+  if (Player)
+  {
+    Player->CheckSpellCooldowns();
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("CheckPlayerCooldowns failed Player was not valid"))
   }
 }
 

@@ -298,6 +298,7 @@ void AMaster_Enemy::DamageEnemy_Implementation(float Damage, bool bShowText, AAc
         WarlustEffect->RemoveLine();
       }
 
+      UGeneralFunctions::CheckPlayerCooldowns(this);
       UGeneralFunctions::RemoveIDFromGamemode(this, ID, this);
       OnDeath();
     }
