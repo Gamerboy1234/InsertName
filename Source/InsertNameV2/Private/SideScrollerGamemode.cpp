@@ -3,6 +3,7 @@
 
 #include "SideScrollerGamemode.h"
 #include "InsertNameV2.h"
+#include "Master_Spell.h"
 #include "GeneralFunctions.h"
 
 int32 ASideScrollerGamemode::GenID()
@@ -56,6 +57,29 @@ const TArray<int32> ASideScrollerGamemode::GetAllIDs()
   TArray<int32> LocalIDs = AllIDs;
 
   return LocalIDs;
+}
+
+void ASideScrollerGamemode::ResumeAllCoolDowns()
+{
+  TArray<AActor*> FoundActors;
+
+  UGameplayStatics::GetAllActorsOfClass(this, AMaster_Spell::StaticClass(), FoundActors);
+
+  for (AActor* Actor : FoundActors)
+  {
+    if (Actor)
+    {
+      AMaster_Spell* LocalSpell = Cast<AMaster_Spell>(Actor);
+
+      if (LocalSpell)
+      {
+        if (LocalSpell->bCoolDownPaused)
+        {
+          LocalSpell->ResumeCoolDown();
+        }
+      }
+    }
+  }
 }
 
 void ASideScrollerGamemode::RemoveID(int32 IDToRemove)

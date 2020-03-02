@@ -73,6 +73,7 @@ void AMaster_Spell::ResetSpell()
   bCurrentlyOnCooldown = false;
   bCoolDownPaused = false;
   CoolDownTime = DefaultCoolDownTime;
+  ResumeCoolDown();
 }
 
 void AMaster_Spell::SetupPause()

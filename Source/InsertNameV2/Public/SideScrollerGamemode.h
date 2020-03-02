@@ -40,6 +40,10 @@ public:
   UFUNCTION(Blueprintpure, Category = "ID Function")
   const TArray<int32> GetAllIDs();
 
+  /* Console command that will reset all current spell cooldowns */
+  UFUNCTION(Exec, Category = "Console Commands")
+  void ResumeAllCoolDowns();
+
 private:
   /* A list of all actor IDs */
   TArray<int32> AllIDs;
