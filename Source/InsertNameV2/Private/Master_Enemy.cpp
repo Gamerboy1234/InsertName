@@ -196,6 +196,27 @@ AActor* AMaster_Enemy::ApplyBuff(TSubclassOf<AMaster_Buff_E> BuffToApply)
   }
 }
 
+void AMaster_Enemy::RemoveBuffByID(AMaster_Buff_E* BuffToRemove)
+{
+  if (BuffToRemove)
+  {
+    for (AMaster_Buff_E* CurrentBuff : CurrentBuffs)
+    {
+      int32 CurrentID = CurrentBuff->GetID();
+      int32 IDToFind = BuffToRemove->GetID();
+
+      if (CurrentID == IDToFind)
+      {
+        CurrentBuff->RemoveBuff(BuffToRemove, this);
+      }
+    }
+  }
+  else
+  {
+    UE_LOG(LogMasterEnemy, Error, TEXT("Was unable to RemoveBuffByID BuffToRemove was not valid"))
+  }
+}
+
 bool AMaster_Enemy::FireCheck(float GunDamage, bool Heal, bool Damage, float BuffAmount)
 {
   AMaster_Debuff_E* FireDebuff = FindDebuffByType(EDebuffType::Fire);

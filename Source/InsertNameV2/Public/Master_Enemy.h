@@ -115,6 +115,10 @@ public:
   UFUNCTION(BlueprintCallable, Category = "Buffs")
   AActor* ApplyBuff(TSubclassOf<AMaster_Buff_E> BuffToApply);
 
+  /* Will look for Buff in the enemy buff array will look by ID */
+  UFUNCTION(BlueprintCallable, Category = "Buffs")
+  void RemoveBuffByID(AMaster_Buff_E* BuffToRemove);
+
   UFUNCTION(BlueprintCallable, Category = "Debuffs")
   bool FireCheck(float GunDamage, bool Heal, bool Damage, float BuffAmount);
 
@@ -191,6 +195,9 @@ public:
 
   UFUNCTION()
   void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+  UPROPERTY(BlueprintReadWrite, Category = "Buff Effects")
+  AActor* CurrentLeech;
 
   // Called every frame
   virtual void Tick(float DeltaSeconds) override;
