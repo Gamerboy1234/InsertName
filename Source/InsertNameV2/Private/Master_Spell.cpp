@@ -47,7 +47,7 @@ void AMaster_Spell::BeginSpellCast_Implementation()
 {
   UE_LOG(LogSpellEvents, Log, TEXT("Spell %s Casted"), *this->GetName())
 
-  OnCastComplete();
+  OnCastComplete(true);
 }
 
 void AMaster_Spell::PauseCoolDown_Implementation()
@@ -60,11 +60,21 @@ void AMaster_Spell::ResumeCoolDown_Implementation()
   SetupResume();
 }
 
-void AMaster_Spell::OnCastComplete_Implementation()
+void AMaster_Spell::OnCastComplete_Implementation(bool bSuccess)
 {
-  bCurrentlyOnCooldown = true;
-  OnCoolDown(false, CoolDownTime);
-  UGeneralFunctions::CheckPlayerCooldowns(this);
+  if (bSuccess)
+  {
+    bCurrentlyOnCooldown = true;
+    OnCoolDown(false, CoolDownTime);
+    UGeneralFunctions::CheckPlayerCooldowns(this);
+  }
+  else
+  {
+    bCurrentlyCasting = false;
+    bCurrentlyOnCooldown = false;
+    bCoolDownPaused = false;
+    CoolDownTime = DefaultCoolDownTime;
+  }
 }
 
 void AMaster_Spell::ResetSpell()
