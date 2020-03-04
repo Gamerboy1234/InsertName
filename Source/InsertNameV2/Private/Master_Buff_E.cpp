@@ -132,6 +132,7 @@ void AMaster_Buff_E::SpawnEffect(AMaster_Enemy* CurrentActor)
     CurrentEffect = GetWorld()->SpawnActor<AMasterDamageEffect>(BuffEffect, SpawnTransform);
     if (CurrentEffect)
     {
+      CurrentEffect->EffectScale = EffectScale;
       CurrentEffect->SetEffect(CurrentActor);
     }
     else

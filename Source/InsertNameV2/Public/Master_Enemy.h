@@ -154,6 +154,9 @@ public:
   const float GetDefaultMaxAcceleration();
 
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
+  const float GetDefaultDamageToPlayer();
+
+  UFUNCTION(BlueprintPure, Category = "Getter Functions")
   const bool GetIsDead();
 
   UFUNCTION(BlueprintPure, Category = "Getter Functions")
@@ -231,6 +234,8 @@ private:
   float DefaultGravityScale;
 
   float DefaultMaxAcceleration;
+
+  float DefaultDamageToPlayer;
 
   float MaxHP;
 

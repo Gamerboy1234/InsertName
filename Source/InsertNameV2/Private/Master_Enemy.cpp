@@ -63,6 +63,8 @@ void AMaster_Enemy::BeginPlay()
   DefaultGravityScale = MovementComp->GravityScale;
   DefaultMaxAcceleration = MovementComp->GetMaxAcceleration();
 
+  DefaultDamageToPlayer = DamageToPlayer;
+
   GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AMaster_Enemy::OnCompHit);
 
   // All defaults values are now set the enemy can now do stuff
@@ -454,6 +456,11 @@ const bool AMaster_Enemy::GetIsDead()
 const float AMaster_Enemy::GetMaxHP()
 {
   return MaxHP;
+}
+
+const float AMaster_Enemy::GetDefaultDamageToPlayer()
+{
+  return DefaultDamageToPlayer;
 }
 
 AActor* AMaster_Enemy::GetHitActor()

@@ -25,4 +25,8 @@ public:
 
   UFUNCTION(BlueprintCallable, Category = "CleanUp")
   void CleanUpEffect(TSubclassOf<AMasterDamageEffect> EffectToCleanUp);
+
+  UPROPERTY(BlueprintReadWrite, Category = "Effect Setup")
+  FVector EffectScale;
+
 };
