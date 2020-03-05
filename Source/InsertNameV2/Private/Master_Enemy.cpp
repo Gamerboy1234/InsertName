@@ -239,24 +239,31 @@ void AMaster_Enemy::RemoveBuffByID(AMaster_Buff_E* BuffToRemove)
 bool AMaster_Enemy::FireCheck(float GunDamage, bool Heal, bool Damage, float BuffAmount)
 {
   AMaster_Debuff_E* FireDebuff = FindDebuffByType(EDebuffType::Fire);
-  auto PlayerRef = UGameplayStatics::GetPlayerCharacter(this, 0);
+  APaperWarden* PlayerRef = UGeneralFunctions::GetPlayer(this);
 
   if (FireDebuff)
   {
-    if (!Heal)
+    if (PlayerRef)
     {
-      float BuffedDamaged = UGeneralFunctions::TickDamage(FireDebuff->GetCurrentTickCount(), GunDamage, BuffAmount);
-      DamageEnemy(BuffedDamaged, true, PlayerRef);
-      FireDebuff->RemoveDebuff(FireDebuff, this);
-      return true;
+      if (!Heal)
+      {
+        float BuffedDamaged = UGeneralFunctions::TickDamage(FireDebuff->GetCurrentTickCount(), GunDamage, BuffAmount);
+        DamageEnemy(BuffedDamaged, true, PlayerRef);
+        FireDebuff->RemoveDebuff(FireDebuff, this);
+        return true;
+      }
+      else
+      {
+        float HealAmount = UGeneralFunctions::TickDamage(FireDebuff->GetCurrentTickCount(), GunDamage, BuffAmount);
+        PlayerRef->HealPlayer(HealAmount);
+        FireDebuff->RemoveDebuff(FireDebuff, this);
+        return true;
+      }
     }
     else
     {
-      auto Player = Cast<APaperWarden>(GetWorld()->GetFirstPlayerController());
-      float HealAmount = UGeneralFunctions::TickDamage(FireDebuff->GetCurrentTickCount(), GunDamage, BuffAmount);
-      Player->HealPlayer(HealAmount);
-      FireDebuff->RemoveDebuff(FireDebuff, this);
-      return true;
+      UE_LOG(LogMasterEnemy, Error, TEXT("FireCheck failed PlayerRef was not valid"))
+      return false;
     }
   }
   else
