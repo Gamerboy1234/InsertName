@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "PaperZDCharacter.h"
 #include "DebuffData.h"
 #include "BuffData.h"
@@ -17,6 +18,7 @@ class USplineComponent;
 class AMasterDamageEffect;
 class AMaster_Buff_E;
 class AWarlustEffectBase;
+class UCurveFloat;
 
 UCLASS()
 class INSERTNAMEV2_API AMaster_Enemy : public APaperZDCharacter
@@ -202,6 +204,9 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "Buff Effects")
   AActor* CurrentLeech;
 
+  UFUNCTION()
+  void TimelineProgress(float Value);
+
   // Called every frame
   virtual void Tick(float DeltaSeconds) override;
 
@@ -209,7 +214,12 @@ protected:
 
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;
-  
+
+  FTimeline CurveTimeline;
+
+  UPROPERTY()
+  UCurveFloat* CurveFloat;
+
 private:
 
   void ResetStun();

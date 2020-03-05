@@ -22,6 +22,7 @@
 #include "Math/Color.h"
 #include "BrainComponent.h"
 #include "FloatingCombatTextComponent.h"
+#include "Curves/CurveFloat.h"
 
 
 AMaster_Enemy::AMaster_Enemy()
@@ -43,12 +44,28 @@ AMaster_Enemy::AMaster_Enemy()
   EnemySpline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
   if (!ensure(EnemySpline != nullptr)) { return; }
   EnemySpline->SetupAttachment(RootComponent);
+
+  static ConstructorHelpers::FObjectFinder<UCurveFloat> Curve(TEXT("/Game/2DPlatformingKit/Blueprints/BP_Enemies/General/EnemyYCurve"));
+  check(Curve.Succeeded());
+
+  CurveFloat = Curve.Object;
 }
 
 // Setup default values for enemy when game starts
 void AMaster_Enemy::BeginPlay()
 {
   Super::BeginPlay();
+
+  // Setup timeline
+  if (CurveFloat)
+  {
+    FOnTimelineFloat TimelineProgress;
+    TimelineProgress.BindUFunction(this, FName("TimelineProgress"));
+    CurveTimeline.AddInterpFloat(CurveFloat, TimelineProgress);
+    CurveTimeline.SetLooping(true);
+    CurveTimeline.SetPlayRate(5.0f);
+    CurveTimeline.PlayFromStart();
+  }
 
   bIsDead = false;
 
@@ -399,11 +416,17 @@ void AMaster_Enemy::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
   }
 }
 
+void AMaster_Enemy::TimelineProgress(float Value)
+{
+  // Keep Enemy on Y level 0
+  UGeneralFunctions::RemoveActorsY(this, this);
+}
+
 void AMaster_Enemy::Tick(float DeltaSeconds)
 {
   Super::Tick(DeltaSeconds);
-  // Keep Enemy on Y level 0
-  UGeneralFunctions::RemoveActorsY(this, this);
+
+  CurveTimeline.TickTimeline(DeltaSeconds);
 }
 
 void AMaster_Enemy::ResetSpriteColor()
