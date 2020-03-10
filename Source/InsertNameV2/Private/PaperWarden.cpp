@@ -12,6 +12,8 @@
 #include "Components/InputComponent.h"
 #include "TimerManager.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 
 APaperWarden::APaperWarden()
 {
@@ -21,6 +23,21 @@ APaperWarden::APaperWarden()
   BarkInnerCollision->SetupAttachment(RootComponent);
   BarkOuterCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Bark Outer Collision"));
   BarkOuterCollision->SetupAttachment(RootComponent);
+
+  SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+  SpringArm->SetupAttachment(RootComponent);
+  SpringArm->TargetArmLength = 1800;
+  SpringArm->SetUsingAbsoluteRotation(true);
+  SpringArm->SetUsingAbsoluteLocation(true);
+  SpringArm->bInheritYaw = false;
+  SpringArm->bEnableCameraLag = true;
+  SpringArm->CameraLagMaxDistance = 40;
+  SpringArm->CameraLagSpeed = 10;
+
+  CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+  CameraComp->SetupAttachment(SpringArm);
+  CameraComp->FieldOfView = 52;
+  CameraComp->bConstrainAspectRatio = false;
 
   AmountofInventorySlots = 8;
   ActionBarSlotsPerRow = 10;

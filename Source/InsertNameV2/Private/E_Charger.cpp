@@ -5,7 +5,6 @@
 
 AE_Charger::AE_Charger()
 {
-  bPassiveAfterHit = true;
   bStopChargeOnPlayerOverlap = true;
   bDefaultToPlayer = true;
 }

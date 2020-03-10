@@ -32,9 +32,6 @@ public:
   /* If true enemy will always look towards player before moving towards it traced location */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
   bool bDefaultToPlayer;
-  /* Whether or not the enemy should be passive towards the player after it's first hit only applies once if the enemy is hit will become hostile again */
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
-  bool bPassiveAfterHit;
   /* If true enemy will stop charging when it overlaps the player */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
   bool bStopChargeOnPlayerOverlap;

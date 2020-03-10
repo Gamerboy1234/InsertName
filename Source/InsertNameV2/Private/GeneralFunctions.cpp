@@ -8,8 +8,11 @@
 #include "Master_Pickup.h"
 #include "Master_Enemy.h"
 #include "InsertNameV2.h"
+#include "WardenCameraManager.h"
+#include "Camera/PlayerCameraManager.h"
 #include "PaperWarden.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "PaperZDCharacter.h"
 #include <iostream>
 #include <random>
@@ -266,6 +269,31 @@ void UGeneralFunctions::CheckPlayerCooldowns(UObject* WorldContextObject)
   }
 }
 
+AWardenCameraManager* UGeneralFunctions::GetWardenCameraManager(UObject* WorldContextObject)
+{
+  APlayerCameraManager* CameraManager = WorldContextObject->GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+
+  if (CameraManager)
+  {
+    AWardenCameraManager* WardenCameraManager = Cast<AWardenCameraManager>(CameraManager);
+
+    if (WardenCameraManager)
+    {
+      return WardenCameraManager;
+    }
+    else
+    {
+      UE_LOG(LogGeneralFunctions, Error, TEXT("Failed to GetWardenCameraManager cast to WardenCameraManager failed"))
+      return nullptr;
+    }
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Failed to GetWardenCameraManager was unable to get CameraManager"))
+    return nullptr;
+  }
+}
+
 APaperWarden* UGeneralFunctions::GetPlayer(UObject* WorldContextObject)
 {
   ACharacter* Character = UGameplayStatics::GetPlayerCharacter(WorldContextObject, 0);
@@ -288,5 +316,51 @@ APaperWarden* UGeneralFunctions::GetPlayer(UObject* WorldContextObject)
   {
     UE_LOG(LogGeneralFunctions, Error, TEXT("Was unable to get player from UGameplayStatics::GetPlayerCharacter"))
     return nullptr;
+  }
+}
+
+FRotator UGeneralFunctions::GetMouseRotation(UObject* WorldContextObject)
+{
+  APlayerController* PlayerController = WorldContextObject->GetWorld()->GetFirstPlayerController();
+  FRotator OutRotator = FRotator(0, 0, 0);
+
+  if (PlayerController)
+  {
+    FVector2D MouseLocation = FVector2D(0, 0);
+    FVector WorldPostion = FVector(MouseLocation.X, MouseLocation.Y, 0);
+
+    FVector Direction = FVector(0, 0, 0);
+    PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
+
+    if (PlayerController->DeprojectMousePositionToWorld(WorldPostion, Direction))
+    {
+      APaperWarden* PlayerRef = GetPlayer(WorldContextObject);
+
+      if (PlayerRef)
+      {
+        FVector CameraLocation = PlayerRef->CameraComp->GetComponentLocation();
+
+        float X = WorldPostion.X - CameraLocation.X;
+        float Z = WorldPostion.Z - CameraLocation.Z;
+
+        FRotator CurrentRotation = FRotator(UKismetMathLibrary::DegAtan2(X, Z), 0, 0);
+
+        return CurrentRotation;
+      }
+      else
+      {
+        UE_LOG(LogGeneralFunctions, Error, TEXT("Was unable to GetMouseRotation failed to get PlayerRef"))
+        return OutRotator;
+      }
+    }
+    else
+    {
+      return OutRotator;
+    }
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Was unable to get PlayerController failed to get GetMouseRotation"))
+    return OutRotator;
   }
 }

@@ -12,6 +12,8 @@
 
 class UBoxComponent;
 class UWardenSaveGame;
+class USpringArmComponent;
+class UCameraComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateInventoryDelegate, const TArray<AMaster_Pickup*>&, InventoryItems);
 
@@ -32,6 +34,12 @@ public:
 
   UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
   UBoxComponent* BarkOuterCollision;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  USpringArmComponent* SpringArm;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  UCameraComponent* CameraComp;
 
   UPROPERTY(BlueprintReadWrite, Category = "Spells")
   bool bWasBarkUsed;
