@@ -112,6 +112,11 @@ FString AMaster_Pickup::ConvertItemNameToString()
   return this->ItemInfo.ItemName.ToString();
 }
 
+APaperWarden* AMaster_Pickup::GetPlayerRef()
+{
+  return PlayerRef;
+}
+
 const int32 AMaster_Pickup::GetID()
 {
   return ID;

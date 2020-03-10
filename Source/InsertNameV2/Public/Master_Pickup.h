@@ -60,6 +60,10 @@ public:
 
   FString ConvertItemNameToString();
 
+  /* Reads the value of PlayerRef */
+  UFUNCTION(BlueprintPure, Category = "Pickup Functions")
+  class APaperWarden* GetPlayerRef();
+
 private:
 
   int32 ID;

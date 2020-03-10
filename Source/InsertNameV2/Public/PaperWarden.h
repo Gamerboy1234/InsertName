@@ -192,6 +192,12 @@ public:
   /* Returns the current rotation of the mouse */
   UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Weapon Functions")
   FRotator GetCurrentMouseRotation();
+  /* This event will rotate to the player's gun to the given rotation */
+  UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
+  void RotateGun(FRotator NewRotation);
+  /* This event will reset the player gun rotation */
+  UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
+  void ResetGunRotation();
   /* Spells to Assign to the player for testing */
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spells Info")
   TArray<TSubclassOf<AMaster_Spell>> TestSpells; 

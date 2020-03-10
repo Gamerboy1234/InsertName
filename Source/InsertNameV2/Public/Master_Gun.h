@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Master_Pickup.h"
+#include "Components/TimelineComponent.h"
 #include "Master_Gun.generated.h"
 
-class UPaperSprite;
+class UPaperSpriteComponent;
 
 /**
  * 
@@ -20,6 +21,12 @@ class INSERTNAMEV2_API AMaster_Gun : public AMaster_Pickup
 public:
 
   AMaster_Gun();
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  UPaperSpriteComponent* PlayerLeftHand;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  UPaperSpriteComponent* PlayerRightHand;
 
   /* The socket to attach the gun to */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
@@ -45,7 +52,7 @@ public:
   /* Color of the gun's laser beam */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
   FLinearColor TrailColor;
-  /* Amount of time it takes for the the laser beam to despawn */
+  /* Amount of time it takes for the the laser beam to Despawn */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
   float TrailDespawn;
   /* The glow intensity of the gun laser beam */
@@ -63,27 +70,45 @@ public:
   /* The rate of fire the gun is shooting at */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
   float FireRate;
-
+  /* How much damage the gun will deal to the given enemy */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
+  float Damage;
+  /* Will fire a multi line ray cast to look for enemies to damage */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
   void FireGun();
   virtual void FireGun_Implementation();
-
+  /* Will stop the gun from firing it's raycast and apply the gun cooldown */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
   void StopGunFire();
   virtual void StopGunFire_Implementation();
+  /* Reads the value of bOnCooldown */
+  UFUNCTION(BlueprintPure, Category = "Gun Functions")
+  const bool GetGunOnCooldown();
 
+  /* Upon player interacting with this object call player equip gun function */
+  virtual void OnInteract_Implementation() override;
 
   // Called every frame
   virtual void Tick(float DeltaSeconds) override;
+
+  UFUNCTION()
+  void MouseTimelineProgress(float Value);
 
 protected:
 
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;
 
+  FTimeline MouseTimeline;
+
+  UPROPERTY()
+  UCurveFloat* CurveFloat;
+
 private:
 
   /* Rotate gun towards the mouse */
-  void RotateGun();
+  void RotateGunToMouse();
+
+  bool bOnCooldown;
 	
 };
