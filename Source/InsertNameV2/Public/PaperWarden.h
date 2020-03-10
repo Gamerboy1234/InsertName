@@ -186,6 +186,12 @@ public:
   /* Equips the given gun to player */
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
   void EquipGun(AMaster_Pickup* GunToEquip, FVector Offset, FVector GunScale);
+  /* Called to updated the current rotation of the mouse */
+  UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
+  void UpdateMouseRotation();
+  /* Returns the current rotation of the mouse */
+  UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Weapon Functions")
+  FRotator GetCurrentMouseRotation();
   /* Spells to Assign to the player for testing */
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spells Info")
   TArray<TSubclassOf<AMaster_Spell>> TestSpells; 
@@ -242,6 +248,9 @@ public:
   TArray<AMaster_Spell*> GetPlayerSpellsOnActionbar();
 
   void CheckSpellCooldowns();
+
+  UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
+  FRotator MouseRot;
 
 protected:
   // Called when the game starts or when spawned

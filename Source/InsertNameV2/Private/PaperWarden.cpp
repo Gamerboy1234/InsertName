@@ -1420,6 +1420,11 @@ void APaperWarden::CheckSpellCooldowns()
   }
 }
 
+FRotator APaperWarden::GetCurrentMouseRotation()
+{
+  return MouseRot;
+}
+
 const TArray<AMaster_Pickup*> APaperWarden::GetPlayerInventory()
 {
   return InventoryItems;
