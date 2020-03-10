@@ -321,46 +321,15 @@ APaperWarden* UGeneralFunctions::GetPlayer(UObject* WorldContextObject)
 
 FRotator UGeneralFunctions::GetMouseRotation(UObject* WorldContextObject)
 {
-  APlayerController* PlayerController = WorldContextObject->GetWorld()->GetFirstPlayerController();
-  FRotator OutRotator = FRotator(0, 0, 0);
+  APaperWarden* PlayerRef = GetPlayer(WorldContextObject);
 
-  if (PlayerController)
+  if (PlayerRef)
   {
-    FVector2D MouseLocation = FVector2D(0, 0);
-    FVector WorldPostion = FVector(MouseLocation.X, MouseLocation.Y, 0);
-
-    FVector Direction = FVector(0, 0, 0);
-    PlayerController->GetMousePosition(MouseLocation.X, MouseLocation.Y);
-
-    if (PlayerController->DeprojectMousePositionToWorld(WorldPostion, Direction))
-    {
-      APaperWarden* PlayerRef = GetPlayer(WorldContextObject);
-
-      if (PlayerRef)
-      {
-        FVector CameraLocation = PlayerRef->CameraComp->GetComponentLocation();
-
-        float X = WorldPostion.X - CameraLocation.X;
-        float Z = WorldPostion.Z - CameraLocation.Z;
-
-        FRotator CurrentRotation = FRotator(UKismetMathLibrary::DegAtan2(X, Z), 0, 0);
-
-        return CurrentRotation;
-      }
-      else
-      {
-        UE_LOG(LogGeneralFunctions, Error, TEXT("Was unable to GetMouseRotation failed to get PlayerRef"))
-        return OutRotator;
-      }
-    }
-    else
-    {
-      return OutRotator;
-    }
+    return PlayerRef->GetCurrentMouseRotation();
   }
   else
   {
-    UE_LOG(LogGeneralFunctions, Error, TEXT("Was unable to get PlayerController failed to get GetMouseRotation"))
-    return OutRotator;
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to GetMouseRotation to get unable to get player"))
+    return FRotator(0);
   }
 }

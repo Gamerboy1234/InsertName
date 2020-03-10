@@ -68,11 +68,8 @@ public:
   /* Gets the Warden Camera Manager */
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetWardenCameraManager", CompactNodeTitle = "GetWCM", Keywords = "GetWardenCameraManager"), Category = "Utility")
   static AWardenCameraManager* GetWardenCameraManager(UObject* WorldContextObject);
-
-
   /* Gets the player character */
   static APaperWarden* GetPlayer(UObject* WorldContextObject);
-
   /* Converts mouse to world space and gets it's rotation in world relative to the player camera */
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetMouseRotation", CompactNodeTitle = "GetMouseRot", Keywords = "GetMouseRotation"), Category = "Utility")
   static FRotator GetMouseRotation(UObject* WorldContextObject);
