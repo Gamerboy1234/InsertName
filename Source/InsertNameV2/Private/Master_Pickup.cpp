@@ -14,12 +14,11 @@
 AMaster_Pickup::AMaster_Pickup()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
   MaxItemAmount = 99;
   AmountAtIndex = 1;
-  UPROPERTY(VisibleAnywhere, Category = "Components")
-
+  
   BoxTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxTrigger"));
   if (!ensure(BoxTrigger != nullptr)) { return; }
   RootComponent = BoxTrigger;
