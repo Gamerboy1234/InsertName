@@ -325,6 +325,8 @@ FRotator UGeneralFunctions::GetMouseRotation(UObject* WorldContextObject)
 
   if (PlayerRef)
   {
+    PlayerRef->UpdateMouseRotation();
+
     return PlayerRef->GetCurrentMouseRotation();
   }
   else
