@@ -5,6 +5,8 @@
 #include "PaperSpriteComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GeneralFunctions.h"
+#include "GameFramework/PlayerController.h"
+#include "Engine/World.h"
 #include "PaperWarden.h"
 #include "InsertNameV2.h"
 
@@ -12,13 +14,6 @@ AMaster_Gun::AMaster_Gun()
 {
   // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
   PrimaryActorTick.bCanEverTick = true;
-
-  // Setup player hand sprites
-  PlayerLeftHand = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Player Left Hand"));
-  PlayerLeftHand->SetupAttachment(RootComponent);
-
-  PlayerRightHand = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Player Right Hand"));
-  PlayerRightHand->SetupAttachment(RootComponent);
 
   // Set Default Values
   TraceMultipler = 125.0f;
@@ -92,6 +87,10 @@ void AMaster_Gun::OnInteract_Implementation()
   {
     LocalPlayer->EquipGun(this, GunOffset, GunScale);
     bIsGunEquipped = true;
+
+    APlayerController* PController = GetWorld()->GetFirstPlayerController();
+
+    this->EnableInput(PController);
   }
   else
   {
