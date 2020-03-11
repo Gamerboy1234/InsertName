@@ -8,6 +8,7 @@
 #include "Master_Gun.generated.h"
 
 class UPaperSpriteComponent;
+class UInputComponent;
 
 /**
  * 
@@ -94,6 +95,10 @@ public:
   UFUNCTION()
   void MouseTimelineProgress(float Value);
 
+  virtual void AttackKeyPressed();
+
+  virtual void AttackKeyReleased();
+
 protected:
 
   // Called when the game starts or when spawned
@@ -110,5 +115,5 @@ private:
   void RotateGunToMouse();
 
   bool bOnCooldown;
-	
+
 };

@@ -5,6 +5,9 @@
 #include "PaperSpriteComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GeneralFunctions.h"
+#include "Engine/BlueprintGeneratedClass.h"
+#include "Components/InputComponent.h"
+#include "Engine/InputDelegateBinding.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
 #include "PaperWarden.h"
@@ -71,7 +74,28 @@ void AMaster_Gun::RotateGunToMouse()
 
 void AMaster_Gun::FireGun_Implementation()
 {
+  FVector TraceStart = Sprite->GetSocketLocation(FName("FireTraceStart"));
+  FVector TraceEnd = Sprite->GetSocketRotation(FName("FireTraceStart")).Vector() * TraceMultipler + TraceStart;
 
+  TArray<FHitResult> OutHit;
+  FCollisionObjectQueryParams ObjectsToTest;
+  ObjectsToTest.AddObjectTypesToQuery(ECC_WorldStatic);
+  ObjectsToTest.AddObjectTypesToQuery(ECC_WorldDynamic);
+  ObjectsToTest.AddObjectTypesToQuery(ECC_Pawn);
+  ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel17);
+  ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel8);
+
+  FCollisionQueryParams CollisionParms;
+
+  DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Green, false, 1, 0, 1);
+
+  if (GetWorld()->LineTraceMultiByObjectType(OutHit, TraceStart, TraceEnd, ObjectsToTest, CollisionParms))
+  {
+    for (FHitResult HitObject : OutHit)
+    {
+      UE_LOG(LogTemp, Log, TEXT("Hit Actor %s"), *HitObject.Actor->GetName())
+    }
+  }
 }
 
 void AMaster_Gun::StopGunFire_Implementation()
@@ -88,9 +112,22 @@ void AMaster_Gun::OnInteract_Implementation()
     LocalPlayer->EquipGun(this, GunOffset, GunScale);
     bIsGunEquipped = true;
 
-    APlayerController* PController = GetWorld()->GetFirstPlayerController();
+    if (!InputComponent)
+    {
+      InputComponent = NewObject<UInputComponent>(this);
+      InputComponent->RegisterComponent();
+      InputComponent->bBlockInput = bBlockInput;
+      InputComponent->Priority = InputPriority;
 
-    this->EnableInput(PController);
+      UBlueprintGeneratedClass* BGClass = Cast<UBlueprintGeneratedClass>(GetClass());
+      if (BGClass != NULL)
+      {
+        UInputDelegateBinding::BindInputDelegates(BGClass, InputComponent);
+      }
+    }
+
+    InputComponent->BindAction("Attack", IE_Pressed, this, &AMaster_Gun::AttackKeyPressed);
+    InputComponent->BindAction("Attack", IE_Released, this, &AMaster_Gun::AttackKeyReleased);
   }
   else
   {
@@ -110,6 +147,18 @@ void AMaster_Gun::Tick(float DeltaSeconds)
 void AMaster_Gun::MouseTimelineProgress(float Value)
 {
   RotateGunToMouse();
+}
+
+void AMaster_Gun::AttackKeyPressed()
+{
+  // for use in children called when attack is pressed
+  UE_LOG(LogInventorySystem, Warning, TEXT("AttackKeyPressed on gun %s has no implementation"), *this->GetName())
+}
+
+void AMaster_Gun::AttackKeyReleased()
+{
+  // for use in children called when attack released
+  UE_LOG(LogInventorySystem, Warning, TEXT("AttackKeyReleased on gun %s has no implementation"), *this->GetName())
 }
 
 const bool AMaster_Gun::GetGunOnCooldown()
