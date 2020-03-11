@@ -108,7 +108,7 @@ void APlayerGun::TimelineCallback(float Value)
 
 void APlayerGun::TimelineFinishedCallback()
 {
-  UE_LOG(LogTemp, Log, TEXT("CD Done"))
+  bOnCooldown = false;
 }
 
 void APlayerGun::StopGunFire_Implementation()

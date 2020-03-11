@@ -107,34 +107,7 @@ void AMaster_Gun::StopGunFire_Implementation()
 
 void AMaster_Gun::OnInteract_Implementation()
 {
-  APaperWarden* LocalPlayer = GetPlayerRef();
-
-  if (LocalPlayer)
-  {
-    LocalPlayer->EquipGun(this, GunOffset, GunScale);
-    bIsGunEquipped = true;
-
-    if (!InputComponent)
-    {
-      InputComponent = NewObject<UInputComponent>(this);
-      InputComponent->RegisterComponent();
-      InputComponent->bBlockInput = bBlockInput;
-      InputComponent->Priority = InputPriority;
-
-      UBlueprintGeneratedClass* BGClass = Cast<UBlueprintGeneratedClass>(GetClass());
-      if (BGClass != NULL)
-      {
-        UInputDelegateBinding::BindInputDelegates(BGClass, InputComponent);
-      }
-    }
-
-    InputComponent->BindAction("Attack", IE_Pressed, this, &AMaster_Gun::AttackKeyPressed);
-    InputComponent->BindAction("Attack", IE_Released, this, &AMaster_Gun::AttackKeyReleased);
-  }
-  else
-  {
-    UE_LOG(LogInventorySystem, Error, TEXT("Unable to equip gun Player not valid"))
-  }
+  UpdateGunInput();
 }
 
 void AMaster_Gun::Tick(float DeltaSeconds)
@@ -160,6 +133,42 @@ void AMaster_Gun::AttackKeyReleased()
 {
   // for use in children called when attack released
   UE_LOG(LogInventorySystem, Warning, TEXT("AttackKeyReleased on gun %s has no implementation"), *this->GetName())
+}
+
+void AMaster_Gun::UpdateGunInput()
+{
+  APaperWarden* LocalPlayer = GetPlayerRef();
+
+  if (LocalPlayer)
+  {
+    if (!LocalPlayer->GunRef)
+    {
+      LocalPlayer->EquipGun(this, GunOffset, GunScale);
+      bIsGunEquipped = true;
+    }
+
+    if (!InputComponent)
+    {
+      InputComponent = NewObject<UInputComponent>(this);
+      InputComponent->RegisterComponent();
+      InputComponent->bBlockInput = bBlockInput;
+      InputComponent->Priority = InputPriority;
+
+      UBlueprintGeneratedClass* BGClass = Cast<UBlueprintGeneratedClass>(GetClass());
+
+      if (BGClass != NULL)
+      {
+        UInputDelegateBinding::BindInputDelegates(BGClass, InputComponent);
+      }
+    }
+
+    InputComponent->BindAction("Attack", IE_Pressed, this, &AMaster_Gun::AttackKeyPressed);
+    InputComponent->BindAction("Attack", IE_Released, this, &AMaster_Gun::AttackKeyReleased);
+  }
+  else
+  {
+    UE_LOG(LogInventorySystem, Error, TEXT("Unable to equip gun Player not valid"))
+  }
 }
 
 const bool AMaster_Gun::GetGunOnCooldown()

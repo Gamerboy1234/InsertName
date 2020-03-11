@@ -95,6 +95,9 @@ public:
 
   virtual void AttackKeyReleased();
 
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
+  void UpdateGunInput();
+
   bool bOnCooldown;
 
 protected:
