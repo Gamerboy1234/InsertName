@@ -44,6 +44,8 @@ void AMaster_Gun::BeginPlay()
 {
   Super::BeginPlay();
 
+  DefaultDamage = Damage;
+
   // Start Mouse Timeline
   if (CurveFloat)
   {
@@ -143,7 +145,6 @@ void AMaster_Gun::Tick(float DeltaSeconds)
   MouseTimeline.TickTimeline(DeltaSeconds);
 }
 
-
 void AMaster_Gun::MouseTimelineProgress(float Value)
 {
   RotateGunToMouse();
@@ -164,4 +165,9 @@ void AMaster_Gun::AttackKeyReleased()
 const bool AMaster_Gun::GetGunOnCooldown()
 {
   return bOnCooldown;
+}
+
+const float AMaster_Gun::GetDefaultDamage()
+{
+  return DefaultDamage;
 }

@@ -5,6 +5,15 @@
 #include "TimerManager.h"
 #include "Engine.h"
 
+APlayerGun::APlayerGun()
+{
+  // Setup Timeline curve
+  static ConstructorHelpers::FObjectFinder<UCurveFloat> Curve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
+  check(Curve.Succeeded());
+
+  CDFloat = Curve.Object;
+}
+
 void APlayerGun::AttackKeyPressed()
 {
   if (!bOnCooldown)
@@ -30,28 +39,31 @@ void APlayerGun::AttackKeyPressed()
 
 void APlayerGun::AttackKeyReleased()
 {
-  StopGunFire();
-
-  if (ChargeTimer.IsValid())
+  if (!bOnCooldown)
   {
-    GetWorldTimerManager().ClearTimer(ChargeTimer);
-  }
+    StopGunFire();
 
-  if (ChargeDone)
-  {
-    HeavyAttack();
-
-    ChargeDone = false;
-  }
-  else
-  {
-    ChargeDone = false;
-
-    if (ChargeStarted)
+    if (ChargeTimer.IsValid())
     {
-      ChargeStarted = false;
+      GetWorldTimerManager().ClearTimer(ChargeTimer);
+    }
 
-      LightAttack();
+    if (ChargeDone)
+    {
+      HeavyAttack();
+
+      ChargeDone = false;
+    }
+    else
+    {
+      ChargeDone = false;
+
+      if (ChargeStarted)
+      {
+        ChargeStarted = false;
+
+        LightAttack();
+      }
     }
   }
 }
@@ -79,8 +91,43 @@ void APlayerGun::CompleteCharge()
   }
 }
 
+void APlayerGun::Tick(float DeltaSeconds)
+{
+  Super::Tick(DeltaSeconds);
+
+  // Update Cooldown Timeline
+  CooldownTimeline.TickTimeline(DeltaSeconds);
+}
+
+void APlayerGun::TimelineCallback(float Value)
+{
+  UE_LOG(LogTemp, Log, TEXT("CD %f"), Value)
+
+  // TODO Update CD Widget
+}
+
+void APlayerGun::TimelineFinishedCallback()
+{
+  UE_LOG(LogTemp, Log, TEXT("CD Done"))
+}
+
 void APlayerGun::StopGunFire_Implementation()
 {
   bOnCooldown = true;
-}
 
+  // Start CD Timeline
+  FOnTimelineFloat CDTimelineCallback;
+  FOnTimelineEventStatic CDTimelineFinishedCallback;
+
+  if (CDFloat)
+  {
+    CDTimelineCallback.BindUFunction(this, FName("TimelineCallback"));
+    CDTimelineFinishedCallback.BindUFunction(this, FName("TimelineFinishedCallback"));
+    CooldownTimeline.SetTimelineFinishedFunc(CDTimelineFinishedCallback);
+    CooldownTimeline.AddInterpFloat(CDFloat, CDTimelineCallback);
+    CooldownTimeline.SetLooping(false);
+    CooldownTimeline.SetPlayRate(1.0f);
+    CooldownTimeline.SetTimelineLength(FireRate);
+    CooldownTimeline.PlayFromStart();
+  }
+}

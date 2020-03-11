@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "Master_Gun.h"
 #include "PlayerGun.generated.h"
 
@@ -16,6 +17,8 @@ class INSERTNAMEV2_API APlayerGun : public AMaster_Gun
 
 public:
 
+  APlayerGun();
+
   virtual void AttackKeyPressed() override;
 
   virtual void AttackKeyReleased() override;
@@ -28,6 +31,22 @@ public:
   FTimerHandle ChargeTimer;
 
   virtual void StopGunFire_Implementation() override;
+
+  // Called every frame
+  virtual void Tick(float DeltaSeconds) override;
+
+protected:
+
+  FTimeline CooldownTimeline;
+
+  UPROPERTY()
+  UCurveFloat* CDFloat;
+
+  UFUNCTION()
+  void TimelineFinishedCallback();
+
+  UFUNCTION()
+  void TimelineCallback(float val);
 
 private:
 

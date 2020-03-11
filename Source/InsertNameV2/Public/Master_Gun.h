@@ -8,7 +8,6 @@
 #include "Master_Gun.generated.h"
 
 class UPaperSpriteComponent;
-class UInputComponent;
 
 /**
  * 
@@ -22,12 +21,6 @@ class INSERTNAMEV2_API AMaster_Gun : public AMaster_Pickup
 public:
 
   AMaster_Gun();
-
-  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-  UPaperSpriteComponent* PlayerLeftHand;
-
-  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-  UPaperSpriteComponent* PlayerRightHand;
 
   /* The socket to attach the gun to */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
@@ -85,6 +78,9 @@ public:
   /* Reads the value of bOnCooldown */
   UFUNCTION(BlueprintPure, Category = "Gun Functions")
   const bool GetGunOnCooldown();
+  /* Gets the default damage */
+  UFUNCTION(BlueprintPure, Category = "Gun Functions")
+  const float GetDefaultDamage();
 
   /* Upon player interacting with this object call player equip gun function */
   virtual void OnInteract_Implementation() override;
@@ -115,4 +111,6 @@ private:
 
   /* Rotate gun towards the mouse */
   void RotateGunToMouse();
+
+  float DefaultDamage;
 };
