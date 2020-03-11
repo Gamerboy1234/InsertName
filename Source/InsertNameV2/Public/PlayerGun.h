@@ -20,9 +20,24 @@ public:
 
   virtual void AttackKeyReleased() override;
 
+  /* Amount of Time needed to charge the heavy attack attack */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
+  float ChargeDelay;
+
+  UPROPERTY(BlueprintReadWrite, Category = "Gun Settings")
+  FTimerHandle ChargeTimer;
+
+  virtual void StopGunFire_Implementation() override;
+
 private:
 
   void LightAttack();
 
-  void HeveyAttack();
+  void HeavyAttack();
+
+  void CompleteCharge();
+
+  bool ChargeStarted;
+
+  bool ChargeDone;
 };

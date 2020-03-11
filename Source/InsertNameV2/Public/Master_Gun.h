@@ -99,6 +99,8 @@ public:
 
   virtual void AttackKeyReleased();
 
+  bool bOnCooldown;
+
 protected:
 
   // Called when the game starts or when spawned
@@ -113,7 +115,4 @@ private:
 
   /* Rotate gun towards the mouse */
   void RotateGunToMouse();
-
-  bool bOnCooldown;
-
 };
