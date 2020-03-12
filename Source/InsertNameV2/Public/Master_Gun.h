@@ -8,6 +8,7 @@
 #include "Master_Gun.generated.h"
 
 class UPaperSpriteComponent;
+class UBoxComponent;
 
 /**
  * 
@@ -22,6 +23,8 @@ public:
 
   AMaster_Gun();
 
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Compoents")
+  UBoxComponent* BarrelCollision;
   /* The socket to attach the gun to */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
   FName SocketName;
@@ -100,6 +103,11 @@ public:
 
   bool bOnCooldown;
 
+  virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+
+  UFUNCTION()
+  void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 protected:
 
   // Called when the game starts or when spawned
@@ -111,6 +119,8 @@ protected:
   UCurveFloat* CurveFloat;
 
 private:
+
+  bool bCanFireTrace;
 
   /* Rotate gun towards the mouse */
   void RotateGunToMouse();

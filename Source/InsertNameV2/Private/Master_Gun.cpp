@@ -5,6 +5,8 @@
 #include "PaperSpriteComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GeneralFunctions.h"
+#include "Master_Magnet.h"
+#include "Components/BoxComponent.h"
 #include "Engine/BlueprintGeneratedClass.h"
 #include "Components/InputComponent.h"
 #include "Engine/InputDelegateBinding.h"
@@ -17,6 +19,10 @@ AMaster_Gun::AMaster_Gun()
 {
   // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
   PrimaryActorTick.bCanEverTick = true;
+
+  // Create front barrel collision
+  BarrelCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BarrelCollision"));
+  BarrelCollision->SetupAttachment(RootComponent);
 
   // Set Default Values
   TraceMultipler = 125.0f;
@@ -45,6 +51,9 @@ void AMaster_Gun::BeginPlay()
   Super::BeginPlay();
 
   DefaultDamage = Damage;
+
+  BarrelCollision->OnComponentBeginOverlap.AddDynamic(this, &AMaster_Gun::OnOverlapBegin);
+  BarrelCollision->OnComponentEndOverlap.AddDynamic(this, &AMaster_Gun::OnOverlapEnd);
 
   // Start Mouse Timeline
   if (CurveFloat)
@@ -89,36 +98,39 @@ void AMaster_Gun::DamageHitActors()
 
 void AMaster_Gun::FireGun_Implementation()
 {
-  FVector TraceStart = Sprite->GetSocketLocation(FName("FireTraceStart"));
-  FVector TraceEnd = Sprite->GetSocketRotation(FName("FireTraceStart")).Vector() * TraceMultipler + TraceStart;
-
-  TArray<FHitResult> OutHit;
-  FCollisionObjectQueryParams ObjectsToTest;
-  ObjectsToTest.AddObjectTypesToQuery(ECC_WorldStatic);
-  ObjectsToTest.AddObjectTypesToQuery(ECC_WorldDynamic);
-  ObjectsToTest.AddObjectTypesToQuery(ECC_Pawn);
-  ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel17);
-  ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel8);
-
-  FCollisionQueryParams CollisionParms;
-
-  DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Green, false, 1, 0, 1);
-
-  if (GetWorld()->LineTraceMultiByObjectType(OutHit, TraceStart, TraceEnd, ObjectsToTest, CollisionParms))
+  if (bCanFireTrace)
   {
-    for (FHitResult HitObject : OutHit)
-    {
-      if (HitObject.Actor != NULL)
-      {
-        AActor* HitActor = Cast<AActor>(HitObject.Actor);
+    FVector TraceStart = Sprite->GetSocketLocation(FName("FireTraceStart"));
+    FVector TraceEnd = Sprite->GetSocketRotation(FName("FireTraceStart")).Vector() * TraceMultipler + TraceStart;
 
-        if (HitActor)
+    TArray<FHitResult> OutHit;
+    FCollisionObjectQueryParams ObjectsToTest;
+    ObjectsToTest.AddObjectTypesToQuery(ECC_WorldStatic);
+    ObjectsToTest.AddObjectTypesToQuery(ECC_WorldDynamic);
+    ObjectsToTest.AddObjectTypesToQuery(ECC_Pawn);
+    ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel17);
+    ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel8);
+
+    FCollisionQueryParams CollisionParms;
+
+    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Green, false, 1, 0, 1);
+
+    if (GetWorld()->LineTraceMultiByObjectType(OutHit, TraceStart, TraceEnd, ObjectsToTest, CollisionParms))
+    {
+      for (FHitResult HitObject : OutHit)
+      {
+        if (HitObject.Actor != NULL)
         {
-          HitActors.AddUnique(HitActor);
+          AActor* HitActor = Cast<AActor>(HitObject.Actor);
+
+          if (HitActor)
+          {
+            HitActors.AddUnique(HitActor);
+          }
         }
       }
+      DamageHitActors();
     }
-    DamageHitActors();
   }
 }
 
@@ -190,6 +202,36 @@ void AMaster_Gun::UpdateGunInput()
   else
   {
     UE_LOG(LogInventorySystem, Error, TEXT("Unable to equip gun Player not valid"))
+  }
+}
+
+void AMaster_Gun::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+  if (OtherActor)
+  {
+    AMaster_Magnet* Magnet = Cast<AMaster_Magnet>(OtherActor);
+
+    if (!Magnet)
+    {
+      bCanFireTrace = false;
+
+      UE_LOG(LogTemp, Log, TEXT("Test"))
+    }
+  }
+}
+
+void AMaster_Gun::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+  if (OtherActor)
+  {
+    AMaster_Magnet* Magnet = Cast<AMaster_Magnet>(OtherActor);
+
+    if (!Magnet)
+    {
+      bCanFireTrace = true;
+
+      UE_LOG(LogTemp, Log, TEXT("Test1"))
+    }
   }
 }
 
