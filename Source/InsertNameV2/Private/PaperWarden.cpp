@@ -1420,6 +1420,11 @@ void APaperWarden::CheckSpellCooldowns()
   }
 }
 
+void APaperWarden::DebugGunHit(bool Debug)
+{
+  bDebugGunHit = Debug;
+}
+
 FRotator APaperWarden::GetCurrentMouseRotation()
 {
   return MouseRot;

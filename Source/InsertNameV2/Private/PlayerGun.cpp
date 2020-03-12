@@ -70,7 +70,7 @@ void APlayerGun::AttackKeyReleased()
 
 void APlayerGun::LightAttack()
 {
-  FireGun();
+  FireMultiLineTrace();
 }
 
 void APlayerGun::HeavyAttack()
@@ -101,8 +101,6 @@ void APlayerGun::Tick(float DeltaSeconds)
 
 void APlayerGun::TimelineCallback(float Value)
 {
-  UE_LOG(LogTemp, Log, TEXT("CD %f"), Value)
-
   // TODO Update CD Widget
 }
 

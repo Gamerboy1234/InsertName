@@ -9,8 +9,10 @@
 #include "Master_Enemy.h"
 #include "InsertNameV2.h"
 #include "WardenCameraManager.h"
+#include "LeechInnerEggBase.h"
 #include "Camera/PlayerCameraManager.h"
 #include "PaperWarden.h"
+#include "PaperCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "PaperZDCharacter.h"
@@ -336,15 +338,21 @@ FRotator UGeneralFunctions::GetMouseRotation(UObject* WorldContextObject)
   }
 }
 
-bool UGeneralFunctions::DamageHitActor(AActor* HitActor, float DamageTextUpTime, float Damage, AActor* Instigator)
+bool UGeneralFunctions::DamageHitActor(AActor* HitActor, float DamageTextUpTime, float Damage, AActor* Instigator, bool bShowDamageText)
 {
   if (HitActor)
   {
     AMaster_Enemy* HitEnemy = Cast<AMaster_Enemy>(HitActor);
+    ALeechInnerEggBase* HitEgg = Cast<ALeechInnerEggBase>(HitActor);
 
     if (HitEnemy)
     {
-      HitEnemy->DamageEnemy(Damage, true, Instigator);
+      HitEnemy->DamageEnemy(Damage, bShowDamageText, Instigator);
+      return true;
+    }
+    else if (HitEgg)
+    {
+      HitEgg->SpawnActor();
       return true;
     }
     else
@@ -356,6 +364,30 @@ bool UGeneralFunctions::DamageHitActor(AActor* HitActor, float DamageTextUpTime,
   {
     UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to DamageHitActor HitActor was not valid"))
     return false;
+  }
+}
+
+void UGeneralFunctions::LaunchCharacterAwayFromActor(APaperCharacter* CharacterToLaunch, AActor* ActorToLaunchAwayfrom, float LaunchVelocityMultipler)
+{
+  if (CharacterToLaunch)
+  {
+    if (ActorToLaunchAwayfrom)
+    {
+      FVector CharacterLocation = CharacterToLaunch->GetActorLocation();
+      FVector ActorLocation = ActorToLaunchAwayfrom->GetActorLocation();
+
+      FVector LaunchVelocity = GetUnitVector(ActorLocation, CharacterLocation) * LaunchVelocityMultipler;
+
+      CharacterToLaunch->LaunchCharacter(LaunchVelocity, false, false);
+    }
+    else
+    {
+      UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to LaunchCharacterAwayFromActor ActorToLaunchAwayfrom was not valid"))
+    }
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to LaunchCharacterAwayFromActor CharacterToLaunch was not valid"))
   }
 }
 

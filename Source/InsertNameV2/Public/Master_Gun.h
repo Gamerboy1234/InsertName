@@ -72,8 +72,8 @@ public:
   float Damage;
   /* Will fire a multi line ray cast to look for enemies to damage */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
-  void FireGun();
-  virtual void FireGun_Implementation();
+  void FireMultiLineTrace();
+  virtual void FireMultiLineTrace_Implementation();
   /* Will stop the gun from firing it's raycast and apply the gun cooldown */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
   void StopGunFire();
@@ -84,6 +84,9 @@ public:
   /* Gets the default damage */
   UFUNCTION(BlueprintPure, Category = "Gun Functions")
   const float GetDefaultDamage();
+  /* Reads the value of bCanFireTrace */
+  UFUNCTION(BlueprintPure, Category = "Gun Functions")
+  const bool GetCanFireTrace();
 
   /* Upon player interacting with this object call player equip gun function */
   virtual void OnInteract_Implementation() override;

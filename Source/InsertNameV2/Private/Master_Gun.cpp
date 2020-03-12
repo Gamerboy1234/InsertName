@@ -51,6 +51,7 @@ void AMaster_Gun::BeginPlay()
   Super::BeginPlay();
 
   DefaultDamage = Damage;
+  bCanFireTrace = true;
 
   BarrelCollision->OnComponentBeginOverlap.AddDynamic(this, &AMaster_Gun::OnOverlapBegin);
   BarrelCollision->OnComponentEndOverlap.AddDynamic(this, &AMaster_Gun::OnOverlapEnd);
@@ -89,14 +90,14 @@ void AMaster_Gun::DamageHitActors()
   {
     if (HitActor)
     {
-      UGeneralFunctions::DamageHitActor(HitActor, 0.2, Damage, GetPlayerRef());
+      UGeneralFunctions::DamageHitActor(HitActor, 0.2, Damage, GetPlayerRef(), true);
     }
   }
 
   HitActors.Empty();
 }
 
-void AMaster_Gun::FireGun_Implementation()
+void AMaster_Gun::FireMultiLineTrace_Implementation()
 {
   if (bCanFireTrace)
   {
@@ -108,10 +109,11 @@ void AMaster_Gun::FireGun_Implementation()
     ObjectsToTest.AddObjectTypesToQuery(ECC_WorldStatic);
     ObjectsToTest.AddObjectTypesToQuery(ECC_WorldDynamic);
     ObjectsToTest.AddObjectTypesToQuery(ECC_Pawn);
-    ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel17);
+    ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel16);
     ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel8);
 
     FCollisionQueryParams CollisionParms;
+    CollisionParms.AddIgnoredActor(this);
 
     DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Green, false, 1, 0, 1);
 
@@ -126,9 +128,15 @@ void AMaster_Gun::FireGun_Implementation()
           if (HitActor)
           {
             HitActors.AddUnique(HitActor);
+
+            if (GetPlayerRef()->bDebugGunHit)
+            {
+              UE_LOG(LogInventorySystem, Log, TEXT("Gun Hit %s"), *HitObject.Actor->GetName())
+            }
           }
         }
       }
+
       DamageHitActors();
     }
   }
@@ -214,8 +222,6 @@ void AMaster_Gun::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, clas
     if (!Magnet)
     {
       bCanFireTrace = false;
-
-      UE_LOG(LogTemp, Log, TEXT("Test"))
     }
   }
 }
@@ -229,8 +235,6 @@ void AMaster_Gun::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class 
     if (!Magnet)
     {
       bCanFireTrace = true;
-
-      UE_LOG(LogTemp, Log, TEXT("Test1"))
     }
   }
 }
@@ -243,4 +247,9 @@ const bool AMaster_Gun::GetGunOnCooldown()
 const float AMaster_Gun::GetDefaultDamage()
 {
   return DefaultDamage;
+}
+
+const bool AMaster_Gun::GetCanFireTrace()
+{
+  return bCanFireTrace;
 }
