@@ -335,3 +335,27 @@ FRotator UGeneralFunctions::GetMouseRotation(UObject* WorldContextObject)
     return FRotator(0);
   }
 }
+
+bool UGeneralFunctions::DamageHitActor(AActor* HitActor, float DamageTextUpTime, float Damage, AActor* Instigator)
+{
+  if (HitActor)
+  {
+    AMaster_Enemy* HitEnemy = Cast<AMaster_Enemy>(HitActor);
+
+    if (HitEnemy)
+    {
+      HitEnemy->DamageEnemy(Damage, true, Instigator);
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to DamageHitActor HitActor was not valid"))
+    return false;
+  }
+}
+

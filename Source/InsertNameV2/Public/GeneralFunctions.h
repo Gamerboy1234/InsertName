@@ -74,6 +74,8 @@ public:
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetMouseRotation", CompactNodeTitle = "GetMouseRot", Keywords = "GetMouseRotation"), Category = "Utility")
   static FRotator GetMouseRotation(UObject* WorldContextObject);
 
+  static bool DamageHitActor(AActor* HitActor, float DamageTextUpTime, float Damage, AActor* Instigator);
+
   /* Will insert a item into an array at a given index */
   template <typename TAr>
   static void SetArrayElement(TAr item, TArray<TAr>& item_array, int32 index)

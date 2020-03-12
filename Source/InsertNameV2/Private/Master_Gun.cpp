@@ -74,6 +74,19 @@ void AMaster_Gun::RotateGunToMouse()
   }
 }
 
+void AMaster_Gun::DamageHitActors()
+{
+  for (AActor* HitActor : HitActors)
+  {
+    if (HitActor)
+    {
+      UGeneralFunctions::DamageHitActor(HitActor, 0.2, Damage, GetPlayerRef());
+    }
+  }
+
+  HitActors.Empty();
+}
+
 void AMaster_Gun::FireGun_Implementation()
 {
   FVector TraceStart = Sprite->GetSocketLocation(FName("FireTraceStart"));
@@ -95,8 +108,17 @@ void AMaster_Gun::FireGun_Implementation()
   {
     for (FHitResult HitObject : OutHit)
     {
-      UE_LOG(LogTemp, Log, TEXT("Hit Actor %s"), *HitObject.Actor->GetName())
+      if (HitObject.Actor != NULL)
+      {
+        AActor* HitActor = Cast<AActor>(HitObject.Actor);
+
+        if (HitActor)
+        {
+          HitActors.AddUnique(HitActor);
+        }
+      }
     }
+    DamageHitActors();
   }
 }
 

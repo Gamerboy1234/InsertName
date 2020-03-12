@@ -116,4 +116,8 @@ private:
   void RotateGunToMouse();
 
   float DefaultDamage;
+
+  TArray<AActor*> HitActors;
+
+  void DamageHitActors();
 };
