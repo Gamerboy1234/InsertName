@@ -75,7 +75,7 @@ public:
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetMouseRotation", CompactNodeTitle = "GetMouseRot", Keywords = "GetMouseRotation"), Category = "Utility")
   static FRotator GetMouseRotation(UObject* WorldContextObject);
   /* Will cast to many different actor classes to determine what damage function to call */
-  static bool DamageHitActor(AActor* HitActor, float DamageTextUpTime, float Damage, AActor* Instigator, bool bShowDamageText);
+  static bool DamageHitActor(AActor* HitActor, float Damage, AActor* Instigator, bool bShowDamageText);
   /* Will launch the given character away from the given actor */
   static void LaunchCharacterAwayFromActor(APaperCharacter* CharacterToLaunch, AActor* ActorToLaunchAwayfrom, float LaunchVelocityMultipler);
 

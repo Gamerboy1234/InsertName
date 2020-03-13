@@ -10,6 +10,7 @@
 #include "InsertNameV2.h"
 #include "WardenCameraManager.h"
 #include "LeechInnerEggBase.h"
+#include "MasterDamageEffect.h"
 #include "Camera/PlayerCameraManager.h"
 #include "PaperWarden.h"
 #include "PaperCharacter.h"
@@ -338,12 +339,13 @@ FRotator UGeneralFunctions::GetMouseRotation(UObject* WorldContextObject)
   }
 }
 
-bool UGeneralFunctions::DamageHitActor(AActor* HitActor, float DamageTextUpTime, float Damage, AActor* Instigator, bool bShowDamageText)
+bool UGeneralFunctions::DamageHitActor(AActor* HitActor, float Damage, AActor* Instigator, bool bShowDamageText)
 {
   if (HitActor)
   {
     AMaster_Enemy* HitEnemy = Cast<AMaster_Enemy>(HitActor);
     ALeechInnerEggBase* HitEgg = Cast<ALeechInnerEggBase>(HitActor);
+    AMasterDamageEffect* HitEffect = Cast<AMasterDamageEffect>(HitActor);
 
     if (HitEnemy)
     {
@@ -354,6 +356,11 @@ bool UGeneralFunctions::DamageHitActor(AActor* HitActor, float DamageTextUpTime,
     {
       HitEgg->SpawnActor();
       return true;
+    }
+    else if (HitEffect)
+    {
+      HitEffect->DamageActor(Damage, bShowDamageText, Instigator);
+      return false;
     }
     else
     {

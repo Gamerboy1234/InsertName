@@ -5,6 +5,7 @@
 #include "PaperSpriteComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GeneralFunctions.h"
+#include "MasterDamageEffect.h"
 #include "Master_Magnet.h"
 #include "Components/BoxComponent.h"
 #include "Engine/BlueprintGeneratedClass.h"
@@ -90,7 +91,7 @@ void AMaster_Gun::DamageHitActors()
   {
     if (HitActor)
     {
-      UGeneralFunctions::DamageHitActor(HitActor, 0.2, Damage, GetPlayerRef(), true);
+      UGeneralFunctions::DamageHitActor(HitActor, Damage, GetPlayerRef(), true);
     }
   }
 
@@ -218,8 +219,9 @@ void AMaster_Gun::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, clas
   if (OtherActor)
   {
     AMaster_Magnet* Magnet = Cast<AMaster_Magnet>(OtherActor);
+    AMasterDamageEffect* DamageEffect = Cast<AMasterDamageEffect>(OtherActor);
 
-    if (!Magnet)
+    if (!Magnet && !DamageEffect)
     {
       bCanFireTrace = false;
     }
@@ -231,8 +233,9 @@ void AMaster_Gun::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class 
   if (OtherActor)
   {
     AMaster_Magnet* Magnet = Cast<AMaster_Magnet>(OtherActor);
+    AMasterDamageEffect* DamageEffect = Cast<AMasterDamageEffect>(OtherActor);
 
-    if (!Magnet)
+    if (!Magnet && !DamageEffect)
     {
       bCanFireTrace = true;
     }
