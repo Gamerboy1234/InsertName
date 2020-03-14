@@ -75,7 +75,7 @@ void APlayerGun::LightAttack()
 
 void APlayerGun::HeavyAttack()
 {
-  UE_LOG(LogTemp, Log, TEXT("Heavy Attack"))
+  FireMultiLineKnockBack();
 }
 
 void APlayerGun::CompleteCharge()

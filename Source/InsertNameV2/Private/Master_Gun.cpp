@@ -7,6 +7,7 @@
 #include "GeneralFunctions.h"
 #include "MasterDamageEffect.h"
 #include "Master_Magnet.h"
+#include "Master_Enemy.h"
 #include "Components/BoxComponent.h"
 #include "Engine/BlueprintGeneratedClass.h"
 #include "Components/InputComponent.h"
@@ -98,12 +99,31 @@ void AMaster_Gun::DamageHitActors()
   HitActors.Empty();
 }
 
+void AMaster_Gun::ApplyKnockBack()
+{
+  for (AActor* HitActor : KnockBackActors)
+  {
+    if (HitActor)
+    {
+      AMaster_Enemy* HitEnemy = Cast<AMaster_Enemy>(HitActor);
+
+      if (HitEnemy)
+      {
+        HitEnemy->OnKnockBack();
+        UGeneralFunctions::LaunchCharacterAwayFromActor(HitEnemy, GetPlayerRef(), KnockBackMultipler);
+      }
+    }
+  }
+
+  KnockBackActors.Empty();
+}
+
 void AMaster_Gun::FireMultiLineTrace_Implementation()
 {
   if (bCanFireTrace)
   {
-    FVector TraceStart = Sprite->GetSocketLocation(FName("FireTraceStart"));
-    FVector TraceEnd = Sprite->GetSocketRotation(FName("FireTraceStart")).Vector() * TraceMultipler + TraceStart;
+    TraceStart = Sprite->GetSocketLocation(FName("FireTraceStart"));
+    TraceEnd = Sprite->GetSocketRotation(FName("FireTraceStart")).Vector() * TraceMultipler + TraceStart;
 
     TArray<FHitResult> OutHit;
     FCollisionObjectQueryParams ObjectsToTest;
@@ -137,8 +157,51 @@ void AMaster_Gun::FireMultiLineTrace_Implementation()
           }
         }
       }
-
       DamageHitActors();
+    }
+  }
+}
+
+void AMaster_Gun::FireMultiLineKnockBack_Implementation()
+{
+  if (bCanFireTrace)
+  {
+    TraceStart = Sprite->GetSocketLocation(FName("FireTraceStart"));
+    TraceEnd = Sprite->GetSocketRotation(FName("FireTraceStart")).Vector() * TraceMultipler + TraceStart;
+
+    TArray<FHitResult> OutHit;
+    FCollisionObjectQueryParams ObjectsToTest;
+    ObjectsToTest.AddObjectTypesToQuery(ECC_WorldStatic);
+    ObjectsToTest.AddObjectTypesToQuery(ECC_WorldDynamic);
+    ObjectsToTest.AddObjectTypesToQuery(ECC_Pawn);
+    ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel16);
+    ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel8);
+
+    FCollisionQueryParams CollisionParms;
+    CollisionParms.AddIgnoredActor(this);
+
+    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Green, false, 1, 0, 1);
+
+    if (GetWorld()->LineTraceMultiByObjectType(OutHit, TraceStart, TraceEnd, ObjectsToTest, CollisionParms))
+    {
+      for (FHitResult HitObject : OutHit)
+      {
+        if (HitObject.Actor != NULL)
+        {
+          AActor* HitActor = Cast<AActor>(HitObject.Actor);
+
+          if (HitActor)
+          {
+            KnockBackActors.AddUnique(HitActor);
+
+            if (GetPlayerRef()->bDebugGunHit)
+            {
+              UE_LOG(LogInventorySystem, Log, TEXT("Gun Hit %s"), *HitObject.Actor->GetName())
+            }
+          }
+        }
+      }
+      ApplyKnockBack();
     }
   }
 }
@@ -255,4 +318,14 @@ const float AMaster_Gun::GetDefaultDamage()
 const bool AMaster_Gun::GetCanFireTrace()
 {
   return bCanFireTrace;
+}
+
+const FVector AMaster_Gun::GetTraceStart()
+{
+  return TraceStart;
+}
+
+const FVector AMaster_Gun::GetTraceEnd()
+{
+  return TraceEnd;
 }

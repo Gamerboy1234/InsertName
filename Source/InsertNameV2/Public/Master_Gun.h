@@ -74,6 +74,10 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
   void FireMultiLineTrace();
   virtual void FireMultiLineTrace_Implementation();
+  /* Will fire a multi line ray cast to look for enemies to knockback */
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
+  void FireMultiLineKnockBack();
+  virtual void FireMultiLineKnockBack_Implementation();
   /* Will stop the gun from firing it's raycast and apply the gun cooldown */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
   void StopGunFire();
@@ -87,6 +91,12 @@ public:
   /* Reads the value of bCanFireTrace */
   UFUNCTION(BlueprintPure, Category = "Gun Functions")
   const bool GetCanFireTrace();
+  /* Reads the value of TraceStart */
+  UFUNCTION(BlueprintPure, Category = "Gun Functions")
+  const FVector GetTraceStart();
+  /* Reads the value of TraceEnd */
+  UFUNCTION(BlueprintPure, Category = "Gun Functions")
+  const FVector GetTraceEnd();
 
   /* Upon player interacting with this object call player equip gun function */
   virtual void OnInteract_Implementation() override;
@@ -125,6 +135,10 @@ private:
 
   bool bCanFireTrace;
 
+  FVector TraceStart;
+  
+  FVector TraceEnd;
+
   /* Rotate gun towards the mouse */
   void RotateGunToMouse();
 
@@ -132,5 +146,9 @@ private:
 
   TArray<AActor*> HitActors;
 
+  TArray<AActor*> KnockBackActors;
+
   void DamageHitActors();
+
+  void ApplyKnockBack();
 };
