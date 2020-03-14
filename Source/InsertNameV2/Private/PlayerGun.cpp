@@ -125,7 +125,7 @@ void APlayerGun::StopGunFire_Implementation()
     CooldownTimeline.AddInterpFloat(CDFloat, CDTimelineCallback);
     CooldownTimeline.SetLooping(false);
     CooldownTimeline.SetPlayRate(1.0f);
-    CooldownTimeline.SetTimelineLength(FireRate);
+    CooldownTimeline.SetTimelineLength(GunCoolDown);
     CooldownTimeline.PlayFromStart();
   }
 }

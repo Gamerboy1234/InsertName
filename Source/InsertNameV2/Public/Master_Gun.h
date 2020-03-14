@@ -9,6 +9,8 @@
 
 class UPaperSpriteComponent;
 class UBoxComponent;
+class UGunCoolDownBar;
+class UWidgetComponent;
 
 /**
  * 
@@ -23,7 +25,10 @@ public:
 
   AMaster_Gun();
 
-  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Compoents")
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  UWidgetComponent* WidgetComp;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
   UBoxComponent* BarrelCollision;
   /* The socket to attach the gun to */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
@@ -64,12 +69,15 @@ public:
   /* Whether or the should faded out of the scene */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
   bool bFadeOut;
-  /* The rate of fire the gun is shooting at */
+  /* Time it takes for the player to be able to fire the gun again */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
-  float FireRate;
+  float GunCoolDown;
   /* How much damage the gun will deal to the given enemy */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
   float Damage;
+  /* Updates Gun's WidgetComp rotation to always face the camera */
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
+  void UpdateWidgetCompRotation(bool bFacingRight);
   /* Will fire a multi line ray cast to look for enemies to damage */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
   void FireMultiLineTrace();
@@ -97,6 +105,9 @@ public:
   /* Reads the value of TraceEnd */
   UFUNCTION(BlueprintPure, Category = "Gun Functions")
   const FVector GetTraceEnd();
+  /* Gets the current cooldown widget */
+  UFUNCTION(BlueprintPure, Category = "Gun Functions")
+  UGunCoolDownBar* GetCDWidget();
 
   /* Upon player interacting with this object call player equip gun function */
   virtual void OnInteract_Implementation() override;
@@ -133,6 +144,8 @@ protected:
 
 private:
 
+  void SetupCDWidget();
+
   bool bCanFireTrace;
 
   FVector TraceStart;
@@ -151,4 +164,8 @@ private:
   void DamageHitActors();
 
   void ApplyKnockBack();
+
+  UGunCoolDownBar* CDWidget;
+
+  TSubclassOf<UGunCoolDownBar> CDClass;
 };

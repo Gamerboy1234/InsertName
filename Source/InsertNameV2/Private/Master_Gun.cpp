@@ -7,6 +7,8 @@
 #include "GeneralFunctions.h"
 #include "MasterDamageEffect.h"
 #include "Master_Magnet.h"
+#include "Components/WidgetComponent.h"
+#include "GunCoolDownBar.h"
 #include "Master_Enemy.h"
 #include "Components/BoxComponent.h"
 #include "Engine/BlueprintGeneratedClass.h"
@@ -14,6 +16,7 @@
 #include "Engine/InputDelegateBinding.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "PaperWarden.h"
 #include "InsertNameV2.h"
 
@@ -26,6 +29,10 @@ AMaster_Gun::AMaster_Gun()
   BarrelCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BarrelCollision"));
   BarrelCollision->SetupAttachment(RootComponent);
 
+  // Create gun cooldown widget component
+  WidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComp"));
+  WidgetComp->SetupAttachment(RootComponent);
+
   // Set Default Values
   TraceMultipler = 125.0f;
   TrailDespawn = 0.08f;
@@ -36,7 +43,7 @@ AMaster_Gun::AMaster_Gun()
   TrailGlowAmount = 1;
   KnockBackMultipler = 1000;
   KnockbackRangeMultipler = 200;
-  FireRate = 1.0f;
+  GunCoolDown = 1.0f;
   bFadeOut = true;
   SocketName = "Gun";
   Damage = 3.0f;
@@ -46,11 +53,21 @@ AMaster_Gun::AMaster_Gun()
   check(Curve.Succeeded());
 
   CurveFloat = Curve.Object;
+
+  // Get gun cooldown widget class
+  ConstructorHelpers::FClassFinder<UUserWidget> LocalCDWidget(TEXT("/Game/2DPlatformingKit/Widgets/Player_Widgets/GunCoolDown"));
+  check(LocalCDWidget.Succeeded());
+
+  CDClass = LocalCDWidget.Class;
+
+  WidgetComp->SetWidgetClass(CDClass);
 }
 
 void AMaster_Gun::BeginPlay()
 {
   Super::BeginPlay();
+
+  SetupCDWidget();
 
   DefaultDamage = Damage;
   bCanFireTrace = true;
@@ -116,6 +133,45 @@ void AMaster_Gun::ApplyKnockBack()
   }
 
   KnockBackActors.Empty();
+}
+
+void AMaster_Gun::SetupCDWidget()
+{
+  CDWidget = Cast<UGunCoolDownBar>(WidgetComp->GetUserWidgetObject());
+
+  if (CDWidget)
+  {
+    CDWidget->SetUpWidget(GunCoolDown, GunCoolDown);
+  }
+  else
+  {
+    UE_LOG(LogInventorySystem, Error, TEXT("Unable to SetupCDWidget CDWidget was not valid"))
+  }
+}
+
+void AMaster_Gun::UpdateWidgetCompRotation(bool bFacingRight)
+{
+  if (WidgetComp)
+  {
+    if (bFacingRight)
+    {
+      FRotator CurrentRot = WidgetComp->GetComponentRotation();
+      FRotator NewRot = FRotator(CurrentRot.Pitch, CurrentRot.Roll, -270);
+
+      WidgetComp->SetWorldRotation(NewRot);
+    }
+    else
+    {
+      FRotator CurrentRot = WidgetComp->GetComponentRotation();
+      FRotator NewRot = FRotator(CurrentRot.Pitch, CurrentRot.Roll, 270);
+
+      WidgetComp->SetWorldRotation(NewRot);
+    }
+  }
+  else
+  {
+    UE_LOG(LogInventorySystem, Warning, TEXT("Unable to update WidgetComp's rotation it's not valid"))
+  }
 }
 
 void AMaster_Gun::FireMultiLineTrace_Implementation()
@@ -328,4 +384,9 @@ const FVector AMaster_Gun::GetTraceStart()
 const FVector AMaster_Gun::GetTraceEnd()
 {
   return TraceEnd;
+}
+
+UGunCoolDownBar* AMaster_Gun::GetCDWidget()
+{
+  return CDWidget;
 }
