@@ -125,25 +125,25 @@ public:
 
   virtual void AttackKeyReleased();
 
+  /* Setup the initialize gun input state */
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
+  void SetupInput();
+
+  /* Will disable Input on Gun */
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
+  void DisableGunInput();
+
   /* Will enable Input on Gun */
   UFUNCTION(BlueprintCallable, Category = "Gun Functions")
-  void UpdateGunInput();
-
-  /* Fades out the Gun cool down widget */
-  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
-  void FadeOutWidget();
-
-  /* Fades in the Gun cool down widget */
-  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
-  void FadeInWidget();
+  void EnableGunInput();
 
   /* Update the current Cooldown bar percent */
   UFUNCTION(BlueprintCallable, Category = "Gun Functions")
-  void UpdateCDBar(float Playback, float Length);
+  void UpdateCDBar(float Playback, float Length, float CDTime);
 
   bool bOnCooldown;
 
-  bool bFadedInWidget;
+  bool bDisabledGun;
 
   virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 

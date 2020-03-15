@@ -22,16 +22,10 @@ public:
   UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
   float MaxCDPercent;
 
-  UFUNCTION(BlueprintImplementableEvent, Category = "Animation Events")
-  void FadeIn();
-
-  UFUNCTION(BlueprintImplementableEvent, Category = "Animation Events")
-  void FadeOut();
-
   /* Set default percent values */
   void SetUpWidget(float NewCurrent, float NexMax);
 
-  void UpdatePercent(float Playback, float Length);
+  void UpdatePercent(float Playback, float Length, float CDTime);
 
   /* Hide or show widget */
   UFUNCTION(BlueprintCallable, Category = "Animation Events")

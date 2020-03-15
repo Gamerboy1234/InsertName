@@ -16,7 +16,7 @@ APlayerGun::APlayerGun()
 
 void APlayerGun::AttackKeyPressed()
 {
-  if (!bOnCooldown)
+  if (!bOnCooldown && !CooldownTimeline.IsPlaying())
   {
     ChargeStarted = true;
 
@@ -39,10 +39,8 @@ void APlayerGun::AttackKeyPressed()
 
 void APlayerGun::AttackKeyReleased()
 {
-  if (!bOnCooldown)
+  if (!bOnCooldown && !CooldownTimeline.IsPlaying())
   {
-    StopGunFire();
-
     if (ChargeTimer.IsValid())
     {
       GetWorldTimerManager().ClearTimer(ChargeTimer);
@@ -51,6 +49,8 @@ void APlayerGun::AttackKeyReleased()
     if (ChargeDone)
     {
       HeavyAttack();
+
+      StopGunFire();
 
       ChargeDone = false;
     }
@@ -63,6 +63,8 @@ void APlayerGun::AttackKeyReleased()
         ChargeStarted = false;
 
         LightAttack();
+
+        StopGunFire();
       }
     }
   }
@@ -101,25 +103,24 @@ void APlayerGun::Tick(float DeltaSeconds)
 
 void APlayerGun::TimelineCallback(float Value)
 {
-  // Only fade in widget once
-  if (!bFadedInWidget)
+  if (!bDisabledGun)
   {
-    bFadedInWidget = true;
+    bDisabledGun = true;
 
-    FadeInWidget();
+    DisableGunInput();
   }
 
   float Playback = CooldownTimeline.GetPlaybackPosition();
   float Length = CooldownTimeline.GetTimelineLength();
 
-  UpdateCDBar(Playback, Length);
+  UpdateCDBar(Playback, Length, GunCoolDown);
 }
 
 void APlayerGun::TimelineFinishedCallback()
 {
   bOnCooldown = false;
-  bFadedInWidget = false;
-  FadeOutWidget();
+  bDisabledGun = false;
+  EnableGunInput();
 }
 
 void APlayerGun::StopGunFire_Implementation()
@@ -130,15 +131,18 @@ void APlayerGun::StopGunFire_Implementation()
   FOnTimelineFloat CDTimelineCallback;
   FOnTimelineEventStatic CDTimelineFinishedCallback;
 
-  if (CDFloat)
+  if (!CooldownTimeline.IsPlaying())
   {
-    CDTimelineCallback.BindUFunction(this, FName("TimelineCallback"));
-    CDTimelineFinishedCallback.BindUFunction(this, FName("TimelineFinishedCallback"));
-    CooldownTimeline.SetTimelineFinishedFunc(CDTimelineFinishedCallback);
-    CooldownTimeline.AddInterpFloat(CDFloat, CDTimelineCallback);
-    CooldownTimeline.SetLooping(false);
-    CooldownTimeline.SetPlayRate(1.0f);
-    CooldownTimeline.SetTimelineLength(GunCoolDown);
-    CooldownTimeline.PlayFromStart();
+    if (CDFloat)
+    {
+      CDTimelineCallback.BindUFunction(this, FName("TimelineCallback"));
+      CDTimelineFinishedCallback.BindUFunction(this, FName("TimelineFinishedCallback"));
+      CooldownTimeline.SetTimelineFinishedFunc(CDTimelineFinishedCallback);
+      CooldownTimeline.AddInterpFloat(CDFloat, CDTimelineCallback);
+      CooldownTimeline.SetLooping(false);
+      CooldownTimeline.SetPlayRate(1.0f);
+      CooldownTimeline.SetTimelineLength(GunCoolDown);
+      CooldownTimeline.PlayFromStart();
+    }
   }
 }

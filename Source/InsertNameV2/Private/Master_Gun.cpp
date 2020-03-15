@@ -144,13 +144,13 @@ void AMaster_Gun::SetupCDWidget()
 
   if (CDWidgetFront)
   {
-    CDWidgetFront->SetUpWidget(GunCoolDown, GunCoolDown);
+    CDWidgetFront->SetUpWidget(0, GunCoolDown);
 
     CDWidgetBack = Cast<UGunCoolDownBar>(WidgetCompBack->GetUserWidgetObject());
     
     if (CDWidgetBack)
     {
-      CDWidgetBack->SetUpWidget(GunCoolDown, GunCoolDown);
+      CDWidgetBack->SetUpWidget(0, GunCoolDown);
     }
     else
     {
@@ -258,7 +258,7 @@ void AMaster_Gun::StopGunFire_Implementation()
 
 void AMaster_Gun::OnInteract_Implementation()
 {
-  UpdateGunInput();
+  SetupInput();
 }
 
 void AMaster_Gun::Tick(float DeltaSeconds)
@@ -286,7 +286,7 @@ void AMaster_Gun::AttackKeyReleased()
   UE_LOG(LogInventorySystem, Warning, TEXT("AttackKeyReleased on gun %s has no implementation"), *this->GetName())
 }
 
-void AMaster_Gun::UpdateGunInput()
+void AMaster_Gun::SetupInput()
 {
   APaperWarden* LocalPlayer = GetPlayerRef();
 
@@ -322,69 +322,39 @@ void AMaster_Gun::UpdateGunInput()
   }
 }
 
-void AMaster_Gun::FadeOutWidget()
+void AMaster_Gun::DisableGunInput()
 {
-  CDWidgetFront = Cast<UGunCoolDownBar>(WidgetCompFront->GetUserWidgetObject());
+  APlayerController* PC = GetWorld()->GetFirstPlayerController();
 
-  if (CDWidgetFront)
+  if (PC)
   {
-    CDWidgetFront->FadeOut();
-
-    CDWidgetBack = Cast<UGunCoolDownBar>(WidgetCompBack->GetUserWidgetObject());
-
-    if (CDWidgetBack)
-    {
-      CDWidgetBack->FadeOut();
-    }
-    else
-    {
-      UE_LOG(LogInventorySystem, Error, TEXT("Unable to FadeOutWidget CDWidgetBack was not valid"))
-    }
-  }
-  else
-  {
-    UE_LOG(LogInventorySystem, Error, TEXT("Unable to FadeOutWidget CDWidgetFront was not valid"))
+    this->DisableInput(PC);
   }
 }
 
-void AMaster_Gun::FadeInWidget()
+void AMaster_Gun::EnableGunInput()
 {
-  CDWidgetFront = Cast<UGunCoolDownBar>(WidgetCompFront->GetUserWidgetObject());
+  APlayerController* PC = GetWorld()->GetFirstPlayerController();
 
-  if (CDWidgetFront)
+  if (PC)
   {
-    CDWidgetFront->FadeIn();
-
-    CDWidgetBack = Cast<UGunCoolDownBar>(WidgetCompBack->GetUserWidgetObject());
-
-    if (CDWidgetBack)
-    {
-      CDWidgetBack->FadeIn();
-    }
-    else
-    {
-      UE_LOG(LogInventorySystem, Error, TEXT("Unable to FadeInWidget CDWidgetBack was not valid"))
-    }
-  }
-  else
-  {
-    UE_LOG(LogInventorySystem, Error, TEXT("Unable to FadeInWidget CDWidgetFront was not valid"))
+    this->EnableInput(PC);
   }
 }
 
-void AMaster_Gun::UpdateCDBar(float Playback, float Length)
+void AMaster_Gun::UpdateCDBar(float Playback, float Length, float CDTime)
 {
   CDWidgetFront = Cast<UGunCoolDownBar>(WidgetCompFront->GetUserWidgetObject());
 
   if (CDWidgetFront)
   {
-    CDWidgetFront->UpdatePercent(Playback, Length);
+    CDWidgetFront->UpdatePercent(Playback, Length, CDTime);
 
     CDWidgetBack = Cast<UGunCoolDownBar>(WidgetCompBack->GetUserWidgetObject());
 
     if (CDWidgetBack)
     {
-      CDWidgetBack->UpdatePercent(Playback, Length);
+      CDWidgetBack->UpdatePercent(Playback, Length, CDTime);
     }
     else
     {

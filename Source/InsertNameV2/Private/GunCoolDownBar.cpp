@@ -8,11 +8,20 @@ void UGunCoolDownBar::SetUpWidget(float NewCurrent, float NewMax)
 {
   CurrentCDPercent = NewCurrent;
   MaxCDPercent = NewMax;
-  ShowWidget(false);
+  ShowWidget(true);
 }
 
-void UGunCoolDownBar::UpdatePercent(float Playback, float Length)
+void UGunCoolDownBar::UpdatePercent(float Playback, float Length, float CDTime)
 {
+  static bool bFirstRun = true;
+
+  if (CurrentCDPercent <= 0 && bFirstRun)
+  {
+    CurrentCDPercent = CDTime;
+
+    bFirstRun = false;
+  }
+
   CurrentCDPercent = Length - Playback;
 }
 
