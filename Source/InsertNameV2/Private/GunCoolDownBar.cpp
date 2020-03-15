@@ -8,15 +8,15 @@ void UGunCoolDownBar::SetUpWidget(float NewCurrent, float NewMax)
 {
   CurrentCDPercent = NewCurrent;
   MaxCDPercent = NewMax;
-  ToggleWidget(true);
+  ShowWidget(false);
 }
 
-void UGunCoolDownBar::UpdatePercent(float Value)
+void UGunCoolDownBar::UpdatePercent(float Playback, float Length)
 {
-  CurrentCDPercent = FMath::Clamp<float>(CurrentCDPercent - Value, 0.0f, MaxCDPercent);
+  CurrentCDPercent = Length - Playback;
 }
 
-void UGunCoolDownBar::ToggleWidget(bool bShow)
+void UGunCoolDownBar::ShowWidget(bool bShow)
 {
   if (bShow)
   {

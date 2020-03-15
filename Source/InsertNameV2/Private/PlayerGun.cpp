@@ -101,12 +101,25 @@ void APlayerGun::Tick(float DeltaSeconds)
 
 void APlayerGun::TimelineCallback(float Value)
 {
-  // TODO Update CD Widget
+  // Only fade in widget once
+  if (!bFadedInWidget)
+  {
+    bFadedInWidget = true;
+
+    FadeInWidget();
+  }
+
+  float Playback = CooldownTimeline.GetPlaybackPosition();
+  float Length = CooldownTimeline.GetTimelineLength();
+
+  UpdateCDBar(Playback, Length);
 }
 
 void APlayerGun::TimelineFinishedCallback()
 {
   bOnCooldown = false;
+  bFadedInWidget = false;
+  FadeOutWidget();
 }
 
 void APlayerGun::StopGunFire_Implementation()

@@ -30,8 +30,10 @@ AMaster_Gun::AMaster_Gun()
   BarrelCollision->SetupAttachment(RootComponent);
 
   // Create gun cooldown widget component
-  WidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComp"));
-  WidgetComp->SetupAttachment(RootComponent);
+  WidgetCompFront = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetCompFront"));
+  WidgetCompFront->SetupAttachment(RootComponent);
+  WidgetCompBack = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetCompBack"));
+  WidgetCompBack->SetupAttachment(RootComponent);
 
   // Set Default Values
   TraceMultipler = 125.0f;
@@ -60,7 +62,8 @@ AMaster_Gun::AMaster_Gun()
 
   CDClass = LocalCDWidget.Class;
 
-  WidgetComp->SetWidgetClass(CDClass);
+  WidgetCompFront->SetWidgetClass(CDClass);
+  WidgetCompBack->SetWidgetClass(CDClass);
 }
 
 void AMaster_Gun::BeginPlay()
@@ -137,40 +140,26 @@ void AMaster_Gun::ApplyKnockBack()
 
 void AMaster_Gun::SetupCDWidget()
 {
-  CDWidget = Cast<UGunCoolDownBar>(WidgetComp->GetUserWidgetObject());
+  CDWidgetFront = Cast<UGunCoolDownBar>(WidgetCompFront->GetUserWidgetObject());
 
-  if (CDWidget)
+  if (CDWidgetFront)
   {
-    CDWidget->SetUpWidget(GunCoolDown, GunCoolDown);
-  }
-  else
-  {
-    UE_LOG(LogInventorySystem, Error, TEXT("Unable to SetupCDWidget CDWidget was not valid"))
-  }
-}
+    CDWidgetFront->SetUpWidget(GunCoolDown, GunCoolDown);
 
-void AMaster_Gun::UpdateWidgetCompRotation(bool bFacingRight)
-{
-  if (WidgetComp)
-  {
-    if (bFacingRight)
+    CDWidgetBack = Cast<UGunCoolDownBar>(WidgetCompBack->GetUserWidgetObject());
+    
+    if (CDWidgetBack)
     {
-      FRotator CurrentRot = WidgetComp->GetComponentRotation();
-      FRotator NewRot = FRotator(CurrentRot.Pitch, CurrentRot.Roll, -270);
-
-      WidgetComp->SetWorldRotation(NewRot);
+      CDWidgetBack->SetUpWidget(GunCoolDown, GunCoolDown);
     }
     else
     {
-      FRotator CurrentRot = WidgetComp->GetComponentRotation();
-      FRotator NewRot = FRotator(CurrentRot.Pitch, CurrentRot.Roll, 270);
-
-      WidgetComp->SetWorldRotation(NewRot);
+      UE_LOG(LogInventorySystem, Error, TEXT("Unable to SetupCDWidget CDWidgetBack was not valid"))
     }
   }
   else
   {
-    UE_LOG(LogInventorySystem, Warning, TEXT("Unable to update WidgetComp's rotation it's not valid"))
+    UE_LOG(LogInventorySystem, Error, TEXT("Unable to SetupCDWidget CDWidgetFront was not valid"))
   }
 }
 
@@ -333,6 +322,81 @@ void AMaster_Gun::UpdateGunInput()
   }
 }
 
+void AMaster_Gun::FadeOutWidget()
+{
+  CDWidgetFront = Cast<UGunCoolDownBar>(WidgetCompFront->GetUserWidgetObject());
+
+  if (CDWidgetFront)
+  {
+    CDWidgetFront->FadeOut();
+
+    CDWidgetBack = Cast<UGunCoolDownBar>(WidgetCompBack->GetUserWidgetObject());
+
+    if (CDWidgetBack)
+    {
+      CDWidgetBack->FadeOut();
+    }
+    else
+    {
+      UE_LOG(LogInventorySystem, Error, TEXT("Unable to FadeOutWidget CDWidgetBack was not valid"))
+    }
+  }
+  else
+  {
+    UE_LOG(LogInventorySystem, Error, TEXT("Unable to FadeOutWidget CDWidgetFront was not valid"))
+  }
+}
+
+void AMaster_Gun::FadeInWidget()
+{
+  CDWidgetFront = Cast<UGunCoolDownBar>(WidgetCompFront->GetUserWidgetObject());
+
+  if (CDWidgetFront)
+  {
+    CDWidgetFront->FadeIn();
+
+    CDWidgetBack = Cast<UGunCoolDownBar>(WidgetCompBack->GetUserWidgetObject());
+
+    if (CDWidgetBack)
+    {
+      CDWidgetBack->FadeIn();
+    }
+    else
+    {
+      UE_LOG(LogInventorySystem, Error, TEXT("Unable to FadeInWidget CDWidgetBack was not valid"))
+    }
+  }
+  else
+  {
+    UE_LOG(LogInventorySystem, Error, TEXT("Unable to FadeInWidget CDWidgetFront was not valid"))
+  }
+}
+
+void AMaster_Gun::UpdateCDBar(float Playback, float Length)
+{
+  CDWidgetFront = Cast<UGunCoolDownBar>(WidgetCompFront->GetUserWidgetObject());
+
+  if (CDWidgetFront)
+  {
+    CDWidgetFront->UpdatePercent(Playback, Length);
+
+    CDWidgetBack = Cast<UGunCoolDownBar>(WidgetCompBack->GetUserWidgetObject());
+
+    if (CDWidgetBack)
+    {
+      CDWidgetBack->UpdatePercent(Playback, Length);
+    }
+    else
+    {
+      UE_LOG(LogInventorySystem, Error, TEXT("Unable to UpdateCDBar CDWidgetBack was not valid"))
+    }
+  }
+  else
+  {
+    UE_LOG(LogInventorySystem, Error, TEXT("Unable to UpdateCDBar CDWidgetFront was not valid"))
+  }
+}
+
 void AMaster_Gun::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
   if (OtherActor)
@@ -386,7 +450,12 @@ const FVector AMaster_Gun::GetTraceEnd()
   return TraceEnd;
 }
 
-UGunCoolDownBar* AMaster_Gun::GetCDWidget()
+UGunCoolDownBar* AMaster_Gun::GetFrontCDWidget()
 {
-  return CDWidget;
+  return CDWidgetFront;
+}
+
+UGunCoolDownBar* AMaster_Gun::GetBackCDWidget()
+{
+  return CDWidgetBack;
 }

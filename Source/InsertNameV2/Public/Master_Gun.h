@@ -26,7 +26,10 @@ public:
   AMaster_Gun();
 
   UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-  UWidgetComponent* WidgetComp;
+  UWidgetComponent* WidgetCompFront;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  UWidgetComponent* WidgetCompBack;
 
   UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
   UBoxComponent* BarrelCollision;
@@ -75,9 +78,6 @@ public:
   /* How much damage the gun will deal to the given enemy */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
   float Damage;
-  /* Updates Gun's WidgetComp rotation to always face the camera */
-  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
-  void UpdateWidgetCompRotation(bool bFacingRight);
   /* Will fire a multi line ray cast to look for enemies to damage */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
   void FireMultiLineTrace();
@@ -105,9 +105,12 @@ public:
   /* Reads the value of TraceEnd */
   UFUNCTION(BlueprintPure, Category = "Gun Functions")
   const FVector GetTraceEnd();
-  /* Gets the current cooldown widget */
+  /* Gets the current front cooldown widget */
   UFUNCTION(BlueprintPure, Category = "Gun Functions")
-  UGunCoolDownBar* GetCDWidget();
+  UGunCoolDownBar* GetFrontCDWidget();
+  /* Gets the current back cooldown widget */
+  UFUNCTION(BlueprintPure, Category = "Gun Functions")
+  UGunCoolDownBar* GetBackCDWidget();
 
   /* Upon player interacting with this object call player equip gun function */
   virtual void OnInteract_Implementation() override;
@@ -122,10 +125,25 @@ public:
 
   virtual void AttackKeyReleased();
 
+  /* Will enable Input on Gun */
   UFUNCTION(BlueprintCallable, Category = "Gun Functions")
   void UpdateGunInput();
 
+  /* Fades out the Gun cool down widget */
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
+  void FadeOutWidget();
+
+  /* Fades in the Gun cool down widget */
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
+  void FadeInWidget();
+
+  /* Update the current Cooldown bar percent */
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
+  void UpdateCDBar(float Playback, float Length);
+
   bool bOnCooldown;
+
+  bool bFadedInWidget;
 
   virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 
@@ -165,7 +183,9 @@ private:
 
   void ApplyKnockBack();
 
-  UGunCoolDownBar* CDWidget;
+  UGunCoolDownBar* CDWidgetFront;
+
+  UGunCoolDownBar* CDWidgetBack;
 
   TSubclassOf<UGunCoolDownBar> CDClass;
 };

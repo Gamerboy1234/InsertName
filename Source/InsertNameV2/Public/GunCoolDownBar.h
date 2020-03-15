@@ -28,9 +28,12 @@ public:
   UFUNCTION(BlueprintImplementableEvent, Category = "Animation Events")
   void FadeOut();
 
+  /* Set default percent values */
   void SetUpWidget(float NewCurrent, float NexMax);
 
-  void UpdatePercent(float Value);
+  void UpdatePercent(float Playback, float Length);
 
-  void ToggleWidget(bool bShow);
+  /* Hide or show widget */
+  UFUNCTION(BlueprintCallable, Category = "Animation Events")
+  void ShowWidget(bool bShow);
 };
