@@ -10,6 +10,7 @@
 class UPaperSpriteComponent;
 class UBoxComponent;
 class UGunCoolDownBar;
+class AGunBeamEffectBase;
 class UWidgetComponent;
 
 /**
@@ -54,24 +55,27 @@ public:
   /* The multiplier used to multiply the length of the Multi line ray trace equation is Trace Start * TraceMultipler */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
   float TraceMultipler;
+  /* The laser beam to spawn */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
+  TSubclassOf<AGunBeamEffectBase> BeamEffectToUse;
   /* Color of the gun's laser beam */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
-  FLinearColor TrailColor;
+  FLinearColor BeamColor;
   /* Amount of time it takes for the the laser beam to Despawn */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
-  float TrailDespawn;
+  float BeamDespawnDelay;
   /* The glow intensity of the gun laser beam */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
-  float TrailGlowAmount;
+  float BeamBrightness;
+  /* The beam exponent the higher this number is the less thick it is */
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
+  float BeamExponent;
   /* The multiplier used to determine how much the gun will knock an enemy back equation is Trace Impact Point * KnockbackRange */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
   float KnockBackMultipler;
   /* The multiplier used to multiply the length of the Multi line ray trace equation is Trace Start * KnockbackRangeMultipler */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
   float KnockbackRangeMultipler;
-  /* Whether or the should faded out of the scene */
-  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
-  bool bFadeOut;
   /* Time it takes for the player to be able to fire the gun again */
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gun Settings")
   float GunCoolDown;
@@ -90,6 +94,9 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
   void StopGunFire();
   virtual void StopGunFire_Implementation();
+  /* Will spawn a laser beam across the raytrace of the gun */
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
+  void SpawnLaserBeam(FVector StartLocation, FVector EndLocation);
   /* Reads the value of bOnCooldown */
   UFUNCTION(BlueprintPure, Category = "Gun Functions")
   const bool GetGunOnCooldown();
@@ -182,6 +189,10 @@ private:
   void DamageHitActors();
 
   void ApplyKnockBack();
+
+  bool DidTraceHitEnemy(AActor* HitActor);
+
+  bool DidTraceHitMagnet(AActor* HitActor);
 
   UGunCoolDownBar* CDWidgetFront;
 

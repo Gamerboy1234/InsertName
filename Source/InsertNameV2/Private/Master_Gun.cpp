@@ -11,6 +11,7 @@
 #include "GunCoolDownBar.h"
 #include "Master_Enemy.h"
 #include "Components/BoxComponent.h"
+#include "GunBeamEffectBase.h"
 #include "Engine/BlueprintGeneratedClass.h"
 #include "Components/InputComponent.h"
 #include "Engine/InputDelegateBinding.h"
@@ -37,16 +38,15 @@ AMaster_Gun::AMaster_Gun()
 
   // Set Default Values
   TraceMultipler = 125.0f;
-  TrailDespawn = 0.08f;
   GunScale = FVector(0.05);
   GunOffset = FVector(2.0f, 0, 0);
-  TrailScale = FVector(0.04);
-  TrailColor = FLinearColor(0.5, 0.023501, 0.0, 1.0);
-  TrailGlowAmount = 1;
+  BeamColor = FLinearColor(0.5, 0.023501, 0.0, 1.0);
+  BeamBrightness = 20.0f;
+  BeamExponent = 4;
+  BeamDespawnDelay = 0.08f;
   KnockBackMultipler = 1000;
   KnockbackRangeMultipler = 200;
   GunCoolDown = 1.0f;
-  bFadeOut = true;
   SocketName = "Gun";
   Damage = 3.0f;
 
@@ -138,6 +138,34 @@ void AMaster_Gun::ApplyKnockBack()
   KnockBackActors.Empty();
 }
 
+bool AMaster_Gun::DidTraceHitEnemy(AActor* HitActor)
+{
+  AMaster_Enemy* HitEnemy = Cast<AMaster_Enemy>(HitActor);
+
+  if (HitEnemy)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+bool AMaster_Gun::DidTraceHitMagnet(AActor* HitActor)
+{
+  AMaster_Magnet* HitMagnet = Cast<AMaster_Magnet>(HitActor);
+
+  if (HitMagnet)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
 void AMaster_Gun::SetupCDWidget()
 {
   CDWidgetFront = Cast<UGunCoolDownBar>(WidgetCompFront->GetUserWidgetObject());
@@ -181,28 +209,59 @@ void AMaster_Gun::FireMultiLineTrace_Implementation()
     FCollisionQueryParams CollisionParms;
     CollisionParms.AddIgnoredActor(this);
 
-    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Green, false, 1, 0, 1);
-
     if (GetWorld()->LineTraceMultiByObjectType(OutHit, TraceStart, TraceEnd, ObjectsToTest, CollisionParms))
     {
-      for (FHitResult HitObject : OutHit)
+      if (OutHit.Num() > 0)
       {
-        if (HitObject.Actor != NULL)
+        for (FHitResult HitObject : OutHit)
         {
-          AActor* HitActor = Cast<AActor>(HitObject.Actor);
-
-          if (HitActor)
+          if (HitObject.Actor != NULL)
           {
-            HitActors.AddUnique(HitActor);
+            AActor* HitActor = Cast<AActor>(HitObject.Actor);
 
-            if (GetPlayerRef()->bDebugGunHit)
+            if (HitActor)
             {
-              UE_LOG(LogInventorySystem, Log, TEXT("Gun Hit %s"), *HitObject.Actor->GetName())
+              if (DidTraceHitEnemy(HitActor))
+              {
+                SpawnLaserBeam(TraceStart, TraceEnd);
+
+                HitActors.AddUnique(HitActor);
+              }
+              else if (DidTraceHitMagnet(HitActor))
+              {
+                AMaster_Magnet* Magnet = Cast<AMaster_Magnet>(HitActor);
+
+                if (Magnet)
+                {
+                  SpawnLaserBeam(TraceStart, HitObject.ImpactPoint);
+
+                  Magnet->Deactivate();
+
+                  UGeneralFunctions::LaunchCharacterAwayFromActor(GetPlayerRef(), Magnet, 3000);
+                }
+              }
+              else
+              {
+                SpawnLaserBeam(TraceStart, HitObject.ImpactPoint);
+              }
+
+              if (GetPlayerRef()->bDebugGunHit)
+              {
+                UE_LOG(LogInventorySystem, Log, TEXT("Gun Hit %s"), *HitObject.Actor->GetName())
+              }
             }
           }
         }
       }
+      else
+      {
+        SpawnLaserBeam(TraceStart, TraceEnd);
+      }
       DamageHitActors();
+    }
+    else
+    {
+      SpawnLaserBeam(TraceStart, TraceEnd);
     }
   }
 }
@@ -225,35 +284,72 @@ void AMaster_Gun::FireMultiLineKnockBack_Implementation()
     FCollisionQueryParams CollisionParms;
     CollisionParms.AddIgnoredActor(this);
 
-    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Green, false, 1, 0, 1);
-
     if (GetWorld()->LineTraceMultiByObjectType(OutHit, TraceStart, TraceEnd, ObjectsToTest, CollisionParms))
     {
-      for (FHitResult HitObject : OutHit)
+      if (OutHit.Num() > 0)
       {
-        if (HitObject.Actor != NULL)
+        for (FHitResult HitObject : OutHit)
         {
-          AActor* HitActor = Cast<AActor>(HitObject.Actor);
-
-          if (HitActor)
+          if (HitObject.Actor != NULL)
           {
-            KnockBackActors.AddUnique(HitActor);
+            AActor* HitActor = Cast<AActor>(HitObject.Actor);
 
-            if (GetPlayerRef()->bDebugGunHit)
+            if (HitActor)
             {
-              UE_LOG(LogInventorySystem, Log, TEXT("Gun Hit %s"), *HitObject.Actor->GetName())
+              if (DidTraceHitEnemy(HitActor))
+              {
+                SpawnLaserBeam(TraceStart, TraceEnd);
+
+                HitActors.AddUnique(HitActor);
+              }
+              else if (DidTraceHitMagnet(HitActor))
+              {
+                AMaster_Magnet* Magnet = Cast<AMaster_Magnet>(HitActor);
+
+                if (Magnet)
+                {
+                  SpawnLaserBeam(TraceStart, HitObject.ImpactPoint);
+
+                  Magnet->Deactivate();
+
+                  UGeneralFunctions::LaunchCharacterAwayFromActor(GetPlayerRef(), Magnet, 3000);
+                }
+              }
+              else
+              {
+                SpawnLaserBeam(TraceStart, HitObject.ImpactPoint);
+              }
+
+              if (GetPlayerRef()->bDebugGunHit)
+              {
+                UE_LOG(LogInventorySystem, Log, TEXT("Gun Hit %s"), *HitObject.Actor->GetName())
+              }
             }
           }
         }
       }
+      else
+      {
+        SpawnLaserBeam(TraceStart, TraceEnd);
+      }
       ApplyKnockBack();
     }
+  }
+  else
+  {
+    SpawnLaserBeam(TraceStart, TraceEnd);
   }
 }
 
 void AMaster_Gun::StopGunFire_Implementation()
 {
   bOnCooldown = true;
+}
+
+void AMaster_Gun::SpawnLaserBeam(FVector StartLocation, FVector EndLocation)
+{
+  AGunBeamEffectBase* Effect = GetWorld()->SpawnActor<AGunBeamEffectBase>(BeamEffectToUse, StartLocation, FRotator(0));
+  Effect->SetupBeam(StartLocation, EndLocation, BeamDespawnDelay, BeamColor, BeamBrightness, BeamExponent);
 }
 
 void AMaster_Gun::OnInteract_Implementation()
