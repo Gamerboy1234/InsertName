@@ -334,10 +334,10 @@ void AMaster_Gun::FireMultiLineKnockBack_Implementation()
       }
       ApplyKnockBack();
     }
-  }
-  else
-  {
-    SpawnLaserBeam(TraceStart, TraceEnd);
+    else
+    {
+      SpawnLaserBeam(TraceStart, TraceEnd);
+    }
   }
 }
 
