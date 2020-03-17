@@ -140,11 +140,18 @@ void AMaster_Gun::ApplyKnockBack()
 
 bool AMaster_Gun::DidTraceHitEnemy(AActor* HitActor)
 {
-  AMaster_Enemy* HitEnemy = Cast<AMaster_Enemy>(HitActor);
-
-  if (HitEnemy)
+  if (HitActor)
   {
-    return true;
+    AMaster_Enemy* HitEnemy = Cast<AMaster_Enemy>(HitActor);
+
+    if (HitEnemy)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
   else
   {
@@ -154,11 +161,39 @@ bool AMaster_Gun::DidTraceHitEnemy(AActor* HitActor)
 
 bool AMaster_Gun::DidTraceHitMagnet(AActor* HitActor)
 {
-  AMaster_Magnet* HitMagnet = Cast<AMaster_Magnet>(HitActor);
-
-  if (HitMagnet)
+  if (HitActor)
   {
-    return true;
+    AMaster_Magnet* HitMagnet = Cast<AMaster_Magnet>(HitActor);
+
+    if (HitMagnet)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    return false;
+  }
+}
+
+bool AMaster_Gun::DidTraceHitDamageEffect(AActor* HitActor)
+{
+  if (HitActor)
+  {
+    AMasterDamageEffect* HitEffect = Cast<AMasterDamageEffect>(HitActor);
+
+    if (HitEffect)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
   else
   {
@@ -240,6 +275,12 @@ void AMaster_Gun::FireMultiLineTrace_Implementation()
                   UGeneralFunctions::LaunchCharacterAwayFromActor(GetPlayerRef(), Magnet, 3000);
                 }
               }
+              else if (DidTraceHitDamageEffect(HitActor))
+              {
+                SpawnLaserBeam(TraceStart, TraceEnd);
+
+                HitActors.Add(HitActor);
+              }
               else
               {
                 SpawnLaserBeam(TraceStart, HitObject.ImpactPoint);
@@ -314,6 +355,12 @@ void AMaster_Gun::FireMultiLineKnockBack_Implementation()
 
                   UGeneralFunctions::LaunchCharacterAwayFromActor(GetPlayerRef(), Magnet, 3000);
                 }
+              }
+              else if (DidTraceHitDamageEffect(HitActor))
+              {
+                SpawnLaserBeam(TraceStart, TraceEnd);
+
+                HitActors.Add(HitActor);
               }
               else
               {

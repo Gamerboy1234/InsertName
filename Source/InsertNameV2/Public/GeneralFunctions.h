@@ -14,7 +14,7 @@ class AWardenCameraManager;
 class APaperCharacter;
 
 /**
- * 
+ *  This function library contains many useful functions for managing gameplay
  */
 UCLASS()
 class INSERTNAMEV2_API UGeneralFunctions : public UBlueprintFunctionLibrary

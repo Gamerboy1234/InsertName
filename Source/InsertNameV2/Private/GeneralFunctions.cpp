@@ -360,7 +360,7 @@ bool UGeneralFunctions::DamageHitActor(AActor* HitActor, float Damage, AActor* I
     else if (HitEffect)
     {
       HitEffect->DamageActor(Damage, bShowDamageText, Instigator);
-      return false;
+      return true;
     }
     else
     {

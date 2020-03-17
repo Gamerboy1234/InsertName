@@ -194,6 +194,8 @@ private:
 
   bool DidTraceHitMagnet(AActor* HitActor);
 
+  bool DidTraceHitDamageEffect(AActor* HitActor);
+
   UGunCoolDownBar* CDWidgetFront;
 
   UGunCoolDownBar* CDWidgetBack;
