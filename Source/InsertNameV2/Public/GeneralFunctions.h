@@ -78,6 +78,8 @@ public:
   static bool DamageHitActor(AActor* HitActor, float Damage, AActor* Instigator, bool bShowDamageText);
   /* Will launch the given character away from the given actor */
   static void LaunchCharacterAwayFromActor(APaperCharacter* CharacterToLaunch, AActor* ActorToLaunchAwayfrom, float LaunchVelocityMultipler);
+  /* Checks to see if there is a check point in the level */
+  static bool IsCheckPointInLevel(UObject* WorldContextObject);
 
 
   /* Will insert a item into an array at a given index */

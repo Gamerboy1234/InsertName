@@ -246,6 +246,10 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "SaveGame")
   FName CurrentCheckpointLevel;
 
+  /* The location of the last used checkpoint */
+  UPROPERTY(BlueprintReadWrite, Category = "SaveGame")
+  FVector CurrentCheckpointLocation;
+
   UPROPERTY(BlueprintReadWrite, Category = "SaveGame")
   bool bWasLevelLoaded;
 
@@ -280,6 +284,8 @@ private:
   TArray<AMaster_Pickup*> LoadActionbar(class UWardenSaveGame* LocalSaveGameObject);
 
   void LoadSpellCoolDowns(UWardenSaveGame* LocalSaveGameObject, TArray<AMaster_Pickup*> LocalActionbarItems);
+
+  void LoadCheckPoint(FVector Location);
 
   int32 KillCount;
 

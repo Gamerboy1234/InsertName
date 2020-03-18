@@ -4,6 +4,7 @@
 #include "GeneralFunctions.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
+#include "CheckPointBase.h"
 #include "SideScrollerGamemode.h"
 #include "Master_Pickup.h"
 #include "Master_Enemy.h"
@@ -396,5 +397,39 @@ void UGeneralFunctions::LaunchCharacterAwayFromActor(APaperCharacter* CharacterT
   {
     UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to LaunchCharacterAwayFromActor CharacterToLaunch was not valid"))
   }
+}
+
+bool UGeneralFunctions::IsCheckPointInLevel(UObject* WorldContextObject)
+{
+  bool LocalBool = false;
+
+  TArray<AActor*> FoundActors;
+
+  UGameplayStatics::GetAllActorsOfClass(WorldContextObject, ACheckPointBase::StaticClass(), FoundActors);
+
+  for (AActor* CurrentActor : FoundActors)
+  {
+    if (CurrentActor)
+    {
+      ACheckPointBase* CurrentCheckPoint = Cast<ACheckPointBase>(CurrentActor);
+
+      if (CurrentCheckPoint)
+      {
+        LocalBool = true;
+        break;
+      }
+      else
+      {
+        LocalBool = false;
+        continue;
+      }
+    }
+    else
+    {
+      LocalBool = false;
+      continue;
+    }
+  }
+  return LocalBool;
 }
 

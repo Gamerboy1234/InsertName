@@ -74,6 +74,9 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
   bool SavedbLoadedCheckpoint;
 
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Save Game")
+  FVector SavedCheckpointLocation;
+
   FSavedItemInfo ItemInfo;
 
   FSavedPlayerSpell SpellInfo;

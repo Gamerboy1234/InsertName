@@ -1091,6 +1091,7 @@ void APaperWarden::SaveGame(FString SaveSlot)
   if (WardenSaveGame)
   {
     // Set Saved var's
+    WardenSaveGame->SavedCheckpointLocation = CurrentCheckpointLocation;
     WardenSaveGame->SavedAmountOfInventorySlots = AmountofInventorySlots;
     WardenSaveGame->SavedActionBarSlotsPerRow = ActionBarSlotsPerRow;
     WardenSaveGame->SavedPlayerCurrentHP = PlayerCurrentHP;
@@ -1174,6 +1175,11 @@ void APaperWarden::LoadGame(FString SaveSlot)
     PlayerCurrentHP = WardenSaveGame->SavedPlayerCurrentHP;
     PlayerMaxHP = WardenSaveGame->SavedPlayerMaxHP;
     CurrentCheckpointLevel = WardenSaveGame->SavedCurrentCheckpointLevel;
+
+    if (bLoadedCheckpoint)
+    {
+      LoadCheckPoint(WardenSaveGame->SavedCheckpointLocation);
+    }
     
     SpawnInventory(WardenSaveGame);
     SpawnActionbar(WardenSaveGame);
@@ -1373,6 +1379,16 @@ void APaperWarden::LoadSpellCoolDowns(UWardenSaveGame* LocalSaveGameObject, TArr
   else
   {
     UE_LOG(LogSaveGame, Error, TEXT("Unable to LoadSpellCoolDown SaveGameObject not vaild"))
+  }
+}
+
+void APaperWarden::LoadCheckPoint(FVector Location)
+{
+  if (UGeneralFunctions::IsCheckPointInLevel(this) && Location != FVector(0))
+  {
+    Location.Y = 0;
+
+    SetActorLocation(Location);
   }
 }
 
