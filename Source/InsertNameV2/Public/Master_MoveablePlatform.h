@@ -15,21 +15,29 @@ public:
 	// Sets default values for this actor's properties
 	AMaster_MoveablePlatform();
 
+  /* Visual representation of the platform */
   UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
   class UPaperSpriteComponent* SpriteComp;
 
-  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-  class UBoxComponent* PlayerCollision;
-
+  /* Location to move to */
   UPROPERTY(EditAnywhere, meta = (MakeEditWidget = true), Category = "Platform Settings")
   FVector TargetLocation;
 
+  /* The speed of this platform */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform Settings")
   float MovementSpeed;
 
-  /* Whether or not the platform move to target location then stop or should it bounce back to the starting location */
+  /* Whether or not the platform should move to target location then stop or should it bounce back to the starting location */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform Settings")
   bool bOneShot;
+
+  /* Updates the movement of the platform make it so that it either can move or disable movement */
+  UFUNCTION(BlueprintCallable, Category = "Movement Functions")
+  void SetCanMove(bool bShouldMove);
+  
+  /* Reads the value of bCanMove */
+  UFUNCTION(BlueprintPure, Category = "Movement Functions")
+  const bool GetCanMove();
 
 protected:
 	// Called when the game starts or when spawned

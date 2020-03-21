@@ -2,7 +2,6 @@
 
 
 #include "Master_MoveablePlatform.h"
-#include "Components/BoxComponent.h"
 #include "PaperSpriteComponent.h"
 
 // Sets default values
@@ -13,9 +12,6 @@ AMaster_MoveablePlatform::AMaster_MoveablePlatform()
 
   SpriteComp = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
   RootComponent = SpriteComp;
-
-  PlayerCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Player Collision"));
-  PlayerCollision->SetupAttachment(RootComponent);
 
   MovementSpeed = 200.0f;
   bOneShot = true;
@@ -28,8 +24,6 @@ void AMaster_MoveablePlatform::BeginPlay()
 	
   GlobalStartLocation = GetActorLocation();
   GlobalTargetLocation = GetTransform().TransformPosition(TargetLocation);
-
-  bCanMove = true;
 }
 
 // Called every frame
@@ -61,3 +55,12 @@ void AMaster_MoveablePlatform::Tick(float DeltaTime)
   }
 }
 
+const bool AMaster_MoveablePlatform::GetCanMove()
+{
+  return bCanMove;
+}
+
+void AMaster_MoveablePlatform::SetCanMove(bool bShouldMove)
+{
+  bCanMove = bShouldMove;
+}
