@@ -22,12 +22,43 @@ private:
 
   EBTNodeResult::Type CurrentCallResult;
 
-  class AMaster_Enemy* CurrentEnemy;
+  class AE_Charger* CurrentEnemy;
 
   class APawn* CurrentPawn;
 
   void StartCharge();
 
-  bool Setup(UBehaviorTreeComponent& OwnerComp);
+  void ChargeToTarget();
 
+  FVector GetDirection();
+  
+  FVector GetLocation();
+
+  void UpdateLocationAndDirection();
+
+  void RotateToTarget();
+
+  bool GetControlledEnemy(UBehaviorTreeComponent& OwnerComp);
+
+  class APaperWarden* PlayerRef;
+
+  bool IsEnemyAtLocationOrOverlaped();
+
+  bool AtLocation();
+
+  void ChargeDelay();
+
+  void UpdateMovement();
+
+  void SetDelay();
+  
+  void EndMovement();
+
+  bool bCanCharge;
+
+  FVector TargetLocation;
+
+  FVector TargetDirection;
+
+  FTimerHandle ChargeTimer;
 };

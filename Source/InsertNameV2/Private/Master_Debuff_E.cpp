@@ -22,7 +22,6 @@ AMaster_Debuff_E::AMaster_Debuff_E()
   CurrentStackCount = 1;
 }
 
-
 void AMaster_Debuff_E::UnpackSettings()
 {
   // Get Debuff Info from Struct

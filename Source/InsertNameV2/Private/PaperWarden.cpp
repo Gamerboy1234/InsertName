@@ -1441,6 +1441,11 @@ void APaperWarden::DebugGunHit(bool Debug)
   bDebugGunHit = Debug;
 }
 
+void APaperWarden::DebugEnemyCharge(bool Debug)
+{
+  bDebugEnemyCharge = Debug;
+}
+
 FRotator APaperWarden::GetCurrentMouseRotation()
 {
   return MouseRot;

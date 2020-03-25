@@ -262,10 +262,17 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   FRotator MouseRot;
 
+  /* Console commands */
+  
   UFUNCTION(Exec)
   void DebugGunHit(bool Debug);
 
   bool bDebugGunHit;
+
+  UFUNCTION(Exec)
+  void DebugEnemyCharge(bool Debug);
+
+  bool bDebugEnemyCharge;
 
 protected:
   // Called when the game starts or when spawned
