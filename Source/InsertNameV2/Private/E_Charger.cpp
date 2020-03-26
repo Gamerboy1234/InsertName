@@ -29,6 +29,12 @@ AE_Charger::AE_Charger()
 
   ChargerFloat = ChargerCurve.Object;
 
+  static ConstructorHelpers::FObjectFinder<UCurveFloat> MovementCurve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
+  check(ChargerCurve.Succeeded());
+
+  MovementFloat = MovementCurve.Object;
+
+  ChargeSpeedMultiplier = 2.0f;
   WanderRadius = 500.0f;
   WaitDelay = 2.0f;
 }
@@ -44,11 +50,23 @@ void AE_Charger::BeginPlay()
   if (ChargerFloat)
   {
     FOnTimelineFloat TimelineProgress;
-    TimelineProgress.BindUFunction(this, FName("ChargerMovementProgress"));
+    TimelineProgress.BindUFunction(this, FName("ChargerMovmentState"));
     ChargerTimeline.AddInterpFloat(ChargerFloat, TimelineProgress);
     ChargerTimeline.SetLooping(true);
     ChargerTimeline.SetPlayRate(5.0f);
     ChargerTimeline.PlayFromStart();
+  }
+
+  if (MovementFloat)
+  {
+    FOnTimelineFloat TimelineProgress;
+    FOnTimelineEventStatic onTimelineFinishedCallback;
+    TimelineProgress.BindUFunction(this, FName("ChargeToTarget"));
+    onTimelineFinishedCallback.BindUFunction(this, FName("OnChargeFinish"));
+    MovementTimeline.SetTimelineFinishedFunc(onTimelineFinishedCallback);
+    MovementTimeline.AddInterpFloat(ChargerFloat, TimelineProgress);
+    MovementTimeline.SetLooping(false);
+    MovementTimeline.SetPlayRate(1.0f);
   }
 }
 
@@ -57,13 +75,17 @@ void AE_Charger::Tick(float DeltaSeconds)
   Super::Tick(DeltaSeconds);
 
   ChargerTimeline.TickTimeline(DeltaSeconds);
+
+  MovementTimeline.TickTimeline(DeltaSeconds);
 }
 
-void AE_Charger::ChargerMovementProgress(float Value)
+void AE_Charger::ChargerMovmentState(float Value)
 {
+  bAggro = CheckAggro();
+
   if (bAggro)
   {
-    
+    StartCharge();
   }
   else
   {
@@ -71,44 +93,13 @@ void AE_Charger::ChargerMovementProgress(float Value)
   }
 }
 
-bool AE_Charger::IsEnemyAtLocationOrOverlaped(FVector Location)
-{
-  if (bStopChargeOnPlayerOverlap)
-  {
-    if (bOverlapedPlayer || AtLocation(Location))
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-  else if (AtLocation(Location))
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-bool AE_Charger::AtLocation(FVector Location)
-{
-  float Distance = GetActorLocation().Size() - Location.Size();
-
-  return (Distance <= ErrorTolerance) ? true : false;
-}
-
 void AE_Charger::UpdateMovement()
 {
-  bCanCharge = false;
-  GetSprite()->SetSpriteColor(FLinearColor::Green);
-  FindTargetDirection();
+  TargetDirection = GetDirection();
+  TargetLocation = GetLocation();
 }
 
-void AE_Charger::FindTargetDirection()
+void AE_Charger::FindTargetRotation()
 {
   if (!bDefaultToPlayer)
   {
@@ -182,7 +173,15 @@ FVector AE_Charger::GetDirection()
   FCollisionQueryParams CollisionParms;
   CollisionParms.AddIgnoredActor(this);
 
-  DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 2);
+  APaperWarden* PlayerRef = UGeneralFunctions::GetPlayer(this);
+
+  if (PlayerRef)
+  {
+    if (PlayerRef->bDebugEnemyCharge)
+    {
+      DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 2);
+    }
+  }
 
   if (GetWorld()->LineTraceSingleByObjectType(OutHit, TraceStart, TraceEnd, ObjectsToTest, CollisionParms))
   {
@@ -203,8 +202,8 @@ FVector AE_Charger::GetDirection()
 
 FVector AE_Charger::GetLocation()
 {
-  FVector TraceStart = GetActorLocation();
-  FVector TraceEnd = TraceRange * GetActorForwardVector() + TraceStart;
+  StartLocation = GetActorLocation();
+  FVector TraceEnd = TraceRange * GetActorForwardVector() + StartLocation;
 
   FHitResult OutHit;
   FCollisionObjectQueryParams ObjectsToTest;
@@ -215,9 +214,17 @@ FVector AE_Charger::GetLocation()
   FCollisionQueryParams CollisionParms;
   CollisionParms.AddIgnoredActor(this);
 
-  DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 2);
+  APaperWarden* PlayerRef = UGeneralFunctions::GetPlayer(this);
 
-  if (GetWorld()->LineTraceSingleByObjectType(OutHit, TraceStart, TraceEnd, ObjectsToTest, CollisionParms))
+  if (PlayerRef)
+  {
+    if (PlayerRef->bDebugEnemyCharge)
+    {
+      DrawDebugLine(GetWorld(), StartLocation, TraceEnd, FColor::Red, false, 2);
+    }
+  }
+
+  if (GetWorld()->LineTraceSingleByObjectType(OutHit, StartLocation, TraceEnd, ObjectsToTest, CollisionParms))
   {
     if (OutHit.bBlockingHit)
     {
@@ -234,21 +241,46 @@ FVector AE_Charger::GetLocation()
   }
 }
 
-void AE_Charger::MoveTo(FVector Direction, bool DelayMovement)
+void AE_Charger::StartCharge()
 {
-  Direction.Y = 0;
-  AddMovementInput(Direction);
-
-  if (IsEnemyAtLocationOrOverlaped(TargetLocation))
+  if (!bOnDelay)
   {
-    GetCharacterMovement()->StopMovementImmediately();
-    FindTargetDirection();
-
-    if (DelayMovement)
+    if (MovementFloat)
     {
-      CreateDelay(ChargeDelay);
+      if (!bIsTimelinePlaying)
+      {
+        UpdateMovement();
+        IncreaseSpeed(ChargeSpeedMultiplier);
+        MovementTimeline.PlayFromStart();
+      }
     }
   }
+}
+
+void AE_Charger::ChargeToTarget(float Value)
+{
+  bIsTimelinePlaying = true;
+  ResetSpriteColor();
+
+  FVector ChargeLocation = FMath::VInterpNormalRotationTo(StartLocation, TargetLocation, Value, ChargeSpeedMultiplier);
+  ChargeLocation.Y = 0;
+
+  TargetDirection = UGeneralFunctions::GetUnitVector(StartLocation, ChargeLocation);
+
+  AddMovementInput(TargetDirection);
+}
+
+void AE_Charger::OnChargeFinish()
+{
+  bIsTimelinePlaying = false;
+
+  GetCharacterMovement()->StopActiveMovement();
+
+  ResetSpeed();
+
+  ResetSpriteColor();
+
+  CreateDelay(ChargeDelay, true);
 }
 
 void AE_Charger::MoveToRandomPoint()
@@ -294,7 +326,7 @@ bool AE_Charger::GetRandomPoint(float RandomPointDeviation, FVector& OutResult)
   if (NavSystem)
   {
     FNavLocation Result;
-    bool bSuccess = NavSystem->GetRandomReachablePointInRadius(GetActorLocation(), WanderRadius, Result);
+    bool bSuccess = NavSystem->GetRandomReachablePointInRadius(GetActorLocation(), RandomPointDeviation, Result);
     OutResult = Result;
     return bSuccess;
   }
@@ -314,9 +346,29 @@ void AE_Charger::CreateDelay(float Delay)
   GetWorldTimerManager().SetTimer(DelayTimer, this, &AE_Charger::OnDelayEnd, Delay, false);
 }
 
+void AE_Charger::CreateDelay(float Delay, bool UpdateRotation)
+{
+  FTimerHandle DelayTimer;
+
+  if (UpdateRotation)
+  {
+    FindTargetRotation();
+    GetSprite()->SetSpriteColor(FLinearColor::Green);
+  }
+
+  bOnDelay = true;
+
+  GetWorldTimerManager().SetTimer(DelayTimer, this, &AE_Charger::OnDelayEnd, Delay, false);
+}
+
 void AE_Charger::OnDelayEnd()
 {
   bOnDelay = false;
+}
+
+bool AE_Charger::CheckAggro()
+{
+  return true;
 }
 
 const bool AE_Charger::GetAggro()

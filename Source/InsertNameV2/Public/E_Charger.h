@@ -49,9 +49,6 @@ public:
   // Called every frame
   virtual void Tick(float DeltaSeconds) override;
 
-  UFUNCTION()
-  void ChargerMovementProgress(float Value);
-
   /* Reads the value of bAggro */
   UFUNCTION(BlueprintPure, Category = "Charge Functions")
   const bool GetAggro();
@@ -66,27 +63,42 @@ protected:
   UPROPERTY()
   UCurveFloat* ChargerFloat;
 
+  FTimeline MovementTimeline;
+
+  UPROPERTY()
+  UCurveFloat* MovementFloat;
+
+  UFUNCTION()
+  void StartCharge();
+
+  UFUNCTION()
+  void ChargeToTarget(float Value);
+
+  UFUNCTION()
+  void OnChargeFinish();
+
+  UFUNCTION()
+  void ChargerMovmentState(float Value);
+
 private:
 
   bool bIsMoving;
-
-  bool bCanCharge;
 
   bool bAggro;
 
   bool bOnDelay;
 
+  bool bIsTimelinePlaying;
+
   FVector TargetLocation;
+
+  FVector StartLocation;
 
   FVector TargetDirection;
 
-  bool IsEnemyAtLocationOrOverlaped(FVector Location);
-
-  bool AtLocation(FVector Location);
-
   void UpdateMovement();
 
-  void FindTargetDirection();
+  void FindTargetRotation();
 
   void RotateToPoint(FVector Location);
 
@@ -96,15 +108,15 @@ private:
 
   FVector GetLocation();
 
-  void MoveTo(FVector Direction, bool DelayMovement);
-
   void MoveToRandomPoint();
 
   bool GetRandomPoint(float RandomPointDeviation, FVector& OutResult);
 
   void CreateDelay(float Delay);
 
+  void CreateDelay(float Delay, bool UpdateRotation);
+
   void OnDelayEnd();
 
-
+  bool CheckAggro();
 };
