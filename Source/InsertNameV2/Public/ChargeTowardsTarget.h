@@ -42,10 +42,6 @@ private:
 
   class APaperWarden* PlayerRef;
 
-  bool IsEnemyAtLocationOrOverlaped();
-
-  bool AtLocation();
-
   void ChargeDelay();
 
   void UpdateMovement();

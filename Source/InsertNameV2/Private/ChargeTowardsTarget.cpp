@@ -98,18 +98,7 @@ void UChargeTowardsTarget::StartCharge()
 
 void UChargeTowardsTarget::ChargeToTarget()
 {
-  if (bCanCharge)
-  {
-    TargetDirection.Y = 0; // Filter out Y
-    CurrentEnemy->AddMovementInput(TargetDirection);
 
-    if (IsEnemyAtLocationOrOverlaped())
-    {
-      UpdateMovement();
-      SetDelay();
-      //EndMovement();
-    }
-  }
 }
 
 FVector UChargeTowardsTarget::GetDirection()
@@ -226,36 +215,6 @@ void UChargeTowardsTarget::RotateToTarget()
   {
     UE_LOG(LogMasterEnemy, Error, TEXT("Enemy %s failed to rotate CurrentEnemy is not valid"))
   }
-}
-
-bool UChargeTowardsTarget::IsEnemyAtLocationOrOverlaped()
-{
-  if (CurrentEnemy->bStopChargeOnPlayerOverlap)
-  {
-    if (CurrentEnemy->bOverlapedPlayer || AtLocation())
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-  else if (AtLocation())
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-bool UChargeTowardsTarget::AtLocation()
-{
-  float Distance = CurrentEnemy->GetActorLocation().Size() - TargetLocation.Size();
-
-  return (Distance <= CurrentEnemy->ErrorTolerance) ? true : false;
 }
 
 void UChargeTowardsTarget::ChargeDelay()

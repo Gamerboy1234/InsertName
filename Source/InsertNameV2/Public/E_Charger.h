@@ -24,22 +24,16 @@ public:
   /* Delay between enemy charging */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
   float ChargeDelay;
-  /* This is how close the enemy should get to it's target location the math is this Enemies X - Targets X if it's less than the error tolerance it stops */
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
-  float ErrorTolerance;
   /* The range of the charger's trace calculated like so Actor's Location + Actor's froward vector x TraceRange */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
   float TraceRange;
   /* If true enemy will always look towards player before moving towards it traced location */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
   bool bDefaultToPlayer;
-  /* If true enemy will stop charging when it overlaps the player */
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
-  bool bStopChargeOnPlayerOverlap;
   /* Specify which target to look at before charge if default to player is set to true disregard this value */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings", meta = (EditCondition = "!bDefaultToPlayer"))
   AActor* TargetActor;
-
+  /* When not aggroed this enemy will try to find a random within this radius to move to radius moves with enemy */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
   float WanderRadius;
 
@@ -58,15 +52,15 @@ protected:
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;
 
-  FTimeline ChargerTimeline;
+  FTimeline MovementStateTimline;
+
+  UPROPERTY()
+  UCurveFloat* StateTimeline;
+
+  FTimeline ChargeTimeline;
 
   UPROPERTY()
   UCurveFloat* ChargerFloat;
-
-  FTimeline MovementTimeline;
-
-  UPROPERTY()
-  UCurveFloat* MovementFloat;
 
   UFUNCTION()
   void StartCharge();

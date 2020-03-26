@@ -21,20 +21,21 @@
 
 AE_Charger::AE_Charger()
 {
-  bStopChargeOnPlayerOverlap = true;
   bDefaultToPlayer = true;
 
-  static ConstructorHelpers::FObjectFinder<UCurveFloat> ChargerCurve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
-  check(ChargerCurve.Succeeded());
+  static ConstructorHelpers::FObjectFinder<UCurveFloat> StateCurve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
+  check(StateCurve.Succeeded());
 
-  ChargerFloat = ChargerCurve.Object;
+  StateTimeline = StateCurve.Object;
 
-  static ConstructorHelpers::FObjectFinder<UCurveFloat> MovementCurve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
-  check(ChargerCurve.Succeeded());
+  static ConstructorHelpers::FObjectFinder<UCurveFloat> ChargeCurve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
+  check(ChargeCurve.Succeeded());
 
-  MovementFloat = MovementCurve.Object;
+  ChargerFloat = ChargeCurve.Object;
 
-  ChargeSpeedMultiplier = 2.0f;
+  ChargeSpeedMultiplier = 4.0f;
+  ChargeDelay = 2.0f;
+  TraceRange = 400;
   WanderRadius = 500.0f;
   WaitDelay = 2.0f;
 }
@@ -47,26 +48,26 @@ void AE_Charger::BeginPlay()
   bOnDelay = false;
 
   // Setup timeline
-  if (ChargerFloat)
+  if (StateTimeline)
   {
     FOnTimelineFloat TimelineProgress;
     TimelineProgress.BindUFunction(this, FName("ChargerMovmentState"));
-    ChargerTimeline.AddInterpFloat(ChargerFloat, TimelineProgress);
-    ChargerTimeline.SetLooping(true);
-    ChargerTimeline.SetPlayRate(5.0f);
-    ChargerTimeline.PlayFromStart();
+    MovementStateTimline.AddInterpFloat(StateTimeline, TimelineProgress);
+    MovementStateTimline.SetLooping(true);
+    MovementStateTimline.SetPlayRate(5.0f);
+    MovementStateTimline.PlayFromStart();
   }
-
-  if (MovementFloat)
+  // Create charge timeline
+  if (ChargerFloat)
   {
     FOnTimelineFloat TimelineProgress;
     FOnTimelineEventStatic onTimelineFinishedCallback;
     TimelineProgress.BindUFunction(this, FName("ChargeToTarget"));
     onTimelineFinishedCallback.BindUFunction(this, FName("OnChargeFinish"));
-    MovementTimeline.SetTimelineFinishedFunc(onTimelineFinishedCallback);
-    MovementTimeline.AddInterpFloat(ChargerFloat, TimelineProgress);
-    MovementTimeline.SetLooping(false);
-    MovementTimeline.SetPlayRate(1.0f);
+    ChargeTimeline.SetTimelineFinishedFunc(onTimelineFinishedCallback);
+    ChargeTimeline.AddInterpFloat(StateTimeline, TimelineProgress);
+    ChargeTimeline.SetLooping(false);
+    ChargeTimeline.SetPlayRate(1.0f);
   }
 }
 
@@ -74,9 +75,9 @@ void AE_Charger::Tick(float DeltaSeconds)
 {
   Super::Tick(DeltaSeconds);
 
-  ChargerTimeline.TickTimeline(DeltaSeconds);
+  MovementStateTimline.TickTimeline(DeltaSeconds);
 
-  MovementTimeline.TickTimeline(DeltaSeconds);
+  ChargeTimeline.TickTimeline(DeltaSeconds);
 }
 
 void AE_Charger::ChargerMovmentState(float Value)
@@ -245,13 +246,13 @@ void AE_Charger::StartCharge()
 {
   if (!bOnDelay)
   {
-    if (MovementFloat)
+    if (ChargerFloat)
     {
       if (!bIsTimelinePlaying)
       {
         UpdateMovement();
         IncreaseSpeed(ChargeSpeedMultiplier);
-        MovementTimeline.PlayFromStart();
+        ChargeTimeline.PlayFromStart();
       }
     }
   }
@@ -266,6 +267,7 @@ void AE_Charger::ChargeToTarget(float Value)
   ChargeLocation.Y = 0;
 
   TargetDirection = UGeneralFunctions::GetUnitVector(StartLocation, ChargeLocation);
+  TargetDirection.Y = 0;
 
   AddMovementInput(TargetDirection);
 }
