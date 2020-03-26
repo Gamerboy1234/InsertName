@@ -13,5 +13,5 @@ UCLASS()
 class INSERTNAMEV2_API AMaster_AIController : public AAIController
 {
 	GENERATED_BODY()
-	
+
 };

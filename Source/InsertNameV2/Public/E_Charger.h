@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Master_Enemy.h"
+#include "Components/TimelineComponent.h"
 #include "E_Charger.generated.h"
 
 /**
@@ -38,4 +39,72 @@ public:
   /* Specify which target to look at before charge if default to player is set to true disregard this value */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings", meta = (EditCondition = "!bDefaultToPlayer"))
   AActor* TargetActor;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
+  float WanderRadius;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
+  float WaitDelay;
+
+  // Called every frame
+  virtual void Tick(float DeltaSeconds) override;
+
+  UFUNCTION()
+  void ChargerMovementProgress(float Value);
+
+  /* Reads the value of bAggro */
+  UFUNCTION(BlueprintPure, Category = "Charge Functions")
+  const bool GetAggro();
+
+protected:
+
+  // Called when the game starts or when spawned
+  virtual void BeginPlay() override;
+
+  FTimeline ChargerTimeline;
+
+  UPROPERTY()
+  UCurveFloat* ChargerFloat;
+
+private:
+
+  bool bIsMoving;
+
+  bool bCanCharge;
+
+  bool bAggro;
+
+  bool bOnDelay;
+
+  FVector TargetLocation;
+
+  FVector TargetDirection;
+
+  bool IsEnemyAtLocationOrOverlaped(FVector Location);
+
+  bool AtLocation(FVector Location);
+
+  void UpdateMovement();
+
+  void FindTargetDirection();
+
+  void RotateToPoint(FVector Location);
+
+  void RotateToPoint(AActor* ActorToRotateTo);
+
+  FVector GetDirection();
+
+  FVector GetLocation();
+
+  void MoveTo(FVector Direction, bool DelayMovement);
+
+  void MoveToRandomPoint();
+
+  bool GetRandomPoint(float RandomPointDeviation, FVector& OutResult);
+
+  void CreateDelay(float Delay);
+
+  void OnDelayEnd();
+
+
 };
