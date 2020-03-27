@@ -55,7 +55,6 @@ void AE_Charger::BeginPlay()
 
   HitBox->OnComponentBeginOverlap.AddDynamic(this, &AE_Charger::OnOverlapBegin);
 
-  bAggro = false;
   bOnDelay = false;
 
   // Create movement state timeline
@@ -65,7 +64,7 @@ void AE_Charger::BeginPlay()
     TimelineProgress.BindUFunction(this, FName("ChargerMovmentState"));
     MovementStateTimline.AddInterpFloat(StateTimeline, TimelineProgress);
     MovementStateTimline.SetLooping(true);
-    MovementStateTimline.SetPlayRate(5.0f);
+    MovementStateTimline.SetPlayRate(1.0f);
     MovementStateTimline.PlayFromStart();
   }
   // Create charge timeline
@@ -91,9 +90,14 @@ void AE_Charger::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class
 
     if (PlayerRef)
     {
-      UGeneralFunctions::LaunchCharacterAwayFromActor(PlayerRef, this, KnockBackMultipler);
+      if (!bOnDelay)
+      {
+        UGeneralFunctions::LaunchCharacterAwayFromActor(PlayerRef, this, KnockBackMultipler);
 
-      PlayerRef->Damage(DamageToPlayer, true, this);
+        PlayerRef->Damage(DamageToPlayer, true, this);
+
+        CreateDelay(ChargeTime);
+      }
     }
   }
 }
@@ -107,12 +111,49 @@ void AE_Charger::Tick(float DeltaSeconds)
   ChargeTimeline.TickTimeline(DeltaSeconds);
 }
 
+AActor* AE_Charger::GetCurrentTarget()
+{
+  if (!bDefaultToPlayer)
+  {
+    if (TargetActor)
+    {
+      return TargetActor;
+    }
+    else
+    {
+      UE_LOG(LogMasterEnemy, Error, TEXT("Failed to GetCurrentTarget TargetActor was not valid"))
+      return nullptr;
+    }
+  }
+  else
+  {
+    APaperWarden* Player = UGeneralFunctions::GetPlayer(this);
+
+    if (Player)
+    {
+      return Player;
+    }
+    else
+    {
+      UE_LOG(LogMasterEnemy, Error, TEXT("Failed to GetCurrentTarget Player was not valid"))
+      return nullptr;
+    }
+  }
+}
+
 void AE_Charger::ChargerMovmentState(float Value)
 {
-  bAggro = CheckAggro();
+  static bool bFirstCharge = true;
 
-  if (bAggro)
+  if (AggroComp->GetAggro())
   {
+    if (bFirstCharge)
+    {
+      GetSprite()->SetSpriteColor(FLinearColor::Green);
+      RotateToPoint(GetCurrentTarget());
+      bFirstCharge = false;
+    }
+
     StartCharge();
   }
   else
@@ -393,14 +434,4 @@ void AE_Charger::CreateDelay(float Delay, bool UpdateRotation)
 void AE_Charger::OnDelayEnd()
 {
   bOnDelay = false;
-}
-
-bool AE_Charger::CheckAggro()
-{
-  return AggroComp->GetAggro();
-}
-
-const bool AE_Charger::GetAggro()
-{
-  return bAggro;
 }

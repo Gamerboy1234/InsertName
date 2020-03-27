@@ -4,8 +4,16 @@
 #include "AggroComponent.h"
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
+#include "InsertNameV2.h"
 #include "CollisionQueryParams.h"
 #include "DrawDebugHelpers.h"
+
+static int32 DebugEnemyAggro = 0;
+FAutoConsoleVariableRef CVARDebugTrackerBotDrawing(
+  TEXT("Aggro.DebugEnemyAggro"),
+  DebugEnemyAggro,
+  TEXT("Draw aggro line of sight"),
+  ECVF_Cheat);
 
 // Sets default values for this component's properties
 UAggroComponent::UAggroComponent()
@@ -14,7 +22,7 @@ UAggroComponent::UAggroComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-  AggroRange = 300;
+  AggroRange = FVector(300, 0, 0);
 }
 
 // Called every frame
@@ -26,10 +34,15 @@ void UAggroComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
   TraceLeft();
 }
 
+void UAggroComponent::SetAggro(bool Value)
+{
+  bAggro = Value;
+}
+
 void UAggroComponent::TraceRight()
 {
   FVector TraceStart = GetOwner()->GetActorLocation();
-  FVector TraceEnd = GetOwner()->GetActorForwardVector() * AggroRange + TraceStart;
+  FVector TraceEnd = TraceStart + AggroRange;
 
   FHitResult OutHit;
   FCollisionObjectQueryParams ObjectsToTest;
@@ -38,7 +51,10 @@ void UAggroComponent::TraceRight()
   FCollisionQueryParams CollisionParms;
   CollisionParms.AddIgnoredActor(GetOwner());
 
-  DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 2);
+  if (DebugEnemyAggro)
+  {
+    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 0);
+  }
 
   if (GetWorld()->LineTraceSingleByObjectType(OutHit, TraceStart, TraceEnd, ObjectsToTest, CollisionParms))
   {
@@ -47,6 +63,11 @@ void UAggroComponent::TraceRight()
       if (OutHit.Actor != nullptr)
       {
         bAggro = true;
+
+        if (DebugEnemyAggro)
+        {
+          UE_LOG(LogGameplaySystem, Log, TEXT("Hit %s on right side"), *OutHit.Actor->GetName())
+        }
       }
     }
   }
@@ -55,7 +76,7 @@ void UAggroComponent::TraceRight()
 void UAggroComponent::TraceLeft()
 {
   FVector TraceStart = GetOwner()->GetActorLocation();
-  FVector TraceEnd = GetOwner()->GetActorForwardVector() * AggroRange + TraceStart;
+  FVector TraceEnd = TraceStart - AggroRange;
 
   FHitResult OutHit;
   FCollisionObjectQueryParams ObjectsToTest;
@@ -64,7 +85,10 @@ void UAggroComponent::TraceLeft()
   FCollisionQueryParams CollisionParms;
   CollisionParms.AddIgnoredActor(GetOwner());
 
-  DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 2);
+  if (DebugEnemyAggro)
+  {
+    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 0);
+  }
 
   if (GetWorld()->LineTraceSingleByObjectType(OutHit, TraceStart, TraceEnd, ObjectsToTest, CollisionParms))
   {
@@ -73,6 +97,11 @@ void UAggroComponent::TraceLeft()
       if (OutHit.Actor != nullptr)
       {
         bAggro = true;
+
+        if (DebugEnemyAggro)
+        {
+          UE_LOG(LogGameplaySystem, Log, TEXT("Hit %s on left side"), *OutHit.Actor->GetName())
+        }
       }
     }
   }

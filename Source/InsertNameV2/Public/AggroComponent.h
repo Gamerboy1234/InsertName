@@ -20,11 +20,16 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+  /* Reads the value of bAggro */
   UFUNCTION(BlueprintPure, Category = "Aggro Functions")
   const bool GetAggro();
 
+  /* Manually set actor aggro */
+  UFUNCTION(BlueprintCallable, Category = "Aggro Functions")
+  void SetAggro(bool Value);
+
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aggro Settings")
-  float AggroRange;
+  FVector AggroRange;
 
 private:
 

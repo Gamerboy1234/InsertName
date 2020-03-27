@@ -57,9 +57,9 @@ public:
   // Called every frame
   virtual void Tick(float DeltaSeconds) override;
 
-  /* Reads the value of bAggro */
+  /* Returns the chargers current target */
   UFUNCTION(BlueprintPure, Category = "Charge Functions")
-  const bool GetAggro();
+  AActor* GetCurrentTarget();
 
 protected:
 
@@ -91,8 +91,6 @@ protected:
 private:
 
   bool bIsMoving;
-
-  bool bAggro;
 
   bool bOnDelay;
 
@@ -126,5 +124,4 @@ private:
 
   void OnDelayEnd();
 
-  bool CheckAggro();
 };
