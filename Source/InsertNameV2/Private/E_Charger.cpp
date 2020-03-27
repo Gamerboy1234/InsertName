@@ -6,9 +6,11 @@
 #include "GeneralFunctions.h"
 #include "CollisionQueryParams.h"
 #include "AI/NavigationSystemBase.h"
+#include "Components/BoxComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "TimerManager.h"
 #include "NavigationSystem.h"
+#include "AggroComponent.h"
 #include "Master_AIController.h"
 #include "AI/NavigationSystemBase.h"
 #include "PaperFlipbookComponent.h"
@@ -23,6 +25,11 @@ AE_Charger::AE_Charger()
 {
   bDefaultToPlayer = true;
 
+  HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
+  HitBox->SetupAttachment(RootComponent);
+
+  AggroComp = CreateDefaultSubobject<UAggroComponent>(TEXT("Aggro Comp"));
+
   static ConstructorHelpers::FObjectFinder<UCurveFloat> StateCurve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
   check(StateCurve.Succeeded());
 
@@ -33,21 +40,25 @@ AE_Charger::AE_Charger()
 
   ChargerFloat = ChargeCurve.Object;
 
-  ChargeSpeedMultiplier = 4.0f;
+  ChargeSpeedMultiplier = 3.0f;
   ChargeDelay = 2.0f;
-  TraceRange = 400;
+  ChargeTime = 2.0f;
+  TraceRange = 1000;
   WanderRadius = 500.0f;
   WaitDelay = 2.0f;
+  KnockBackMultipler = 100;
 }
 
 void AE_Charger::BeginPlay()
 {
   Super::BeginPlay();
 
+  HitBox->OnComponentBeginOverlap.AddDynamic(this, &AE_Charger::OnOverlapBegin);
+
   bAggro = false;
   bOnDelay = false;
 
-  // Setup timeline
+  // Create movement state timeline
   if (StateTimeline)
   {
     FOnTimelineFloat TimelineProgress;
@@ -66,8 +77,24 @@ void AE_Charger::BeginPlay()
     onTimelineFinishedCallback.BindUFunction(this, FName("OnChargeFinish"));
     ChargeTimeline.SetTimelineFinishedFunc(onTimelineFinishedCallback);
     ChargeTimeline.AddInterpFloat(StateTimeline, TimelineProgress);
+    ChargeTimeline.SetTimelineLength(ChargeTime);
     ChargeTimeline.SetLooping(false);
     ChargeTimeline.SetPlayRate(1.0f);
+  }
+}
+
+void AE_Charger::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+  if (OtherActor)
+  {
+    APaperWarden* PlayerRef = Cast<APaperWarden>(OtherActor);
+
+    if (PlayerRef)
+    {
+      UGeneralFunctions::LaunchCharacterAwayFromActor(PlayerRef, this, KnockBackMultipler);
+
+      PlayerRef->Damage(DamageToPlayer, true, this);
+    }
   }
 }
 
@@ -370,7 +397,7 @@ void AE_Charger::OnDelayEnd()
 
 bool AE_Charger::CheckAggro()
 {
-  return true;
+  return AggroComp->GetAggro();
 }
 
 const bool AE_Charger::GetAggro()

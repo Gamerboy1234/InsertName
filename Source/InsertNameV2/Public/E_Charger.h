@@ -27,6 +27,12 @@ public:
   /* The range of the charger's trace calculated like so Actor's Location + Actor's froward vector x TraceRange */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
   float TraceRange;
+  /* Knockback to apply when player is hit */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
+  float KnockBackMultipler;
+  /* The amount of time the beetle should charge for */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
+  float ChargeTime;
   /* If true enemy will always look towards player before moving towards it traced location */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings")
   bool bDefaultToPlayer;
@@ -36,6 +42,14 @@ public:
   /* When not aggroed this enemy will try to find a random within this radius to move to radius moves with enemy */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
   float WanderRadius;
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  class UBoxComponent* HitBox;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  class UAggroComponent* AggroComp;
+
+  UFUNCTION()
+  void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
   float WaitDelay;
