@@ -27,9 +27,18 @@ public:
   /* Manually set actor aggro */
   UFUNCTION(BlueprintCallable, Category = "Aggro Functions")
   void SetAggro(bool Value);
-
+  /* How far along the trace should go from the actors current position */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aggro Settings")
   FVector AggroRange;
+  /* If true the actor will fire a trace on both sides */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aggro Settings")
+  bool bTwoSided;
+  /* whether or not to fire a trace off the actors right side only use sable if bTwoSided is false */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aggro Settings", meta = (EditCondition = "!bTwoSided"))
+  bool bTraceRight;
+  /* whether or not to fire a trace off the actors left side only use sable if bTwoSided is false */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aggro Settings", meta = (EditCondition = "!bTwoSided"))
+  bool bTraceLeft;
 
 private:
 

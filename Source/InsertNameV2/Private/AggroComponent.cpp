@@ -23,6 +23,10 @@ UAggroComponent::UAggroComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
   AggroRange = FVector(300, 0, 0);
+
+  bTwoSided = true;
+  bTraceRight = false;
+  bTraceLeft = false;
 }
 
 // Called every frame
@@ -30,13 +34,23 @@ void UAggroComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-  TraceRight();
-  TraceLeft();
-}
-
-void UAggroComponent::SetAggro(bool Value)
-{
-  bAggro = Value;
+  if (bTwoSided)
+  {
+    TraceRight();
+    TraceLeft();
+  }
+  else if (bTraceRight)
+  {
+    TraceRight();
+  }
+  else if (bTraceLeft)
+  {
+    TraceLeft();
+  }
+  else
+  {
+    UE_LOG(LogGameplaySystem, Log, TEXT("Actor %s aggro component is not firing"), *GetOwner()->GetName())
+  }
 }
 
 void UAggroComponent::TraceRight()
@@ -112,3 +126,7 @@ const bool UAggroComponent::GetAggro()
   return bAggro;
 }
 
+void UAggroComponent::SetAggro(bool Value)
+{
+  bAggro = Value;
+}
