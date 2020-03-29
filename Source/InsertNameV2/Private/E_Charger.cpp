@@ -33,7 +33,7 @@ AE_Charger::AE_Charger()
   static ConstructorHelpers::FObjectFinder<UCurveFloat> StateCurve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
   check(StateCurve.Succeeded());
 
-  StateTimeline = StateCurve.Object;
+  StateFloat = StateCurve.Object;
 
   static ConstructorHelpers::FObjectFinder<UCurveFloat> ChargeCurve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
   check(ChargeCurve.Succeeded());
@@ -45,7 +45,8 @@ AE_Charger::AE_Charger()
   ChargeTime = 2.0f;
   TraceRange = 1000;
   WanderRadius = 500.0f;
-  WaitDelay = 2.0f;
+  WaitDelayMin = 2.0f;
+  WaitDelayMax = 5.0f;
   KnockBackMultipler = 100;
 }
 
@@ -58,11 +59,11 @@ void AE_Charger::BeginPlay()
   bOnDelay = false;
 
   // Create movement state timeline
-  if (StateTimeline)
+  if (StateFloat)
   {
     FOnTimelineFloat TimelineProgress;
     TimelineProgress.BindUFunction(this, FName("ChargerMovmentState"));
-    MovementStateTimline.AddInterpFloat(StateTimeline, TimelineProgress);
+    MovementStateTimline.AddInterpFloat(StateFloat, TimelineProgress);
     MovementStateTimline.SetLooping(true);
     MovementStateTimline.SetPlayRate(1.0f);
     MovementStateTimline.PlayFromStart();
@@ -75,7 +76,7 @@ void AE_Charger::BeginPlay()
     TimelineProgress.BindUFunction(this, FName("ChargeToTarget"));
     onTimelineFinishedCallback.BindUFunction(this, FName("OnChargeFinish"));
     ChargeTimeline.SetTimelineFinishedFunc(onTimelineFinishedCallback);
-    ChargeTimeline.AddInterpFloat(StateTimeline, TimelineProgress);
+    ChargeTimeline.AddInterpFloat(StateFloat, TimelineProgress);
     ChargeTimeline.SetTimelineLength(ChargeTime);
     ChargeTimeline.SetLooping(false);
     ChargeTimeline.SetPlayRate(1.0f);
@@ -378,7 +379,7 @@ void AE_Charger::MoveToRandomPoint()
 
         LocalController->MoveToLocation(TargetLocation);
         bGotLocation = true;
-        CreateDelay(WaitDelay);
+        CreateDelay(CreateRandomWaitTime());
       }
       else
       {
@@ -429,6 +430,11 @@ void AE_Charger::CreateDelay(float Delay, bool UpdateRotation)
   bOnDelay = true;
 
   GetWorldTimerManager().SetTimer(DelayTimer, this, &AE_Charger::OnDelayEnd, Delay, false);
+}
+
+float AE_Charger::CreateRandomWaitTime()
+{
+  return FMath::RandRange(WaitDelayMin, WaitDelayMax);
 }
 
 void AE_Charger::OnDelayEnd()

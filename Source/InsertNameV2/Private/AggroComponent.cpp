@@ -9,7 +9,7 @@
 #include "DrawDebugHelpers.h"
 
 static int32 DebugEnemyAggro = 0;
-FAutoConsoleVariableRef CVARDebugTrackerBotDrawing(
+FAutoConsoleVariableRef CVARDebugAggro(
   TEXT("Aggro.DebugEnemyAggro"),
   DebugEnemyAggro,
   TEXT("Draw aggro line of sight"),

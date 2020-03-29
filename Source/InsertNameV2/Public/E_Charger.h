@@ -51,8 +51,13 @@ public:
   UFUNCTION()
   void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+  /* The minimum amount of time the charger waits to move to a random location */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
-  float WaitDelay;
+  float WaitDelayMin;
+
+  /* The maximum amount of time the charger waits to move to a random location */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
+  float WaitDelayMax;
 
   // Called every frame
   virtual void Tick(float DeltaSeconds) override;
@@ -60,6 +65,10 @@ public:
   /* Returns the chargers current target */
   UFUNCTION(BlueprintPure, Category = "Charge Functions")
   AActor* GetCurrentTarget();
+
+  /* Generates a random wait time */
+  UFUNCTION(BlueprintPure, Category = "Charge Functions")
+  float CreateRandomWaitTime();
 
 protected:
 
@@ -69,7 +78,7 @@ protected:
   FTimeline MovementStateTimline;
 
   UPROPERTY()
-  UCurveFloat* StateTimeline;
+  UCurveFloat* StateFloat;
 
   FTimeline ChargeTimeline;
 
