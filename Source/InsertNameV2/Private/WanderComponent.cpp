@@ -80,8 +80,6 @@ bool UWanderComponent::GetRandomPoint(float RandomPointDeviation, FVector& OutRe
 void UWanderComponent::SetInUse(bool Value)
 {
   bComponentInUse = Value;
-
-  PrimaryComponentTick.bCanEverTick = (bComponentInUse) ? true : false;
 }
 
 void UWanderComponent::CreateDelay(float Delay)

@@ -39,9 +39,7 @@ public:
   /* Specify which target to look at before charge if default to player is set to true disregard this value */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge Settings", meta = (EditCondition = "!bDefaultToPlayer"))
   AActor* TargetActor;
-  /* When not aggroed this enemy will try to find a random within this radius to move to radius moves with enemy */
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
-  float WanderRadius;
+
   UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
   class UBoxComponent* HitBox;
 
@@ -53,14 +51,6 @@ public:
 
   UFUNCTION()
   void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-  /* The minimum amount of time the charger waits to move to a random location */
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
-  float WaitDelayMin;
-
-  /* The maximum amount of time the charger waits to move to a random location */
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
-  float WaitDelayMax;
 
   // Called every frame
   virtual void Tick(float DeltaSeconds) override;
@@ -101,6 +91,8 @@ private:
   bool bIsMoving;
 
   bool bOnDelay;
+
+  bool bSetupFirstCharge;
 
   bool bIsTimelinePlaying;
 

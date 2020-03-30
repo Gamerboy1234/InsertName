@@ -48,9 +48,6 @@ AE_Charger::AE_Charger()
   ChargeDelay = 2.0f;
   ChargeTime = 2.0f;
   TraceRange = 1000;
-  WanderRadius = 500.0f;
-  WaitDelayMin = 2.0f;
-  WaitDelayMax = 5.0f;
   KnockBackMultipler = 100;
 }
 
@@ -61,6 +58,7 @@ void AE_Charger::BeginPlay()
   HitBox->OnComponentBeginOverlap.AddDynamic(this, &AE_Charger::OnOverlapBegin);
 
   bOnDelay = false;
+  bSetupFirstCharge = true;
 
   // Create movement state timeline
   if (StateFloat)
@@ -148,19 +146,8 @@ AActor* AE_Charger::GetCurrentTarget()
 
 void AE_Charger::ChargerMovmentState(float Value)
 {
-  static bool bFirstCharge = true;
-
   if (AggroComp->GetAggro())
   {
-    if (bFirstCharge)
-    {
-      GetSprite()->SetSpriteColor(FLinearColor::Green);
-      UE_LOG(LogTemp, Log, TEXT("Test"))
-      WanderComp->SetInUse(false);
-      UGeneralFunctions::RotateActorToActorLocation(this, GetCurrentTarget());
-      bFirstCharge = false;
-    }
-
     StartCharge();
   }
   else
@@ -285,11 +272,17 @@ FVector AE_Charger::GetLocation()
 
 void AE_Charger::StartCharge()
 {
-  if (!bOnDelay)
+  if (ChargerFloat)
   {
-    if (ChargerFloat)
+    if (!bIsTimelinePlaying)
     {
-      if (!bIsTimelinePlaying)
+      if (bSetupFirstCharge)
+      {
+        bSetupFirstCharge = false;
+        WanderComp->SetInUse(false);
+        CreateDelay(ChargeDelay, true);
+      }
+      if (!bOnDelay)
       {
         UpdateMovement();
         IncreaseSpeed(ChargeSpeedMultiplier);
@@ -302,6 +295,7 @@ void AE_Charger::StartCharge()
 void AE_Charger::ChargeToTarget(float Value)
 {
   bIsTimelinePlaying = true;
+  
   ResetSpriteColor();
 
   FVector ChargeLocation = FMath::VInterpNormalRotationTo(StartLocation, TargetLocation, Value, ChargeSpeedMultiplier);
@@ -320,7 +314,7 @@ void AE_Charger::OnChargeFinish()
   GetCharacterMovement()->StopActiveMovement();
 
   ResetSpeed();
-
+  
   ResetSpriteColor();
 
   CreateDelay(ChargeDelay, true);
