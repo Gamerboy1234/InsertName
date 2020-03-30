@@ -18,15 +18,15 @@ public:
 
 public:	
 	
-  /* When not aggroed this enemy will try to find a random within this radius to move to radius moves with enemy */
+  /* The radius to find a random Vector in */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
   float WanderRadius;
 
-  /* The minimum amount of time the charger waits to move to a random location */
+  /* The minimum amount of time the owner waits to move to a random location */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
   float WaitDelayMin;
 
-  /* The maximum amount of time the charger waits to move to a random location */
+  /* The maximum amount of time the owner waits to move to a random location */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wandering Settings")
   float WaitDelayMax;
 
