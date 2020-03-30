@@ -433,3 +433,52 @@ bool UGeneralFunctions::IsCheckPointInLevel(UObject* WorldContextObject)
   return LocalBool;
 }
 
+void UGeneralFunctions::RotateActorToVector(AActor* ActorToRotate, FVector VectorToRotateTo)
+{
+  if (ActorToRotate)
+  {
+    FVector Direction = GetUnitVector(ActorToRotate->GetActorLocation(), VectorToRotateTo);
+
+    if (IsNumberNegative(Direction.X))
+    {
+      ActorToRotate->SetActorRotation(FRotator(0, 180, 0));
+    }
+    else
+    {
+      ActorToRotate->SetActorRotation(FRotator(0));
+    }
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to RotateActorToVector ActorToRotate was not valid"))
+  }
+}
+
+void UGeneralFunctions::RotateActorToActorLocation(AActor* ActorToRotate, AActor* ActorToRotateTo)
+{
+  if (ActorToRotate)
+  {
+    if (ActorToRotateTo)
+    {
+      FVector Direction = GetUnitVector(ActorToRotate->GetActorLocation(), ActorToRotateTo->GetActorLocation());
+
+      if (IsNumberNegative(Direction.X))
+      {
+        ActorToRotate->SetActorRotation(FRotator(0, 180, 0));
+      }
+      else
+      {
+        ActorToRotate->SetActorRotation(FRotator(0));
+      }
+    }
+    else
+    {
+      UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to RotateActorToActorLocation ActorToRotateTo was not valid"))
+    }
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to RotateActorToActorLocation ActorToRotate was not valid"))
+  }
+}
+

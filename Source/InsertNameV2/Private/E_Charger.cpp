@@ -5,14 +5,10 @@
 #include "Curves/CurveFloat.h"
 #include "GeneralFunctions.h"
 #include "CollisionQueryParams.h"
-#include "AI/NavigationSystemBase.h"
 #include "Components/BoxComponent.h"
-#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "TimerManager.h"
-#include "NavigationSystem.h"
 #include "AggroComponent.h"
-#include "Master_AIController.h"
-#include "AI/NavigationSystemBase.h"
+#include "WanderComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "Engine/World.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -28,7 +24,15 @@ AE_Charger::AE_Charger()
   HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
   HitBox->SetupAttachment(RootComponent);
 
+  if (!ensure(HitBox != nullptr)) { return; }
+
   AggroComp = CreateDefaultSubobject<UAggroComponent>(TEXT("Aggro Comp"));
+
+  if (!ensure(AggroComp != nullptr)) { return; }
+
+  WanderComp = CreateDefaultSubobject<UWanderComponent>(TEXT("Wander Comp"));
+
+  if (!ensure(WanderComp != nullptr)) { return; }
 
   static ConstructorHelpers::FObjectFinder<UCurveFloat> StateCurve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
   check(StateCurve.Succeeded());
@@ -151,7 +155,9 @@ void AE_Charger::ChargerMovmentState(float Value)
     if (bFirstCharge)
     {
       GetSprite()->SetSpriteColor(FLinearColor::Green);
-      RotateToPoint(GetCurrentTarget());
+      UE_LOG(LogTemp, Log, TEXT("Test"))
+      WanderComp->SetInUse(false);
+      UGeneralFunctions::RotateActorToActorLocation(this, GetCurrentTarget());
       bFirstCharge = false;
     }
 
@@ -159,7 +165,8 @@ void AE_Charger::ChargerMovmentState(float Value)
   }
   else
   {
-    MoveToRandomPoint();
+    WanderComp->SetInUse(true);
+    WanderComp->MoveOwnerToRandomPoint();
   }
 }
 
@@ -173,7 +180,7 @@ void AE_Charger::FindTargetRotation()
 {
   if (!bDefaultToPlayer)
   {
-    RotateToPoint(TargetActor);
+    UGeneralFunctions::RotateActorToActorLocation(this, TargetActor);
   }
   else
   {
@@ -181,7 +188,7 @@ void AE_Charger::FindTargetRotation()
 
     if (PlayerRef)
     {
-      RotateToPoint(PlayerRef);
+      UGeneralFunctions::RotateActorToActorLocation(this, PlayerRef);
     }
     else
     {
@@ -192,41 +199,6 @@ void AE_Charger::FindTargetRotation()
 
   TargetLocation = GetLocation();
   TargetDirection = GetDirection();
-}
-
-void AE_Charger::RotateToPoint(FVector Location)
-{
-  FVector Direction = UGeneralFunctions::GetUnitVector(GetActorLocation(), Location);
-
-  if (UGeneralFunctions::IsNumberNegative(Direction.X))
-  {
-    SetActorRotation(FRotator(0, 180, 0));
-  }
-  else
-  {
-    SetActorRotation(FRotator(0));
-  }
-}
-
-void AE_Charger::RotateToPoint(AActor* ActorToRotateTo)
-{
-  if (ActorToRotateTo)
-  {
-    FVector Direction = UGeneralFunctions::GetUnitVector(GetActorLocation(), ActorToRotateTo->GetActorLocation());
-
-    if (UGeneralFunctions::IsNumberNegative(Direction.X))
-    {
-      SetActorRotation(FRotator(0, 180, 0));
-    }
-    else
-    {
-      SetActorRotation(FRotator(0));
-    }
-  }
-  else
-  {
-    UE_LOG(LogMasterEnemy, Error, TEXT("Failed to RotateToPoint ActorToRotateTo was not valid"))
-  }
 }
 
 FVector AE_Charger::GetDirection()
@@ -354,60 +326,6 @@ void AE_Charger::OnChargeFinish()
   CreateDelay(ChargeDelay, true);
 }
 
-void AE_Charger::MoveToRandomPoint()
-{
-  bool bGotLocation = false;
-
-  if (!bOnDelay)
-  {
-    if (!bGotLocation)
-    {
-      AMaster_AIController* LocalController = Cast<AMaster_AIController>(GetController());
-
-      if (LocalController)
-      { 
-        if (GetRandomPoint(WanderRadius, TargetLocation))
-        {
-          RotateToPoint(TargetLocation);
-          TargetLocation.Y = 0;
-        }
-        else
-        {
-          UE_LOG(LogMasterEnemy, Error, TEXT("Failed to get Random location"))
-          return;
-        }
-
-        LocalController->MoveToLocation(TargetLocation);
-        bGotLocation = true;
-        CreateDelay(CreateRandomWaitTime());
-      }
-      else
-      {
-        UE_LOG(LogMasterEnemy, Error, TEXT("Failed to MoveToRandomPoint Controller was not valid"))
-        return;
-      }
-    }
-  }
-}
-
-bool AE_Charger::GetRandomPoint(float RandomPointDeviation, FVector& OutResult)
-{
-  UNavigationSystemV1* NavSystem = Cast<UNavigationSystemV1>(GetWorld()->GetNavigationSystem());
-
-  if (NavSystem)
-  {
-    FNavLocation Result;
-    bool bSuccess = NavSystem->GetRandomReachablePointInRadius(GetActorLocation(), RandomPointDeviation, Result);
-    OutResult = Result;
-    return bSuccess;
-  }
-  else
-  {
-    UE_LOG(LogMasterEnemy, Error, TEXT("Failed to GetRandomPoint NavSystem was not valid"))
-    return false;
-  }
-}
-
 void AE_Charger::CreateDelay(float Delay)
 {
   FTimerHandle DelayTimer;
@@ -430,11 +348,6 @@ void AE_Charger::CreateDelay(float Delay, bool UpdateRotation)
   bOnDelay = true;
 
   GetWorldTimerManager().SetTimer(DelayTimer, this, &AE_Charger::OnDelayEnd, Delay, false);
-}
-
-float AE_Charger::CreateRandomWaitTime()
-{
-  return FMath::RandRange(WaitDelayMin, WaitDelayMax);
 }
 
 void AE_Charger::OnDelayEnd()

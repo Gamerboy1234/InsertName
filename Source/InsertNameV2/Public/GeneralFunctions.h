@@ -80,7 +80,12 @@ public:
   static void LaunchCharacterAwayFromActor(APaperCharacter* CharacterToLaunch, AActor* ActorToLaunchAwayfrom, float LaunchVelocityMultipler);
   /* Checks to see if there is a check point in the level */
   static bool IsCheckPointInLevel(UObject* WorldContextObject);
-
+  /* Will rotate actor to face the direction of the given vector */
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "RotateActorToVector", CompactNodeTitle = "RotateActorV", Keywords = "RotateActorToVector"), Category = "Utility")
+  static void RotateActorToVector(AActor* ActorToRotate, FVector VectorToRotateTo);
+  /* Will rotate actor to face the direction of the given actor */
+  UFUNCTION(BlueprintCallable, meta = (DisplayName = "RotateActorToActorLocation", CompactNodeTitle = "RotateActorA", Keywords = "RotateActorToActorLocation"), Category = "Utility")
+  static void RotateActorToActorLocation(AActor* ActorToRotate, AActor* ActorToRotateTo);
 
   /* Will insert a item into an array at a given index */
   template <typename TAr>

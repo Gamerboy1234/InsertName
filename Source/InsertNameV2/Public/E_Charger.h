@@ -48,6 +48,9 @@ public:
   UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
   class UAggroComponent* AggroComp;
 
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  class UWanderComponent* WanderComp;
+
   UFUNCTION()
   void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -65,10 +68,6 @@ public:
   /* Returns the chargers current target */
   UFUNCTION(BlueprintPure, Category = "Charge Functions")
   AActor* GetCurrentTarget();
-
-  /* Generates a random wait time */
-  UFUNCTION(BlueprintPure, Category = "Charge Functions")
-  float CreateRandomWaitTime();
 
 protected:
 
@@ -115,22 +114,13 @@ private:
 
   void FindTargetRotation();
 
-  void RotateToPoint(FVector Location);
-
-  void RotateToPoint(AActor* ActorToRotateTo);
-
   FVector GetDirection();
 
   FVector GetLocation();
-
-  void MoveToRandomPoint();
-
-  bool GetRandomPoint(float RandomPointDeviation, FVector& OutResult);
 
   void CreateDelay(float Delay);
 
   void CreateDelay(float Delay, bool UpdateRotation);
 
   void OnDelayEnd();
-
 };
