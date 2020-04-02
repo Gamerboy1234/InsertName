@@ -96,9 +96,33 @@ void AMaster_Gun::RotateGunToMouse()
 
   if (LocalPlayer)
   {
-    FRotator MouseRot = UGeneralFunctions::GetMouseRotation(this);
+    FRotator NewRotation = GetMouseRotation();
 
-    LocalPlayer->RotateGun(MouseRot);
+    if (LocalPlayer->GunRef)
+    {
+      LocalPlayer->GunRef->SetActorRotation(NewRotation);
+
+      // Keep gun on Y level 1 and adjust gun rotation
+      if (LocalPlayer->GunRef->GetActorRotation().Roll < 0)
+      {
+        FRotator CurrentRot = LocalPlayer->GunRef->GetActorRotation();
+        FRotator AdjustedRot = FRotator(CurrentRot.Pitch, CurrentRot.Yaw, -180);
+
+        LocalPlayer->GunRef->SetActorRotation(AdjustedRot);
+
+        FVector CurrentLocation = LocalPlayer->GunRef->GetActorLocation();
+        FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
+
+        LocalPlayer->GunRef->SetActorLocation(AdjustedLocation);
+      }
+      else
+      {
+        FVector CurrentLocation = LocalPlayer->GunRef->GetActorLocation();
+        FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
+
+        LocalPlayer->GunRef->SetActorLocation(AdjustedLocation);
+      }
+    }
   }
   else
   {
@@ -535,6 +559,49 @@ void AMaster_Gun::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class 
     {
       bCanFireTrace = true;
     }
+  }
+}
+
+FRotator AMaster_Gun::GetMouseRotation()
+{
+  APaperWarden* LocalPlayer = GetPlayerRef();
+
+  if (LocalPlayer)
+  {
+    APlayerController* PC = GetWorld()->GetFirstPlayerController();
+
+    if (PC)
+    {
+      FVector MouseWorldLocation;
+      FVector MouseWorldDirection;
+
+      if (PC->DeprojectMousePositionToWorld(MouseWorldLocation, MouseWorldDirection))
+      {
+        FVector CurrentCameraLocation = LocalPlayer->CameraComp->GetComponentLocation();
+
+        float RotX = MouseWorldLocation.X - CurrentCameraLocation.X;
+        float RotZ = MouseWorldLocation.Z - CurrentCameraLocation.Z;
+
+        float NewPitch = UKismetMathLibrary::DegAtan2(RotZ, RotX);
+
+        return FRotator(NewPitch, 0, 0);
+      }
+      else
+      {
+        UE_LOG(LogTemp, Log, TEXT("1"))
+        return FRotator(0);
+      }
+    }
+    else
+    {
+      UE_LOG(LogInventorySystem, Error, TEXT("Unable to GetMouseRotation Player Controller is not valid"))
+      return FRotator(0);
+    }
+  }
+  else
+  {
+    UE_LOG(LogInventorySystem, Error, TEXT("Unable to GetMouseRotation Player is not valid"))
+    return FRotator(0);
   }
 }
 

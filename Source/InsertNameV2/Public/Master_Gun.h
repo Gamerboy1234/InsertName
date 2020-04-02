@@ -171,6 +171,8 @@ private:
 
   void SetupCDWidget();
 
+  FRotator GetMouseRotation();
+
   bool bCanFireTrace;
 
   FVector TraceStart;
