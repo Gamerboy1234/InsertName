@@ -10,6 +10,8 @@
 #include "GeneralFunctions.h"
 #include "InsertNameV2.h"
 #include "Components/InputComponent.h"
+#include "Components/ChildActorComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "TimerManager.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -38,6 +40,9 @@ APaperWarden::APaperWarden()
   CameraComp->SetupAttachment(SpringArm);
   CameraComp->FieldOfView = 52;
   CameraComp->bConstrainAspectRatio = false;
+
+  PlayerLegs = CreateDefaultSubobject<UChildActorComponent>(TEXT("PlayerLegs"));
+  PlayerLegs->SetupAttachment(RootComponent);
 
   AmountofInventorySlots = 8;
   ActionBarSlotsPerRow = 10;
@@ -1421,6 +1426,55 @@ void APaperWarden::ResumeAllSpellCooldowns()
         Spell->ResumeCoolDown();
       }
     }
+  }
+}
+
+bool APaperWarden::CanSetMouseRot()
+{
+  bool bIsDead = (PlayerCurrentHP <= 0) ? true : false;
+
+  if (!bIsDead)
+  {
+    if (GunRef)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    return false;
+  }
+}
+
+void APaperWarden::RotatePlayer(FRotator NewRot)
+{
+  if (PlayerLegs)
+  {
+    APlayerController* PC = GetWorld()->GetFirstPlayerController();
+
+    if (PC)
+    {
+      PlayerLegs->SetWorldRotation(NewRot);
+      PC->SetControlRotation(NewRot);
+      UpdateMovementVars();
+
+      // Keep Player Legs on Y level -1
+      FVector CurrentLocation = PlayerLegs->GetComponentLocation();
+      FVector AdjustedLocation = FVector(CurrentLocation.X, -1, CurrentLocation.Z);
+      PlayerLegs->SetWorldLocation(AdjustedLocation);
+    }
+    else
+    {
+      UE_LOG(LogPlayerEvents, Error, TEXT("Failed to RotatePlayer Player Controller not valid"))
+    }
+  }
+  else
+  {
+    UE_LOG(LogPlayerEvents, Error, TEXT("Failed to RotatePlayer PlayerLegs not valid"))
   }
 }
 

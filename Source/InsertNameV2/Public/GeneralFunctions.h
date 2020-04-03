@@ -71,9 +71,6 @@ public:
   static AWardenCameraManager* GetWardenCameraManager(UObject* WorldContextObject);
   /* Gets the player character */
   static APaperWarden* GetPlayer(UObject* WorldContextObject);
-  /* Converts mouse to world space and gets it's rotation in world relative to the player camera */
-  UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetMouseRotation", CompactNodeTitle = "GetMouseRot", Keywords = "GetMouseRotation"), Category = "Utility")
-  static FRotator GetMouseRotation(UObject* WorldContextObject);
   /* Will cast to many different actor classes to determine what damage function to call */
   static bool DamageHitActor(AActor* HitActor, float Damage, AActor* Instigator, bool bShowDamageText);
   /* Will launch the given character away from the given actor */

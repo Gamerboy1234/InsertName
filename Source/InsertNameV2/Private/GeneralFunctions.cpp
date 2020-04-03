@@ -323,23 +323,6 @@ APaperWarden* UGeneralFunctions::GetPlayer(UObject* WorldContextObject)
   }
 }
 
-FRotator UGeneralFunctions::GetMouseRotation(UObject* WorldContextObject)
-{
-  APaperWarden* PlayerRef = GetPlayer(WorldContextObject);
-
-  if (PlayerRef)
-  {
-    PlayerRef->UpdateMouseRotation();
-
-    return PlayerRef->GetCurrentMouseRotation();
-  }
-  else
-  {
-    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to GetMouseRotation to get unable to get player"))
-    return FRotator(0);
-  }
-}
-
 bool UGeneralFunctions::DamageHitActor(AActor* HitActor, float Damage, AActor* Instigator, bool bShowDamageText)
 {
   if (HitActor)

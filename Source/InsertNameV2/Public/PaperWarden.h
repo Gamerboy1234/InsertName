@@ -41,6 +41,9 @@ public:
   UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
   UCameraComponent* CameraComp;
 
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+  class UChildActorComponent* PlayerLegs;
+
   UPROPERTY(BlueprintReadWrite, Category = "Spells")
   bool bWasBarkUsed;
 
@@ -186,15 +189,15 @@ public:
   /* Equips the given gun to player */
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
   void EquipGun(AMaster_Pickup* GunToEquip, FVector Offset, FVector GunScale);
+  /* Updates player movement vars in blueprint */
+  UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
+  void UpdateMovementVars();
   /* Called to updated the current rotation of the mouse */
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
   void UpdateMouseRotation();
   /* Returns the current rotation of the mouse */
   UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Weapon Functions")
   FRotator GetCurrentMouseRotation();
-  /* This event will rotate to the player's gun to the given rotation */
-  UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
-  void RotateGun(FRotator NewRotation);
   /* This event will reset the player gun rotation */
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon Functions")
   void ResetGunRotation();
@@ -219,6 +222,12 @@ public:
   AMaster_Pickup* GunRef;
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   FVector CurrentGunScale;
+  UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
+  class AMaster_Gun* EquippedGun; 
+
+  bool CanSetMouseRot();
+
+  void RotatePlayer(FRotator NewRot);
 
   UFUNCTION(BlueprintCallable, Category = "Spell Functions")
   void PauseAllSpellCooldowns();

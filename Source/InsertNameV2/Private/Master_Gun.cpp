@@ -96,33 +96,54 @@ void AMaster_Gun::RotateGunToMouse()
 
   if (LocalPlayer)
   {
-    FRotator NewRotation = GetMouseRotation();
+   bool bCanSetRot = LocalPlayer->CanSetMouseRot();
 
-    if (LocalPlayer->GunRef)
-    {
-      LocalPlayer->GunRef->SetActorRotation(NewRotation);
+   if (bCanSetRot)
+   {
+     FRotator NewRotation = GetMouseRotation();
 
-      // Keep gun on Y level 1 and adjust gun rotation
-      if (LocalPlayer->GunRef->GetActorRotation().Roll < 0)
-      {
-        FRotator CurrentRot = LocalPlayer->GunRef->GetActorRotation();
-        FRotator AdjustedRot = FRotator(CurrentRot.Pitch, CurrentRot.Yaw, -180);
+     APlayerController* PC = GetWorld()->GetFirstPlayerController();
 
-        LocalPlayer->GunRef->SetActorRotation(AdjustedRot);
+     if (PC)
+     {
+        float MouseX = 0;
+        float MouseY = 0;
 
-        FVector CurrentLocation = LocalPlayer->GunRef->GetActorLocation();
-        FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
+        if (PC->GetMousePosition(MouseX, MouseY))
+        {
+          // Keep gun on Y level 1 and adjust gun rotation
+          if (!UGeneralFunctions::MouseLeftOrRight(MouseX, MouseY))
+          {
+            FRotator AdjustedRot = FRotator(NewRotation.Pitch, NewRotation.Yaw, -180);
 
-        LocalPlayer->GunRef->SetActorLocation(AdjustedLocation);
-      }
-      else
-      {
-        FVector CurrentLocation = LocalPlayer->GunRef->GetActorLocation();
-        FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
+            LocalPlayer->EquippedGun->SetActorRotation(AdjustedRot);
+            LocalPlayer->GunRef->SetActorRotation(AdjustedRot);
 
-        LocalPlayer->GunRef->SetActorLocation(AdjustedLocation);
-      }
-    }
+            FVector CurrentLocation = LocalPlayer->EquippedGun->GetActorLocation();
+            FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
+
+            LocalPlayer->EquippedGun->SetActorLocation(AdjustedLocation);
+
+            LocalPlayer->RotatePlayer(FRotator(0, 180, 0));
+          }
+          else
+          {
+            FVector CurrentLocation = LocalPlayer->EquippedGun->GetActorLocation();
+            FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
+
+            LocalPlayer->EquippedGun->SetActorLocation(AdjustedLocation);
+            LocalPlayer->EquippedGun->SetActorRotation(NewRotation);
+            LocalPlayer->GunRef->SetActorRotation(NewRotation);
+
+            LocalPlayer->RotatePlayer(FRotator(0));
+          }
+        }
+     }
+     else
+     {
+       UE_LOG(LogInventorySystem, Error, TEXT("Unable to RotateGunToMouse Player Controller is not valid"))
+     }
+   }
   }
   else
   {
@@ -588,7 +609,6 @@ FRotator AMaster_Gun::GetMouseRotation()
       }
       else
       {
-        UE_LOG(LogTemp, Log, TEXT("1"))
         return FRotator(0);
       }
     }
