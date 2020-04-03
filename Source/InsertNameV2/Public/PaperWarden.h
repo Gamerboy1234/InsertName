@@ -229,6 +229,9 @@ public:
 
   void RotatePlayer(FRotator NewRot);
 
+  UPROPERTY(BlueprintReadWrite, Category = "Movement Vars")
+  bool bFacingRight;
+
   UFUNCTION(BlueprintCallable, Category = "Spell Functions")
   void PauseAllSpellCooldowns();
 

@@ -83,6 +83,9 @@ public:
   /* Will rotate actor to face the direction of the given actor */
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "RotateActorToActorLocation", CompactNodeTitle = "RotateActorA", Keywords = "RotateActorToActorLocation"), Category = "Utility")
   static void RotateActorToActorLocation(AActor* ActorToRotate, AActor* ActorToRotateTo);
+  /* Determines if the provided character is currently moving left or right returns false if facing left if true character is facing right */
+  UFUNCTION(BlueprintPure, meta = (DisplayName = "IsCharacterMovingLeftOrRight", CompactNodeTitle = "MovingLeftOrRight", Keywords = "IsCharacterMovingLeftOrRight"), Category = "Utility")
+  static bool IsCharacterMovingLeftOrRight(APaperCharacter* Character);
 
   /* Will insert a item into an array at a given index */
   template <typename TAr>

@@ -7,6 +7,7 @@
 #include "CheckPointBase.h"
 #include "SideScrollerGamemode.h"
 #include "Master_Pickup.h"
+#include "PaperFlipbookComponent.h"
 #include "Master_Enemy.h"
 #include "InsertNameV2.h"
 #include "WardenCameraManager.h"
@@ -462,6 +463,24 @@ void UGeneralFunctions::RotateActorToActorLocation(AActor* ActorToRotate, AActor
   else
   {
     UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to RotateActorToActorLocation ActorToRotate was not valid"))
+  }
+}
+
+bool UGeneralFunctions::IsCharacterMovingLeftOrRight(APaperCharacter* Character)
+{
+  if (Character)
+  {
+    FVector CharVelocity = Character->GetVelocity().GetSafeNormal();
+    FVector FowardVector = Character->GetSprite()->GetForwardVector();
+
+    bool LocalBool = (IsNumberNegative(FVector::DotProduct(FowardVector, CharVelocity))) ? false : true;
+
+    return LocalBool;
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to check IsCharacterMovingLeftOrRight Character was not valid"))
+    return false;
   }
 }
 

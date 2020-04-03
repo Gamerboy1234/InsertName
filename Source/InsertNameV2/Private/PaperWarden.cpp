@@ -6,6 +6,7 @@
 #include "WardenSaveGame.h"
 #include "PaperSpriteComponent.h"
 #include "Engine.h"
+#include "PaperFlipbookComponent.h"
 #include "Master_Spell.h"
 #include "GeneralFunctions.h"
 #include "InsertNameV2.h"
@@ -59,6 +60,8 @@ void APaperWarden::BeginPlay()
 
   BarkInnerCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::OnOverlapBegin);
   BarkOuterCollision->OnComponentBeginOverlap.AddDynamic(this, &APaperWarden::BeginOverlap);
+
+  bFacingRight = (UGeneralFunctions::IsNumberNegative(GetActorForwardVector().X)) ? false : true;
 
   if (UGameplayStatics::DoesSaveGameExist(TEXT("Slot1"), 0) && !bLoadedCheckpoint)
   {
@@ -1458,9 +1461,12 @@ void APaperWarden::RotatePlayer(FRotator NewRot)
 
     if (PC)
     {
-      PlayerLegs->SetWorldRotation(NewRot);
-      PC->SetControlRotation(NewRot);
       UpdateMovementVars();
+
+      PlayerLegs->SetWorldRotation(NewRot);
+      GetSprite()->SetWorldRotation(NewRot);
+
+      bFacingRight = UGeneralFunctions::IsCharacterMovingLeftOrRight(this);
 
       // Keep Player Legs on Y level -1
       FVector CurrentLocation = PlayerLegs->GetComponentLocation();
