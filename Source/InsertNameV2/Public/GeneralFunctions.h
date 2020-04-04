@@ -86,6 +86,9 @@ public:
   /* Determines if the provided character is currently moving left or right returns false if facing left if true character is facing right */
   UFUNCTION(BlueprintPure, meta = (DisplayName = "IsCharacterMovingLeftOrRight", CompactNodeTitle = "MovingLeftOrRight", Keywords = "IsCharacterMovingLeftOrRight"), Category = "Utility")
   static bool IsCharacterMovingLeftOrRight(APaperCharacter* Character);
+  /* Gets the players current movement speed */
+  UFUNCTION(BlueprintPure, meta = (DisplayName = "GetPlayerMovementSpeed", CompactNodeTitle = "GetPlayerSpeed", Keywords = "GetPlayerMovementSpeed"), Category = "Utility")
+  static const float GetPlayerMovementSpeed(UObject* WorldContextObject);
 
   /* Will insert a item into an array at a given index */
   template <typename TAr>

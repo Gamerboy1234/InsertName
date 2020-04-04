@@ -43,6 +43,9 @@ public:
   /* Updates the magnets current sprite to given sprite */
   UFUNCTION(BlueprintCallable, Category = "Magnet Functions")
   void UpdateSprite(UPaperSprite* Sprite);
+  /* Returns the amount of momentum the player has built up */
+  UFUNCTION(BlueprintPure, Category = "Magnet Functions")
+  const float GetMomentum();
   /* Called to activate the magnet and start player pull */
   UFUNCTION(BlueprintCallable, Category = "Magnet Functions")
   void Activate();
@@ -73,7 +76,11 @@ public:
   UPROPERTY(BlueprintReadOnly, Category = "Magnet Settings")
   FTimerHandle PullTimer;
 
+
+
 private:
+
+  float BuiltMomentum;
 
   APaperWarden* PlayerRef;
 

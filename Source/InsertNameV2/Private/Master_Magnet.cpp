@@ -168,3 +168,8 @@ void AMaster_Magnet::UpdateSprite(UPaperSprite* Sprite)
 {
   CurrentSprite->SetSprite(Sprite);
 }
+
+const float AMaster_Magnet::GetMomentum()
+{
+  return BuiltMomentum;
+}

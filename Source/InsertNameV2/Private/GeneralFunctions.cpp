@@ -484,3 +484,18 @@ bool UGeneralFunctions::IsCharacterMovingLeftOrRight(APaperCharacter* Character)
   }
 }
 
+const float UGeneralFunctions::GetPlayerMovementSpeed(UObject* WorldContextObject)
+{
+  APaperWarden* LocalPlayer = GetPlayer(WorldContextObject);
+
+  if (LocalPlayer)
+  {
+    return LocalPlayer->GetCharacterMovement()->Velocity.Size();
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to get GetPlayerMovementSpeed Player was not valid"))
+    return 0.0f;
+  }
+}
+
