@@ -1466,7 +1466,7 @@ void APaperWarden::RotatePlayer(FRotator NewRot)
       PlayerLegs->SetWorldRotation(NewRot);
       GetSprite()->SetWorldRotation(NewRot);
 
-      bFacingRight = UGeneralFunctions::IsCharacterMovingLeftOrRight(this);
+      bFacingRight = UGeneralFunctions::IsCharacterSpriteMovingLeftOrRight(this);
 
       // Keep Player Legs on Y level -1
       FVector CurrentLocation = PlayerLegs->GetComponentLocation();

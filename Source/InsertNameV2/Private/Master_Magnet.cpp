@@ -2,6 +2,7 @@
 
 
 #include "Master_Magnet.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Components/SphereComponent.h"
 #include "GeneralFunctions.h"
 #include "PaperWarden.h"
@@ -14,10 +15,12 @@
 AMaster_Magnet::AMaster_Magnet()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
   GravityStrength = 30.0f;
   bActive = true;
+  AccelerationMultiplyer = 2.0f;
+  AccelerationDelay = 1.0f;
 
   OuterSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("OuterSphereCollision"));
   RootComponent = OuterSphereComp;
@@ -35,12 +38,23 @@ AMaster_Magnet::AMaster_Magnet()
   InnerSphereComp->SetCollisionResponseToChannel(ECC_GameTraceChannel14, ECR_Block);
   InnerSphereComp->SetCollisionResponseToChannel(ECC_GameTraceChannel17, ECR_Block);
   InnerSphereComp->SetCollisionResponseToChannel(ECC_GameTraceChannel18, ECR_Block);
+
+  // Setup Timeline curve
+  static ConstructorHelpers::FObjectFinder<UCurveFloat> Curve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
+  check(Curve.Succeeded());
+
+  CurveFloat = Curve.Object;
 }
 
 // Called when the game starts or when spawned
 void AMaster_Magnet::BeginPlay()
 {
 	Super::BeginPlay();
+
+  BuiltMomentum = 10.0f;
+  DefaultMomentum = BuiltMomentum;
+
+  bBuildMomentumStarted = false;
 
   if (bActive)
   {
@@ -62,8 +76,16 @@ void AMaster_Magnet::Activate()
 
   UpdateSprite(ActiveSprite);
 
-  // Create pull timer
-  GetWorldTimerManager().SetTimer(PullTimer, this, &AMaster_Magnet::PullPlayer, 0.01f, true);
+  // Start Pull Timeline
+  if (CurveFloat)
+  {
+    FOnTimelineFloat PullTimelineProgress;
+    PullTimelineProgress.BindUFunction(this, FName("PullTimelineProgress"));
+    PullTimeline.AddInterpFloat(CurveFloat, PullTimelineProgress);
+    PullTimeline.SetLooping(true);
+    PullTimeline.SetPlayRate(1.0f);
+    PullTimeline.PlayFromStart();
+  }
 }
 
 void AMaster_Magnet::Deactivate()
@@ -72,7 +94,7 @@ void AMaster_Magnet::Deactivate()
 
   UpdateSprite(DeactivatedSprite);
 
-  StopTimer();
+  PullTimeline.Stop();
 
   OnPullStop();
 }
@@ -90,6 +112,13 @@ void AMaster_Magnet::PullPlayer()
     FVector PullVelocity = PullDirection * GravityStrength;
 
     PlayerRef->LaunchCharacter(PullVelocity, false, false);
+
+    if (!bBuildMomentumStarted)
+    {
+      CreateMomentumTimer();
+
+      bBuildMomentumStarted = true;
+    }
   }
   else
   {
@@ -98,14 +127,45 @@ void AMaster_Magnet::PullPlayer()
   }
 }
 
-void AMaster_Magnet::OnPullStop_Implementation()
+void AMaster_Magnet::BuildMomentum()
 {
-  StopTimer();
+  PlayerRef = UGeneralFunctions::GetPlayer(this);
+
+  if (PlayerRef)
+  {
+    if (PlayerRef->bMovingRight)
+    {
+      BuiltMomentum = BuiltMomentum * AccelerationMultiplyer;
+
+      UE_LOG(LogTemp, Log, TEXT("%f"), BuiltMomentum)
+    }
+    else if (PlayerRef->bMovingLeft)
+    {
+      BuiltMomentum = BuiltMomentum * AccelerationMultiplyer;
+
+      UE_LOG(LogTemp, Log, TEXT("%f"), BuiltMomentum)
+    }
+  }
 }
 
-void AMaster_Magnet::StopTimer()
+void AMaster_Magnet::OnPullStop_Implementation()
 {
-  GetWorldTimerManager().ClearTimer(PullTimer);
+  StopMomentumTimer();
+}
+
+void AMaster_Magnet::CreateMomentumTimer()
+{
+  // Create pull timer
+  GetWorldTimerManager().SetTimer(MomentumTimer, this, &AMaster_Magnet::BuildMomentum, AccelerationDelay, true);
+}
+
+void AMaster_Magnet::StopMomentumTimer()
+{
+  GetWorldTimerManager().ClearTimer(MomentumTimer);
+
+  bBuildMomentumStarted = false;
+
+  ResetMomentum();
 }
 
 void AMaster_Magnet::OnOuterOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -164,6 +224,13 @@ void AMaster_Magnet::OnSpriteHit(UPrimitiveComponent* HitComp, AActor* OtherActo
   }
 }
 
+void AMaster_Magnet::Tick(float DeltaSeconds)
+{
+  Super::Tick(DeltaSeconds);
+
+  PullTimeline.TickTimeline(DeltaSeconds);
+}
+
 void AMaster_Magnet::UpdateSprite(UPaperSprite* Sprite)
 {
   CurrentSprite->SetSprite(Sprite);
@@ -172,4 +239,14 @@ void AMaster_Magnet::UpdateSprite(UPaperSprite* Sprite)
 const float AMaster_Magnet::GetMomentum()
 {
   return BuiltMomentum;
+}
+
+void AMaster_Magnet::ResetMomentum()
+{
+  BuiltMomentum = DefaultMomentum;
+}
+
+void AMaster_Magnet::PullTimelineProgress(float Value)
+{
+  PullPlayer();
 }

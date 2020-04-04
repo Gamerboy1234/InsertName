@@ -466,7 +466,7 @@ void UGeneralFunctions::RotateActorToActorLocation(AActor* ActorToRotate, AActor
   }
 }
 
-bool UGeneralFunctions::IsCharacterMovingLeftOrRight(APaperCharacter* Character)
+bool UGeneralFunctions::IsCharacterSpriteMovingLeftOrRight(APaperCharacter* Character)
 {
   if (Character)
   {
@@ -479,7 +479,25 @@ bool UGeneralFunctions::IsCharacterMovingLeftOrRight(APaperCharacter* Character)
   }
   else
   {
-    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to check IsCharacterMovingLeftOrRight Character was not valid"))
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to check IsCharacterSpriteMovingLeftOrRight Character was not valid"))
+    return false;
+  }
+}
+
+bool UGeneralFunctions::IsCharacterRootMovingLeftOrRight(APaperCharacter* Character)
+{
+  if (Character)
+  {
+    FVector CharVelocity = Character->GetVelocity().GetSafeNormal();
+    FVector FowardVector = Character->GetActorForwardVector();
+
+    bool LocalBool = (IsNumberNegative(FVector::DotProduct(FowardVector, CharVelocity))) ? false : true;
+
+    return LocalBool;
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to check IsCharacterRootMovingLeftOrRight Character was not valid"))
     return false;
   }
 }

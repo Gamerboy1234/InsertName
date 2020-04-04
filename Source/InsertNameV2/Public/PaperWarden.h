@@ -232,6 +232,12 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "Movement Vars")
   bool bFacingRight;
 
+  UPROPERTY(BlueprintReadWrite, Category = "Movement Vars")
+  bool bMovingRight;
+
+  UPROPERTY(BlueprintReadWrite, Category = "Movement Vars")
+  bool bMovingLeft; 
+
   UFUNCTION(BlueprintCallable, Category = "Spell Functions")
   void PauseAllSpellCooldowns();
 

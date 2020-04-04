@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
 #include "Master_Magnet.generated.h"
 
@@ -37,6 +38,12 @@ public:
   /* The strength at which to pull towards the magnet */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magnet Settings")
   float GravityStrength;
+  /* The delay between add momentum stacks */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magnet Settings")
+  float AccelerationDelay;
+  /* The amount to multiply player acceleration by */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magnet Settings")
+  float AccelerationMultiplyer;
   /* If the magnet can currently pull the player */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magnet Settings")
   bool bActive;
@@ -56,9 +63,6 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Magnet Functions")
   void OnPullStop();
   void OnPullStop_Implementation();
-  /* Called to stop pull timer */
-  UFUNCTION(BlueprintCallable, Category = "Magnet Functions")
-  void StopTimer();
 
   UFUNCTION()
   void OnOuterOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -72,15 +76,25 @@ public:
   UFUNCTION()
   void OnSpriteHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
-  /* The actually timer that is pulling the player */
-  UPROPERTY(BlueprintReadOnly, Category = "Magnet Settings")
-  FTimerHandle PullTimer;
-
-
+  // Called every frame
+  virtual void Tick(float DeltaSeconds) override;
+  
+  UFUNCTION()
+  void PullTimelineProgress(float Value);
 
 private:
 
   float BuiltMomentum;
+   
+  float DefaultMomentum;
+
+  void ResetMomentum();
+
+  void CreateMomentumTimer();
+
+  void StopMomentumTimer();
+
+  void BuildMomentum();
 
   APaperWarden* PlayerRef;
 
@@ -88,7 +102,16 @@ private:
 
   bool bMovementStopped;
 
+  FTimerHandle MomentumTimer;
+
+  bool bBuildMomentumStarted;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+  FTimeline PullTimeline;
+
+  UPROPERTY()
+  UCurveFloat* CurveFloat;
 };

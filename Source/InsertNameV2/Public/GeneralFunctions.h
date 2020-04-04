@@ -83,9 +83,12 @@ public:
   /* Will rotate actor to face the direction of the given actor */
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "RotateActorToActorLocation", CompactNodeTitle = "RotateActorA", Keywords = "RotateActorToActorLocation"), Category = "Utility")
   static void RotateActorToActorLocation(AActor* ActorToRotate, AActor* ActorToRotateTo);
-  /* Determines if the provided character is currently moving left or right returns false if facing left if true character is facing right */
-  UFUNCTION(BlueprintPure, meta = (DisplayName = "IsCharacterMovingLeftOrRight", CompactNodeTitle = "MovingLeftOrRight", Keywords = "IsCharacterMovingLeftOrRight"), Category = "Utility")
-  static bool IsCharacterMovingLeftOrRight(APaperCharacter* Character);
+  /* Determines if the provided characters sprite is currently moving right returns false if facing left if true character is facing right */
+  UFUNCTION(BlueprintPure, meta = (DisplayName = "IsCharacterMovingLeftOrRight", CompactNodeTitle = "SpriteMovingLeftOrRight", Keywords = "IsCharacterSpriteMovingLeftOrRight"), Category = "Utility")
+  static bool IsCharacterSpriteMovingLeftOrRight(APaperCharacter* Character);
+  /* Determines if the provided characters root is currently moving right returns false if facing left if true character is facing right */
+  UFUNCTION(BlueprintPure, meta = (DisplayName = "IsCharacterRootMovingLeftOrRight", CompactNodeTitle = "RootMovingLeftOrRight", Keywords = "IsCharacterRootMovingLeftOrRight"), Category = "Utility")
+  static bool IsCharacterRootMovingLeftOrRight(APaperCharacter* Character);
   /* Gets the players current movement speed */
   UFUNCTION(BlueprintPure, meta = (DisplayName = "GetPlayerMovementSpeed", CompactNodeTitle = "GetPlayerSpeed", Keywords = "GetPlayerMovementSpeed"), Category = "Utility")
   static const float GetPlayerMovementSpeed(UObject* WorldContextObject);
