@@ -19,7 +19,8 @@ AMaster_Magnet::AMaster_Magnet()
 
   GravityStrength = 30.0f;
   bActive = true;
-  AccelerationMultiplyer = 2.0f;
+  AccelerationMultiplyer = 20.0f;
+  AccelerationCap = 2000.0f;
   AccelerationDelay = 1.0f;
 
   OuterSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("OuterSphereCollision"));
@@ -88,7 +89,7 @@ void AMaster_Magnet::Activate()
   }
 }
 
-void AMaster_Magnet::Deactivate()
+void AMaster_Magnet::Deactivate(FVector HitLocation, bool bUseMomentum)
 {
   bActive = false;
 
@@ -96,7 +97,7 @@ void AMaster_Magnet::Deactivate()
 
   PullTimeline.Stop();
 
-  OnPullStop();
+  OnPullStop(HitLocation, bUseMomentum);
 }
 
 void AMaster_Magnet::PullPlayer()
@@ -123,7 +124,7 @@ void AMaster_Magnet::PullPlayer()
   else
   {
     UE_LOG(LogGameplaySystem, Error, TEXT("Unable to pull player PlayerRef is not valid"))
-    OnPullStop();
+    OnPullStop(FVector(0), false);
   }
 }
 
@@ -135,22 +136,41 @@ void AMaster_Magnet::BuildMomentum()
   {
     if (PlayerRef->bMovingRight)
     {
-      BuiltMomentum = BuiltMomentum * AccelerationMultiplyer;
+      BuiltMomentum = FMath::Clamp<float>(BuiltMomentum * AccelerationMultiplyer, BuiltMomentum, AccelerationCap);
 
       UE_LOG(LogTemp, Log, TEXT("%f"), BuiltMomentum)
     }
     else if (PlayerRef->bMovingLeft)
     {
-      BuiltMomentum = BuiltMomentum * AccelerationMultiplyer;
+      BuiltMomentum = FMath::Clamp<float>(BuiltMomentum * AccelerationMultiplyer, BuiltMomentum, AccelerationCap);
 
       UE_LOG(LogTemp, Log, TEXT("%f"), BuiltMomentum)
     }
   }
 }
 
-void AMaster_Magnet::OnPullStop_Implementation()
+void AMaster_Magnet::OnPullStop_Implementation(FVector HitLocation, bool bUseMomentum)
 {
   StopMomentumTimer();
+
+  PlayerRef = UGeneralFunctions::GetPlayer(this);
+
+  if (PlayerRef)
+  {
+    if (bUseMomentum)
+    {
+      FVector LaunchDirection = UGeneralFunctions::GetUnitVector(PlayerRef->GetActorLocation(), GetActorLocation());
+      LaunchDirection.Y = 0.0f;
+
+      FVector LaunchVelocity = LaunchDirection * BuiltMomentum;
+
+      UE_LOG(LogTemp, Log, TEXT("LaunchVelocity %s"), *LaunchVelocity.ToString())
+
+      PlayerRef->LaunchCharacter(LaunchVelocity, false, false);
+    }
+  }
+
+  ResetMomentum();
 }
 
 void AMaster_Magnet::CreateMomentumTimer()
@@ -164,8 +184,6 @@ void AMaster_Magnet::StopMomentumTimer()
   GetWorldTimerManager().ClearTimer(MomentumTimer);
 
   bBuildMomentumStarted = false;
-
-  ResetMomentum();
 }
 
 void AMaster_Magnet::OnOuterOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -189,7 +207,7 @@ void AMaster_Magnet::OnOuterOverlapEnd(class UPrimitiveComponent* OverlappedComp
 
     if (PlayerRef)
     {
-      OnPullStop();
+      OnPullStop(FVector(0), false);
     }
   }
 }
@@ -219,7 +237,7 @@ void AMaster_Magnet::OnSpriteHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 
     if (OtherActor != PlayerRef)
     {
-      Deactivate();
+      Deactivate(FVector(0), false);
     }
   }
 }

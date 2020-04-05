@@ -44,6 +44,9 @@ public:
   /* The amount to multiply player acceleration by */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magnet Settings")
   float AccelerationMultiplyer;
+  /* The Acceleration cap acceleration can't go over this number */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magnet Settings")
+  float AccelerationCap;
   /* If the magnet can currently pull the player */
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magnet Settings")
   bool bActive;
@@ -58,11 +61,11 @@ public:
   void Activate();
   /* Called to stop the magnet from pulling the player */
   UFUNCTION(BlueprintCallable, Category = "Magnet Functions")
-  void Deactivate();
+  void Deactivate(FVector HitLocation, bool bUseMomentum);
   /* Called when magnet stops pull the player */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Magnet Functions")
-  void OnPullStop();
-  void OnPullStop_Implementation();
+  void OnPullStop(FVector HitLocation, bool bUseMomentum);
+  void OnPullStop_Implementation(FVector HitLocation, bool bUseMomentum);
 
   UFUNCTION()
   void OnOuterOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

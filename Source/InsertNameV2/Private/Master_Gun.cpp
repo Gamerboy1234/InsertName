@@ -315,9 +315,7 @@ void AMaster_Gun::FireMultiLineTrace_Implementation()
                 {
                   SpawnLaserBeam(TraceStart, HitObject.ImpactPoint);
 
-                  Magnet->Deactivate();
-
-                  UGeneralFunctions::LaunchCharacterAwayFromActor(GetPlayerRef(), Magnet, 3000);
+                  Magnet->Deactivate(HitObject.ImpactPoint, true);
                 }
               }
               else if (DidTraceHitDamageEffect(HitActor))
@@ -396,9 +394,7 @@ void AMaster_Gun::FireMultiLineKnockBack_Implementation()
                 {
                   SpawnLaserBeam(TraceStart, HitObject.ImpactPoint);
 
-                  Magnet->Deactivate();
-
-                  UGeneralFunctions::LaunchCharacterAwayFromActor(GetPlayerRef(), Magnet, 3000);
+                  Magnet->Deactivate(HitObject.ImpactNormal, true);
                 }
               }
               else if (DidTraceHitDamageEffect(HitActor))
