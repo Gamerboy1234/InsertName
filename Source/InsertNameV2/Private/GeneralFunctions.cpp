@@ -517,3 +517,14 @@ const float UGeneralFunctions::GetPlayerMovementSpeed(UObject* WorldContextObjec
   }
 }
 
+FRotator UGeneralFunctions::InvertRotation(FRotator RotationToInvert)
+{
+  if (IsNumberNegative(RotationToInvert.Vector().X))
+  {
+    return FRotator(RotationToInvert.Pitch, 0.0f, RotationToInvert.Roll);
+  }
+  else
+  {
+    return FRotator(RotationToInvert.Pitch, 180.0f, RotationToInvert.Roll);
+  }
+}

@@ -92,6 +92,10 @@ public:
   /* Gets the players current movement speed */
   UFUNCTION(BlueprintPure, meta = (DisplayName = "GetPlayerMovementSpeed", CompactNodeTitle = "GetPlayerSpeed", Keywords = "GetPlayerMovementSpeed"), Category = "Utility")
   static const float GetPlayerMovementSpeed(UObject* WorldContextObject);
+  /* Inverts the given rotation */
+  UFUNCTION(BlueprintPure, meta = (DisplayName = "InvertRotation", CompactNodeTitle = "InvertRotation", Keywords = "InvertRotation"), Category = "Utility")
+  static FRotator InvertRotation(FRotator RotationToInvert);
+
 
   /* Will insert a item into an array at a given index */
   template <typename TAr>
