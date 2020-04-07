@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "EnemySightComponent.generated.h"
 
-/* This component will draw a line between it and the player if anything is in between it and the player it's sight will return as blocked */
+/* This component will draw a line in the direction the enemy is facing if anything is in front of the enemy (excluding the player) will return as blocked */
 UCLASS( ClassGroup=(AI), meta=(BlueprintSpawnableComponent) )
 class INSERTNAMEV2_API UEnemySightComponent : public UActorComponent
 {
@@ -28,8 +28,14 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sight Settings")
   float SightRange;
 
+protected:
+  // Called when the game starts or when spawned
+  virtual void BeginPlay() override;
+
 private:
 
   FVector HitLocation;
+
+  class APaperWarden* PlayerRef;
 
 };

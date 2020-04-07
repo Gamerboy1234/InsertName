@@ -88,3 +88,10 @@ FVector UEnemySightComponent::GetHitLocation()
 {
   return HitLocation;
 }
+
+void UEnemySightComponent::BeginPlay()
+{
+  Super::BeginPlay();
+
+  PlayerRef = UGeneralFunctions::GetPlayer(this);
+}
