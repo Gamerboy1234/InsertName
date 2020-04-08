@@ -26,7 +26,7 @@ UEnemySightComponent::UEnemySightComponent()
   SightRange = 500.0f;
 }
 
-const bool UEnemySightComponent::GetSightBlocked()
+void UEnemySightComponent::CheckSight()
 {
   FHitResult OutHit;
 
@@ -46,7 +46,7 @@ const bool UEnemySightComponent::GetSightBlocked()
     {
       if (OutHit.Actor != NULL)
       {
-        
+
         if (DebugEnemySight)
         {
           UE_LOG(LogGameplaySystem, Log, TEXT("Hit : %s"), *OutHit.Actor->GetName())
@@ -57,41 +57,39 @@ const bool UEnemySightComponent::GetSightBlocked()
         if (HitPlayer)
         {
           HitLocation = OutHit.Location;
-          return false;
+          bSightBlocked = false;
         }
         else
         {
           HitLocation = OutHit.Location;
-          return true;
+          bSightBlocked = true;
         }
       }
       else
       {
         HitLocation = EndLocation;
-        return false;
+        bSightBlocked = false;
       }
     }
     else
     {
       HitLocation = EndLocation;
-      return false;
+      bSightBlocked = false;
     }
   }
   else
   {
     HitLocation = EndLocation;
-    return false;
+    bSightBlocked = false;
   }
+}
+
+const bool UEnemySightComponent::GetSightBlocked()
+{
+  return bSightBlocked;
 }
 
 FVector UEnemySightComponent::GetHitLocation()
 {
   return HitLocation;
-}
-
-void UEnemySightComponent::BeginPlay()
-{
-  Super::BeginPlay();
-
-  PlayerRef = UGeneralFunctions::GetPlayer(this);
 }

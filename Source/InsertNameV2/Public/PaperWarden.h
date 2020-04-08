@@ -292,6 +292,12 @@ public:
 
   bool bDebugEnemyCharge;
 
+  UPROPERTY(BlueprintReadOnly, Category = "Player Console Vars")
+  bool bGodModeEnabled;
+
+  UFUNCTION(Exec)
+  void EnableGodMode(bool Enable);
+
 protected:
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;

@@ -1506,6 +1506,11 @@ void APaperWarden::DebugEnemyCharge(bool Debug)
   bDebugEnemyCharge = Debug;
 }
 
+void APaperWarden::EnableGodMode(bool Enable)
+{
+  bGodModeEnabled = Enable;
+}
+
 FRotator APaperWarden::GetCurrentMouseRotation()
 {
   return MouseRot;

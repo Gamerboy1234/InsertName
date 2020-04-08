@@ -20,6 +20,10 @@ public:
   UFUNCTION(BlueprintPure, Category = "Sight Functions")
   const bool GetSightBlocked();
 
+  /* Fires the actual sight trace */
+  UFUNCTION(BlueprintCallable, Category = "Sight Functions")
+  void CheckSight();
+
   /* Returns the hit location of the sight trace */
   UFUNCTION(BlueprintPure, Category = "Sight Functions")
   FVector GetHitLocation();
@@ -28,14 +32,9 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sight Settings")
   float SightRange;
 
-protected:
-  // Called when the game starts or when spawned
-  virtual void BeginPlay() override;
-
 private:
 
   FVector HitLocation;
 
-  class APaperWarden* PlayerRef;
-
+  bool bSightBlocked;
 };
