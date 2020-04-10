@@ -31,7 +31,7 @@ void UEnemySightComponent::CheckSight()
   FHitResult OutHit;
 
   FVector StartLocation = GetOwner()->GetActorLocation();
-  FVector EndLocation = GetOwner()->GetActorForwardVector() * SightRange + StartLocation;
+  FVector EndLocation = GetOwner()->GetActorRotation().Vector() * SightRange + StartLocation;
 
   FCollisionQueryParams CollisionParams;
 

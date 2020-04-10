@@ -3,7 +3,9 @@
 
 #include "ReflectionProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GeneralFunctions.h"
 #include "PaperFlipBookComponent.h"
+#include "PaperWarden.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values
@@ -30,6 +32,8 @@ AReflectionProjectile::AReflectionProjectile()
   ProjectileMovement->BounceVelocityStopSimulatingThreshold = 0;
   // Get Current Velocity of Actor
   MyVelocity = GetActorForwardVector() * CurrentSpeed;
+
+  KnockbackMultiplier = 100;
 }
 
 // Called when the game starts or when spawned
@@ -37,9 +41,34 @@ void AReflectionProjectile::BeginPlay()
 {
   Super::BeginPlay();
   SphereComponent->OnComponentHit.AddDynamic(this, &AReflectionProjectile::OnHit);
+  SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AReflectionProjectile::OnOverlapBegin);
+
+  ID = UGeneralFunctions::GetIDFromGamemode(this, this);
+}
+
+void AReflectionProjectile::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+  OnObjectOverlap(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+
+  if (OtherActor)
+  {
+    APaperCharacter* HitPlayer = Cast<APaperWarden>(OtherActor);
+
+    if (HitPlayer)
+    {
+      UGeneralFunctions::LaunchCharacterAwayFromActor(HitPlayer, this, KnockbackMultiplier);
+
+      ReflectProjectile(SweepResult);
+    }
+  }
 }
 
 void AReflectionProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
+{
+  ReflectProjectile(Hit);
+}
+
+void AReflectionProjectile::ReflectProjectile(const FHitResult& Hit)
 {
   FVector ReflectedVelocity = BounceSpeedLoss * (-2 * FVector::DotProduct(MyVelocity, Hit.Normal) * Hit.Normal + MyVelocity);
   MyVelocity = ReflectedVelocity;
@@ -62,4 +91,9 @@ void AReflectionProjectile::Tick(float DeltaTime)
 void AReflectionProjectile::OnFireWallHit_Implementation()
 {
   Destroy();
+}
+
+const int32 AReflectionProjectile::GetID()
+{
+  return ID;
 }
