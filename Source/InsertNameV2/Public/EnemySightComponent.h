@@ -32,6 +32,10 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sight Settings")
   float SightRange;
 
+  /* Actors to ignore in site trace */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sight Settings")
+  TArray<AActor*> IgnoredActors;
+
 private:
 
   FVector HitLocation;

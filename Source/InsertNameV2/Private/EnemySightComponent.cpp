@@ -35,6 +35,11 @@ void UEnemySightComponent::CheckSight()
 
   FCollisionQueryParams CollisionParams;
 
+  for (AActor* Actor : IgnoredActors)
+  {
+    CollisionParams.AddIgnoredActor(Actor);
+  }
+
   if (DebugEnemySight)
   {
     DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Green, false, 1, 0, 1);
