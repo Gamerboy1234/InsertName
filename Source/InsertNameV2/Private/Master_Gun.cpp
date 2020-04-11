@@ -151,36 +151,29 @@ void AMaster_Gun::RotateGunToMouse()
   }
 }
 
-void AMaster_Gun::DamageHitActors()
+void AMaster_Gun::DamageOrKnockHitActors(bool bApplyKnockback)
 {
   for (AActor* HitActor : HitActors)
   {
     if (HitActor)
     {
-      UGeneralFunctions::DamageHitActor(HitActor, Damage, GetPlayerRef(), true);
-    }
-  }
-
-  HitActors.Empty();
-}
-
-void AMaster_Gun::ApplyKnockBack()
-{
-  for (AActor* HitActor : KnockBackActors)
-  {
-    if (HitActor)
-    {
-      AMaster_Enemy* HitEnemy = Cast<AMaster_Enemy>(HitActor);
-
-      if (HitEnemy)
+      if (bApplyKnockback)
       {
-        HitEnemy->OnKnockBack();
-        UGeneralFunctions::LaunchCharacterAwayFromActor(HitEnemy, GetPlayerRef(), KnockBackMultipler);
+        AMaster_Enemy* HitEnemy = Cast<AMaster_Enemy>(HitActor);
+
+        if (HitEnemy)
+        {
+          UGeneralFunctions::ApplyKnockbackToEnemy(HitEnemy, KnockBackMultipler);
+        }
+      }
+      else
+      {
+        UGeneralFunctions::DamageHitActor(HitActor, Damage, GetPlayerRef(), true);
       }
     }
   }
 
-  KnockBackActors.Empty();
+  HitActors.Empty();
 }
 
 bool AMaster_Gun::DidTraceHitEnemy(AActor* HitActor)
@@ -271,7 +264,7 @@ void AMaster_Gun::SetupCDWidget()
   }
 }
 
-void AMaster_Gun::FireMultiLineTrace_Implementation()
+void AMaster_Gun::FireMultiLineTrace_Implementation(bool bApplyKnockback)
 {
   if (bCanFireTrace)
   {
@@ -341,86 +334,7 @@ void AMaster_Gun::FireMultiLineTrace_Implementation()
       {
         SpawnLaserBeam(TraceStart, TraceEnd);
       }
-      DamageHitActors();
-    }
-    else
-    {
-      SpawnLaserBeam(TraceStart, TraceEnd);
-    }
-  }
-}
-
-void AMaster_Gun::FireMultiLineKnockBack_Implementation()
-{
-  if (bCanFireTrace)
-  {
-    TraceStart = Sprite->GetSocketLocation(FName("FireTraceStart"));
-    TraceEnd = Sprite->GetSocketRotation(FName("FireTraceStart")).Vector() * TraceMultipler + TraceStart;
-
-    TArray<FHitResult> OutHit;
-    FCollisionObjectQueryParams ObjectsToTest;
-    ObjectsToTest.AddObjectTypesToQuery(ECC_WorldStatic);
-    ObjectsToTest.AddObjectTypesToQuery(ECC_WorldDynamic);
-    ObjectsToTest.AddObjectTypesToQuery(ECC_Pawn);
-    ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel16);
-    ObjectsToTest.AddObjectTypesToQuery(ECC_GameTraceChannel8);
-
-    FCollisionQueryParams CollisionParms;
-    CollisionParms.AddIgnoredActor(this);
-
-    if (GetWorld()->LineTraceMultiByObjectType(OutHit, TraceStart, TraceEnd, ObjectsToTest, CollisionParms))
-    {
-      if (OutHit.Num() > 0)
-      {
-        for (FHitResult HitObject : OutHit)
-        {
-          if (HitObject.Actor != NULL)
-          {
-            AActor* HitActor = Cast<AActor>(HitObject.Actor);
-
-            if (HitActor)
-            {
-              if (DidTraceHitEnemy(HitActor))
-              {
-                SpawnLaserBeam(TraceStart, TraceEnd);
-
-                HitActors.AddUnique(HitActor);
-              }
-              else if (DidTraceHitMagnet(HitActor))
-              {
-                AMaster_Magnet* Magnet = Cast<AMaster_Magnet>(HitActor);
-
-                if (Magnet)
-                {
-                  SpawnLaserBeam(TraceStart, HitObject.ImpactPoint);
-
-                  Magnet->Deactivate(HitObject.ImpactNormal, true);
-                }
-              }
-              else if (DidTraceHitDamageEffect(HitActor))
-              {
-                SpawnLaserBeam(TraceStart, TraceEnd);
-
-                HitActors.Add(HitActor);
-              }
-              else
-              {
-                SpawnLaserBeam(TraceStart, HitObject.ImpactPoint);
-              }
-
-              if (GetPlayerRef()->bDebugGunHit)
-              {
-                UE_LOG(LogInventorySystem, Log, TEXT("Gun Hit %s"), *HitObject.Actor->GetName())
-              }
-            }
-          }
-        }
-      }
-      else
-      {
-        SpawnLaserBeam(TraceStart, TraceEnd);
-      }
-      ApplyKnockBack();
+      DamageOrKnockHitActors(bApplyKnockback);
     }
     else
     {

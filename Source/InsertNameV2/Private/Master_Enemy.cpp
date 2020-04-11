@@ -114,7 +114,7 @@ void AMaster_Enemy::Stun(float Duration)
 
 void AMaster_Enemy::GravityCheck(float NewGravityScale)
 {
-  if (GetCharacterMovement()->GravityScale < 0.5f)
+  if (GetCharacterMovement()->GravityScale < 1.0f)
   {
     GetCharacterMovement()->GravityScale = NewGravityScale;
   }

@@ -84,12 +84,8 @@ public:
   float Damage;
   /* Will fire a multi line ray cast to look for enemies to damage */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
-  void FireMultiLineTrace();
-  virtual void FireMultiLineTrace_Implementation();
-  /* Will fire a multi line ray cast to look for enemies to knockback */
-  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
-  void FireMultiLineKnockBack();
-  virtual void FireMultiLineKnockBack_Implementation();
+  void FireMultiLineTrace(bool bApplyKnockback);
+  virtual void FireMultiLineTrace_Implementation(bool bApplyKnockback);
   /* Will stop the gun from firing it's raycast and apply the gun cooldown */
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Gun Functions")
   void StopGunFire();
@@ -186,11 +182,7 @@ private:
 
   TArray<AActor*> HitActors;
 
-  TArray<AActor*> KnockBackActors;
-
-  void DamageHitActors();
-
-  void ApplyKnockBack();
+  void DamageOrKnockHitActors(bool bApplyKnockback);
 
   bool DidTraceHitEnemy(AActor* HitActor);
 

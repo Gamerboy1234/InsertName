@@ -72,12 +72,12 @@ void APlayerGun::AttackKeyReleased()
 
 void APlayerGun::LightAttack()
 {
-  FireMultiLineTrace();
+  FireMultiLineTrace(false);
 }
 
 void APlayerGun::HeavyAttack()
 {
-  FireMultiLineKnockBack();
+  FireMultiLineTrace(true);
 }
 
 void APlayerGun::CompleteCharge()

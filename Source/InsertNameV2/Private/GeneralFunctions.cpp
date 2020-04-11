@@ -5,6 +5,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
 #include "CheckPointBase.h"
+#include "Master_Enemy.h"
 #include "SideScrollerGamemode.h"
 #include "Master_Pickup.h"
 #include "PaperFlipbookComponent.h"
@@ -526,5 +527,29 @@ FRotator UGeneralFunctions::InvertRotation(FRotator RotationToInvert)
   else
   {
     return FRotator(RotationToInvert.Pitch, 180.0f, RotationToInvert.Roll);
+  }
+}
+
+void UGeneralFunctions::ApplyKnockbackToEnemy(AMaster_Enemy* Enemy, float KnockBackMultiplier)
+{
+  if (Enemy)
+  {
+    Enemy->GravityCheck(1.0f);
+
+    APaperWarden* PlayerRef = GetPlayer(Enemy);
+
+    if (PlayerRef)
+    {
+      LaunchCharacterAwayFromActor(Enemy, PlayerRef, KnockBackMultiplier);
+      Enemy->OnKnockBack();
+    }
+    else
+    {
+      UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to ApplyKnockbackToEnemy PlayerRef was not valid"))
+    }
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to ApplyKnockbackToEnemy Enemy was not valid"))
   }
 }

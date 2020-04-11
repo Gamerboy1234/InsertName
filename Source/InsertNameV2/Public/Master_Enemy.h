@@ -92,7 +92,7 @@ public:
 
   UFUNCTION(BlueprintCallable, Category = "AI")
   void Stun(float Duration);
-  /* Will check to see if current gravity scale is < 0.5 if so updates gravity so enemy can be knocked backed */
+  /* Will check to see if current gravity scale is < 1 if so updates gravity so enemy can be knocked backed */
   UFUNCTION(BlueprintCallable, Category = "AI")
   void GravityCheck(float NewGravityScale);
   /* Called when player uses the bark spell to bounce the enemy if the enemy does not die this is called */
