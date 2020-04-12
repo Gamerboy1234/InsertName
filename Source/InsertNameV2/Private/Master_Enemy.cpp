@@ -406,6 +406,11 @@ void AMaster_Enemy::ResetGravity_Implementation()
   GetCharacterMovement()->GravityScale = DefaultGravityScale;
 }
 
+void AMaster_Enemy::EnemyTick_Implementation(float TimelineValue)
+{
+ // for use in children
+}
+
 void AMaster_Enemy::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
   APaperWarden* PlayerRef = Cast<APaperWarden>(UGameplayStatics::GetPlayerPawn(this, 0));
@@ -429,6 +434,8 @@ void AMaster_Enemy::TimelineProgress(float Value)
 {
   // Keep Enemy on Y level 0
   UGeneralFunctions::RemoveActorsY(this, this);
+  // Tick replacement
+  EnemyTick(Value);
 }
 
 void AMaster_Enemy::Tick(float DeltaSeconds)

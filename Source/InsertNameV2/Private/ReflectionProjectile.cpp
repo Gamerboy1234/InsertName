@@ -5,8 +5,17 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GeneralFunctions.h"
 #include "PaperFlipBookComponent.h"
+#include "InsertNameV2.h"
 #include "PaperWarden.h"
 #include "Components/SphereComponent.h"
+
+static int32 DebugReflectionHit = 0;
+FAutoConsoleVariableRef CVARDebugReflectionProjectile(
+  TEXT("Reflection.DebugHit"),
+  DebugReflectionHit,
+  TEXT("Prints reflection projectile hit actor"),
+  ECVF_Cheat);
+
 
 // Sets default values
 AReflectionProjectile::AReflectionProjectile()
@@ -52,6 +61,14 @@ void AReflectionProjectile::OnOverlapBegin(class UPrimitiveComponent* Overlapped
 
   if (OtherActor)
   {
+    if (OtherActor)
+    {
+      if (DebugReflectionHit)
+      {
+        UE_LOG(LogMasterEnemy, Log, TEXT("%s Overlapped %s"), *this->GetName(), *OtherActor->GetName())
+      }
+    }
+
     APaperCharacter* HitPlayer = Cast<APaperWarden>(OtherActor);
 
     if (HitPlayer)
@@ -66,6 +83,14 @@ void AReflectionProjectile::OnOverlapBegin(class UPrimitiveComponent* Overlapped
 void AReflectionProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
   ReflectProjectile(Hit);
+
+  if (OtherActor)
+  {
+    if (DebugReflectionHit)
+    {
+      UE_LOG(LogMasterEnemy, Log, TEXT("%s Hit %s"), *this->GetName(), *OtherActor->GetName())
+    }
+  }
 }
 
 void AReflectionProjectile::ReflectProjectile(const FHitResult& Hit)

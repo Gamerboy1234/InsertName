@@ -90,6 +90,9 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "AI")
   bool bIsPlayerOnEnemy;
 
+  UPROPERTY(BlueprintReadWrite, Category = "AI")
+  bool bHitByRage;
+
   UFUNCTION(BlueprintCallable, Category = "AI")
   void Stun(float Duration);
   /* Will check to see if current gravity scale is < 1 if so updates gravity so enemy can be knocked backed */
@@ -178,25 +181,29 @@ public:
   void AfterBeginPlay();
   virtual void AfterBeginPlay_Implementation();
   /* Called when enemy is knocked back */
-  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Events")
   void OnKnockBack();
   virtual void OnKnockBack_Implementation();
   /* Increase enemies speed by a set multiplier will increase both MaxWalkSpeed and MaxAcceleration */
-  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Events")
   void IncreaseSpeed(float SpeedMultiplier);
   virtual void IncreaseSpeed_Implementation(float SpeedMultiplier);
   /* Reset speed back to default speed */
-  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Events")
   void ResetSpeed();
   virtual void ResetSpeed_Implementation();
   /* Will make enemy jump into the air */
-  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Events")
   void AIJump();
   virtual void AIJump_Implementation();
   /* Reset Gravity back to default values */
-  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Functions")
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Events")
   void ResetGravity();
   virtual void ResetGravity_Implementation();
+  /* Enemy tick replacement called on enemy timeline */
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Basic Enemy Events")
+  void EnemyTick(float TimelineValue);
+  virtual void EnemyTick_Implementation(float TimelineValue);
 
   UFUNCTION()
   void OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

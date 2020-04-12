@@ -36,6 +36,9 @@ public:
   /* Gets this objects ID */
   UFUNCTION(BlueprintPure, Category = "Projectile Functions")
   const int32 GetID();
+  /* Calculates the reflections vector */
+  UFUNCTION(BlueprintCallable, Category = "Projectile Functions")
+  void ReflectProjectile(const FHitResult& Hit);
 
 protected:
 	// Called when the game starts or when spawned
@@ -71,8 +74,6 @@ private:
   void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
   int32 ID;
-
-  void ReflectProjectile(const FHitResult& Hit);
 
 public:	
 	// Called every frame
