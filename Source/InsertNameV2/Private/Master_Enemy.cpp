@@ -367,6 +367,8 @@ void AMaster_Enemy::OnDeath_Implementation()
 {
   // Despawn the actor after a set delay
   SetLifeSpan(ActorDespawnDelay);
+
+  UGeneralFunctions::RemoveIDFromGamemode(this, ID, this);
 }
 
 void AMaster_Enemy::AfterBeginPlay_Implementation()
