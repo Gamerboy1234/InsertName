@@ -13,6 +13,7 @@ class APaperWarden;
 class AWardenCameraManager;
 class APaperCharacter;
 class AMaster_Enemy;
+class AWardenController;
 
 /**
  *  This function library contains many useful functions for managing gameplay
@@ -99,6 +100,9 @@ public:
   /* Will check given enemy's gravity if gravity is <= 0 will set gravity to 1 then apply knockback */
   UFUNCTION(BlueprintCallable, meta = (DisplayName = "ApplyKnockbackToEnemy", CompactNodeTitle = "ApplyKnockBack", Keywords = "ApplyKnockbackToEnemy"), Category = "Enemy Functions")
   static void ApplyKnockbackToEnemy(AMaster_Enemy* Enemy, float KnockBackMultiplier);
+  /* Gets the current player controller */
+  UFUNCTION(BlueprintPure, meta = (DisplayName = "GetWardenController", CompactNodeTitle = "GetWardenController", Keywords = "GetWardenController"), Category = "Utility")
+  static AWardenController* GetWardenContoller(UObject* WorldContextObject);
 
   /* Will insert a item into an array at a given index */
   template <typename TAr>

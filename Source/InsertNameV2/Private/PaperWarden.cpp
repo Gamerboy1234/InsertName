@@ -8,8 +8,10 @@
 #include "Engine.h"
 #include "PaperFlipbookComponent.h"
 #include "Master_Spell.h"
+#include "Master_Gun.h"
 #include "GeneralFunctions.h"
 #include "InsertNameV2.h"
+#include "WardenController.h"
 #include "Components/InputComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -1432,7 +1434,7 @@ void APaperWarden::ResumeAllSpellCooldowns()
   }
 }
 
-bool APaperWarden::CanSetMouseRot()
+bool APaperWarden::CanSetGunRot()
 {
   bool bIsDead = (PlayerCurrentHP <= 0) ? true : false;
 
@@ -1496,6 +1498,88 @@ void APaperWarden::CheckSpellCooldowns()
   }
 }
 
+void APaperWarden::SetupPlayerInputComponent(class UInputComponent* WardenInputComponent)
+{
+  Super::SetupPlayerInputComponent(WardenInputComponent);
+
+  // Respond every frame to the values of our two movement axes, "GamepadX" and "GamepadY".
+  WardenInputComponent->BindAxis("GamepadX", this, &APaperWarden::GamepadX);
+  WardenInputComponent->BindAxis("GamepadY", this, &APaperWarden::GamepadY);
+}
+
+
+void APaperWarden::GamepadX(float AxisValue)
+{
+  CurrentGamepadX = FMath::Clamp(AxisValue, -1.0f, 1.0f) * GetWorld()->GetDeltaSeconds();
+  RotateGunWithThumbStick();
+}
+
+void APaperWarden::GamepadY(float AxisValue)
+{
+  CurrentGamepadY = FMath::Clamp(AxisValue, -1.0f, 1.0f) * GetWorld()->GetDeltaSeconds();
+}
+
+void APaperWarden::RotateGunWithThumbStick()
+{
+  AWardenController* WardenController = UGeneralFunctions::GetWardenContoller(this);
+
+  if (WardenController)
+  {
+    if (CanSetGunRot())
+    {
+      if (WardenController->bIsUsingGamepad)
+      {
+        FRotator GunRot = GetThumbstickAngle();
+        
+        if (!GunRot.Pitch == 0)
+        {
+          EquippedGun->SetActorRotation(GunRot);
+          GunRef->SetActorRotation(GunRot);
+
+          FVector GunFowardVector = GunRot.Vector();
+
+          if (UGeneralFunctions::IsNumberNegative(GunFowardVector.X))
+          {
+            FRotator AjustedRot = FRotator(GunRot.Pitch, GunRot.Yaw, -180);
+
+            EquippedGun->SetActorRotation(AjustedRot);
+            GunRef->SetActorRotation(AjustedRot);
+
+            FVector CurrentLocation = EquippedGun->GetActorLocation();
+            FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
+
+            EquippedGun->SetActorLocation(AdjustedLocation);
+
+            RotatePlayer(FRotator(0, 180, 0));
+          }
+          else
+          {
+            FRotator AjustedRot = FRotator(GunRot.Pitch, GunRot.Yaw, 0);
+
+            EquippedGun->SetActorRotation(AjustedRot);
+            GunRef->SetActorRotation(AjustedRot);
+
+            FVector CurrentLocation = EquippedGun->GetActorLocation();
+            FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
+
+            EquippedGun->SetActorLocation(AdjustedLocation);
+
+            RotatePlayer(FRotator(0));
+          }
+        }
+      }
+    }
+  }
+}
+
+FRotator APaperWarden::GetThumbstickAngle()
+{
+  float Atan = FMath::Atan2(CurrentGamepadY * -1, CurrentGamepadX);
+  float Angle = FMath::RadiansToDegrees(Atan);
+
+  return FRotator(Angle, 0, 0);
+}
+
 void APaperWarden::DebugGunHit(bool Debug)
 {
   bDebugGunHit = Debug;
@@ -1524,4 +1608,14 @@ const TArray<AMaster_Pickup*> APaperWarden::GetPlayerInventory()
 const TArray<AMaster_Pickup*> APaperWarden::GetActionBarItems()
 {
   return ActionBarItems;
+}
+
+const float APaperWarden::GetGamepadX()
+{
+  return CurrentGamepadX;
+}
+
+const float APaperWarden::GetGamepadY()
+{
+  return CurrentGamepadY;
 }

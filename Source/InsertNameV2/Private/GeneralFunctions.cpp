@@ -20,6 +20,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "PaperZDCharacter.h"
+#include "WardenController.h"
 #include <iostream>
 #include <random>
 #include <time.h>
@@ -553,3 +554,19 @@ void UGeneralFunctions::ApplyKnockbackToEnemy(AMaster_Enemy* Enemy, float KnockB
     UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to ApplyKnockbackToEnemy Enemy was not valid"))
   }
 }
+
+AWardenController* UGeneralFunctions::GetWardenContoller(UObject* WorldContextObject)
+{
+  AWardenController* PlayerController = Cast<AWardenController>(WorldContextObject->GetWorld()->GetFirstPlayerController());
+
+  if (PlayerController)
+  {
+    return PlayerController;
+  }
+  else
+  {
+    UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to GetWardenContoller PlayerController was not valid"))
+    return nullptr;
+  }
+}
+

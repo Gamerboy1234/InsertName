@@ -225,7 +225,13 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   class AMaster_Gun* EquippedGun; 
 
-  bool CanSetMouseRot();
+  UFUNCTION(BlueprintPure, Category = "Input Functions")
+  const float GetGamepadX();
+
+  UFUNCTION(BlueprintPure, Category = "Input Functions")
+  const float GetGamepadY();
+
+  bool CanSetGunRot();
 
   void RotatePlayer(FRotator NewRot);
 
@@ -280,6 +286,9 @@ public:
   UPROPERTY(BlueprintReadWrite, Category = "Weapon Vars")
   FRotator MouseRot;
 
+  // Called to bind functionality to input
+  virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+
   /* Console commands */
   
   UFUNCTION(Exec)
@@ -304,6 +313,14 @@ protected:
 
 private:
 
+  void GamepadX(float AxisValue);
+
+  void GamepadY(float AxisValue);
+
+  void RotateGunWithThumbStick();
+
+  FRotator GetThumbstickAngle();
+
   void AssignTestSpells();
 
   void SpawnInventory(class UWardenSaveGame* LocalSaveGameObject);
@@ -320,7 +337,13 @@ private:
 
   int32 KillCount;
 
+  float Direction;
+
   AMaster_Pickup* ItemToRest;
+
+  float CurrentGamepadX;
+
+  float CurrentGamepadY;
 
   bool bFoundSlot;
 

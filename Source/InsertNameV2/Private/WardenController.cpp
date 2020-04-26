@@ -58,5 +58,9 @@ void AWardenController::PlayerTick(float DeltaTime)
       bIsUsingGamepad = false;
       ControllerDisconnected();
     }
+    else
+    {
+      bIsUsingGamepad = true;
+    }
   }
 }

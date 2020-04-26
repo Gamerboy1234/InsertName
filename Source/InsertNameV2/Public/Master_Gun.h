@@ -175,8 +175,8 @@ private:
   
   FVector TraceEnd;
 
-  /* Rotate gun towards the mouse */
-  void RotateGunToMouse();
+  /* Rotate gun towards the mouse or rotate with gamepad right thumb stick */
+  void RotateGun();
 
   float DefaultDamage;
 

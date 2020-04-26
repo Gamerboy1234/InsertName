@@ -15,7 +15,8 @@
 #include "Engine/BlueprintGeneratedClass.h"
 #include "Components/InputComponent.h"
 #include "Engine/InputDelegateBinding.h"
-#include "GameFramework/PlayerController.h"
+#include "WardenController.h"
+#include "InputCoreTypes.h"
 #include "Engine/World.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "PaperWarden.h"
@@ -90,52 +91,55 @@ void AMaster_Gun::BeginPlay()
   }
 }
 
-void AMaster_Gun::RotateGunToMouse()
+void AMaster_Gun::RotateGun()
 {
   APaperWarden* LocalPlayer = GetPlayerRef();
 
   if (LocalPlayer)
   {
-   bool bCanSetRot = LocalPlayer->CanSetMouseRot();
+   bool bCanSetRot = LocalPlayer->CanSetGunRot();
 
    if (bCanSetRot)
    {
-     FRotator NewRotation = GetMouseRotation();
-
-     APlayerController* PC = GetWorld()->GetFirstPlayerController();
+     FRotator MouseRotation = GetMouseRotation();
+     
+     AWardenController* PC = UGeneralFunctions::GetWardenContoller(this);
 
      if (PC)
      {
-        float MouseX = 0;
-        float MouseY = 0;
-
-        if (PC->GetMousePosition(MouseX, MouseY))
+        if (!PC->bIsUsingGamepad)
         {
-          // Keep gun on Y level 1 and adjust gun rotation
-          if (!UGeneralFunctions::MouseLeftOrRight(MouseX, MouseY))
+          float MouseX = 0;
+          float MouseY = 0;
+
+          if (PC->GetMousePosition(MouseX, MouseY))
           {
-            FRotator AdjustedRot = FRotator(NewRotation.Pitch, NewRotation.Yaw, -180);
+            // Keep gun on Y level 1 and adjust gun rotation
+            if (!UGeneralFunctions::MouseLeftOrRight(MouseX, MouseY))
+            {
+              FRotator AdjustedRot = FRotator(MouseRotation.Pitch, MouseRotation.Yaw, -180);
 
-            LocalPlayer->EquippedGun->SetActorRotation(AdjustedRot);
-            LocalPlayer->GunRef->SetActorRotation(AdjustedRot);
+              LocalPlayer->EquippedGun->SetActorRotation(AdjustedRot);
+              LocalPlayer->GunRef->SetActorRotation(AdjustedRot);
 
-            FVector CurrentLocation = LocalPlayer->EquippedGun->GetActorLocation();
-            FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
+              FVector CurrentLocation = LocalPlayer->EquippedGun->GetActorLocation();
+              FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
 
-            LocalPlayer->EquippedGun->SetActorLocation(AdjustedLocation);
+              LocalPlayer->EquippedGun->SetActorLocation(AdjustedLocation);
 
-            LocalPlayer->RotatePlayer(FRotator(0, 180, 0));
-          }
-          else
-          {
-            FVector CurrentLocation = LocalPlayer->EquippedGun->GetActorLocation();
-            FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
+              LocalPlayer->RotatePlayer(FRotator(0, 180, 0));
+            }
+            else
+            {
+              FVector CurrentLocation = LocalPlayer->EquippedGun->GetActorLocation();
+              FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
 
-            LocalPlayer->EquippedGun->SetActorLocation(AdjustedLocation);
-            LocalPlayer->EquippedGun->SetActorRotation(NewRotation);
-            LocalPlayer->GunRef->SetActorRotation(NewRotation);
+              LocalPlayer->EquippedGun->SetActorLocation(AdjustedLocation);
+              LocalPlayer->EquippedGun->SetActorRotation(MouseRotation);
+              LocalPlayer->GunRef->SetActorRotation(MouseRotation);
 
-            LocalPlayer->RotatePlayer(FRotator(0));
+              LocalPlayer->RotatePlayer(FRotator(0));
+            }
           }
         }
      }
@@ -369,7 +373,7 @@ void AMaster_Gun::Tick(float DeltaSeconds)
 
 void AMaster_Gun::MouseTimelineProgress(float Value)
 {
-  RotateGunToMouse();
+  RotateGun();
 }
 
 void AMaster_Gun::AttackKeyPressed()
