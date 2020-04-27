@@ -15,6 +15,7 @@
 #include "LeechInnerEggBase.h"
 #include "MasterDamageEffect.h"
 #include "Camera/PlayerCameraManager.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "PaperWarden.h"
 #include "PaperCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -568,5 +569,17 @@ AWardenController* UGeneralFunctions::GetWardenContoller(UObject* WorldContextOb
     UE_LOG(LogGeneralFunctions, Error, TEXT("Unable to GetWardenContoller PlayerController was not valid"))
     return nullptr;
   }
+}
+
+float UGeneralFunctions::GetSquaredMagnitude(float A, float B)
+{
+  float BaseResult = A + B;
+
+  if (IsNumberNegative(BaseResult))
+  {
+    BaseResult = BaseResult * -1;
+  }
+
+  return UKismetMathLibrary::Sqrt(BaseResult);
 }
 

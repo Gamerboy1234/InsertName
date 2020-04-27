@@ -103,6 +103,9 @@ public:
   /* Gets the current player controller */
   UFUNCTION(BlueprintPure, meta = (DisplayName = "GetWardenController", CompactNodeTitle = "GetWardenController", Keywords = "GetWardenController"), Category = "Utility")
   static AWardenController* GetWardenContoller(UObject* WorldContextObject);
+  /* Gets the squared magnitude's of 2 given floats */
+  UFUNCTION(BlueprintPure, meta = (DisplayName = "GetSquaredMagnitude", CompactNodeTitle = "SquaredMag", Keywords = "GetSquaredMagnitude"), Category = "Math")
+  static float GetSquaredMagnitude(float A, float B);
 
   /* Will insert a item into an array at a given index */
   template <typename TAr>

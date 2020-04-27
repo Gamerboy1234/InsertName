@@ -1530,42 +1530,41 @@ void APaperWarden::RotateGunWithThumbStick()
       if (WardenController->bIsUsingGamepad)
       {
         FRotator GunRot = GetThumbstickAngle();
-        
-        if (!GunRot.Pitch == 0)
+
+        EquippedGun->SetActorRotation(GunRot);
+        GunRef->SetActorRotation(GunRot);
+
+        FVector GunFowardVector = GunRot.Vector();
+
+        if (UGeneralFunctions::IsNumberNegative(GunFowardVector.X))
         {
-          EquippedGun->SetActorRotation(GunRot);
-          GunRef->SetActorRotation(GunRot);
+          FRotator AjustedRot = FRotator(GunRot.Pitch, 0, -180);
 
-          FVector GunFowardVector = GunRot.Vector();
+          EquippedGun->SetActorRotation(AjustedRot);
+          GunRef->SetActorRotation(AjustedRot);
 
-          if (UGeneralFunctions::IsNumberNegative(GunFowardVector.X))
-          {
-            FRotator AjustedRot = FRotator(GunRot.Pitch, GunRot.Yaw, -180);
+          FVector CurrentLocation = EquippedGun->GetActorLocation();
+          FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
 
-            EquippedGun->SetActorRotation(AjustedRot);
-            GunRef->SetActorRotation(AjustedRot);
+          EquippedGun->SetActorLocation(AdjustedLocation);
 
-            FVector CurrentLocation = EquippedGun->GetActorLocation();
-            FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
+          LastUsedGunAngle = AjustedRot;
+          RotatePlayer(FRotator(0, 180, 0));
+        }
+        else
+        {
+          FRotator AjustedRot = FRotator(GunRot.Pitch, 0, 0);
 
-            EquippedGun->SetActorLocation(AdjustedLocation);
+          EquippedGun->SetActorRotation(AjustedRot);
+          GunRef->SetActorRotation(AjustedRot);
 
-            RotatePlayer(FRotator(0, 180, 0));
-          }
-          else
-          {
-            FRotator AjustedRot = FRotator(GunRot.Pitch, GunRot.Yaw, 0);
+          FVector CurrentLocation = EquippedGun->GetActorLocation();
+          FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
 
-            EquippedGun->SetActorRotation(AjustedRot);
-            GunRef->SetActorRotation(AjustedRot);
+          EquippedGun->SetActorLocation(AdjustedLocation);
 
-            FVector CurrentLocation = EquippedGun->GetActorLocation();
-            FVector AdjustedLocation = FVector(CurrentLocation.X, 1, CurrentLocation.Z);
-
-            EquippedGun->SetActorLocation(AdjustedLocation);
-
-            RotatePlayer(FRotator(0));
-          }
+          LastUsedGunAngle = AjustedRot;
+          RotatePlayer(FRotator(0));
         }
       }
     }
@@ -1574,10 +1573,20 @@ void APaperWarden::RotateGunWithThumbStick()
 
 FRotator APaperWarden::GetThumbstickAngle()
 {
-  float Atan = FMath::Atan2(CurrentGamepadY * -1, CurrentGamepadX);
-  float Angle = FMath::RadiansToDegrees(Atan);
+  if (CurrentGamepadX == 0 && CurrentGamepadY == 0)
+  {
+    UE_LOG(LogTemp, Log, TEXT("Last Angle Pitch: %f"), LastUsedGunAngle.Pitch)
+    UE_LOG(LogTemp, Log, TEXT("Last Angle Roll: %f"), LastUsedGunAngle.Roll)
+    UE_LOG(LogTemp, Log, TEXT("Last Angle Yaw: %f"), LastUsedGunAngle.Yaw)
+    return LastUsedGunAngle;
+  }
+  else
+  {
+    float Atan = FMath::Atan2(CurrentGamepadY * -1, CurrentGamepadX);
+    float Angle = FMath::RadiansToDegrees(Atan);
 
-  return FRotator(Angle, 0, 0);
+    return FRotator(Angle, 0, 0);
+  }
 }
 
 void APaperWarden::DebugGunHit(bool Debug)

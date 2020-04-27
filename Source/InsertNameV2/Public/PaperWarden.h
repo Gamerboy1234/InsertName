@@ -337,9 +337,11 @@ private:
 
   int32 KillCount;
 
-  float Direction;
-
   AMaster_Pickup* ItemToRest;
+
+  float InputMag;
+
+  FRotator LastUsedGunAngle;
 
   float CurrentGamepadX;
 
