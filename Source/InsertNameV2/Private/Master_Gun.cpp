@@ -573,3 +573,8 @@ UGunCoolDownBar* AMaster_Gun::GetBackCDWidget()
 {
   return CDWidgetBack;
 }
+
+void AMaster_Gun::ResetGunCooldown()
+{
+  bOnCooldown = false;
+}

@@ -17,8 +17,6 @@ class INSERTNAMEV2_API APlayerGun : public AMaster_Gun
 
 public:
 
-  APlayerGun();
-
   virtual void AttackKeyPressed() override;
 
   virtual void AttackKeyReleased() override;
@@ -32,31 +30,21 @@ public:
 
   virtual void StopGunFire_Implementation() override;
 
-  // Called every frame
-  virtual void Tick(float DeltaSeconds) override;
-
-protected:
-
-  FTimeline CooldownTimeline;
-
-  UPROPERTY()
-  UCurveFloat* CDFloat;
-
-  UFUNCTION()
-  void TimelineFinishedCallback();
-
-  UFUNCTION()
-  void TimelineCallback(float val);
-
-private:
-
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
   void LightAttack();
 
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
   void HeavyAttack();
 
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
   void CompleteCharge();
 
+  UPROPERTY(BlueprintReadOnly, Category = "Gun Vars")
   bool ChargeStarted;
 
+  UPROPERTY(BlueprintReadOnly, Category = "Gun Vars")
   bool ChargeDone;
+
+  UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Gun Events")
+  void OnFireEnd();
 };

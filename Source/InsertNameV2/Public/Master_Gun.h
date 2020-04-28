@@ -114,6 +114,9 @@ public:
   /* Gets the current back cooldown widget */
   UFUNCTION(BlueprintPure, Category = "Gun Functions")
   UGunCoolDownBar* GetBackCDWidget();
+  /* Resets gun cooldown */
+  UFUNCTION(BlueprintCallable, Category = "Gun Functions")
+  void ResetGunCooldown();
 
   /* Upon player interacting with this object call player equip gun function */
   virtual void OnInteract_Implementation() override;

@@ -5,18 +5,9 @@
 #include "TimerManager.h"
 #include "Engine.h"
 
-APlayerGun::APlayerGun()
-{
-  // Setup Timeline curve
-  static ConstructorHelpers::FObjectFinder<UCurveFloat> Curve(TEXT("/Game/2DPlatformingKit/Blueprints/Player/MouseCurve"));
-  check(Curve.Succeeded());
-
-  CDFloat = Curve.Object;
-}
-
 void APlayerGun::AttackKeyPressed()
 {
-  if (!bOnCooldown && !CooldownTimeline.IsPlaying())
+  if (!bOnCooldown)
   {
     ChargeStarted = true;
 
@@ -39,7 +30,7 @@ void APlayerGun::AttackKeyPressed()
 
 void APlayerGun::AttackKeyReleased()
 {
-  if (!bOnCooldown && !CooldownTimeline.IsPlaying())
+  if (!bOnCooldown)
   {
     if (ChargeTimer.IsValid())
     {
@@ -53,6 +44,8 @@ void APlayerGun::AttackKeyReleased()
       StopGunFire();
 
       ChargeDone = false;
+
+      OnFireEnd();
     }
     else
     {
@@ -65,6 +58,8 @@ void APlayerGun::AttackKeyReleased()
         LightAttack();
 
         StopGunFire();
+
+        OnFireEnd();
       }
     }
   }
@@ -93,56 +88,7 @@ void APlayerGun::CompleteCharge()
   }
 }
 
-void APlayerGun::Tick(float DeltaSeconds)
-{
-  Super::Tick(DeltaSeconds);
-
-  // Update Cooldown Timeline
-  CooldownTimeline.TickTimeline(DeltaSeconds);
-}
-
-void APlayerGun::TimelineCallback(float Value)
-{
-  if (!bDisabledGun)
-  {
-    bDisabledGun = true;
-
-    DisableGunInput();
-  }
-
-  float Playback = CooldownTimeline.GetPlaybackPosition();
-  float Length = CooldownTimeline.GetTimelineLength();
-
-  UpdateCDBar(Playback, Length, GunCoolDown);
-}
-
-void APlayerGun::TimelineFinishedCallback()
-{
-  bOnCooldown = false;
-  bDisabledGun = false;
-  EnableGunInput();
-}
-
 void APlayerGun::StopGunFire_Implementation()
 {
   bOnCooldown = true;
-
-  // Start CD Timeline
-  FOnTimelineFloat CDTimelineCallback;
-  FOnTimelineEventStatic CDTimelineFinishedCallback;
-
-  if (!CooldownTimeline.IsPlaying())
-  {
-    if (CDFloat)
-    {
-      CDTimelineCallback.BindUFunction(this, FName("TimelineCallback"));
-      CDTimelineFinishedCallback.BindUFunction(this, FName("TimelineFinishedCallback"));
-      CooldownTimeline.SetTimelineFinishedFunc(CDTimelineFinishedCallback);
-      CooldownTimeline.AddInterpFloat(CDFloat, CDTimelineCallback);
-      CooldownTimeline.SetLooping(false);
-      CooldownTimeline.SetPlayRate(1.0f);
-      CooldownTimeline.SetTimelineLength(GunCoolDown);
-      CooldownTimeline.PlayFromStart();
-    }
-  }
 }
