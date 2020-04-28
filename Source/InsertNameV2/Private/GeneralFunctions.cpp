@@ -82,6 +82,23 @@ bool UGeneralFunctions::MouseLeftOrRight(float mouseX, float mouseY)
   }
 }
 
+float y = 0;
+float resY = 0;
+bool UGeneralFunctions::IsMouseTopOrBottom(float mouseX, float mouseY)
+{
+  resY = GetGameViewportSize().Y;
+  resY = resY / 2;
+  if (mouseY < resY)
+  {
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+}
+
+
 int32 UGeneralFunctions::RandomNumber(int32 max, int32 min)
 {
   if (min > max) {

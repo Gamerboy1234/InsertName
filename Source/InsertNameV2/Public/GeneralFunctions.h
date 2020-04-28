@@ -106,6 +106,9 @@ public:
   /* Gets the squared magnitude's of 2 given floats */
   UFUNCTION(BlueprintPure, meta = (DisplayName = "GetSquaredMagnitude", CompactNodeTitle = "SquaredMag", Keywords = "GetSquaredMagnitude"), Category = "Math")
   static float GetSquaredMagnitude(float A, float B);
+  /* Checks to see if the mouse is on the top or bottom of the screen returns true if mouse is on the bottom of the screen and false if top */
+  UFUNCTION(BlueprintPure, meta = (DisplayName = "IsMouseTopOrBottom", CompactNodeTitle = "IsMouseTopOrBottom", Keywords = "IsMouseTopOrBottom"), Category = "Utility")
+  static bool IsMouseTopOrBottom(float mouseX, float mouseY);
 
   /* Will insert a item into an array at a given index */
   template <typename TAr>
