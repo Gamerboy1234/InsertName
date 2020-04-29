@@ -43,9 +43,16 @@ void AMaster_PressurePlate::OnOverlapBegin(class UPrimitiveComponent* Overlapped
       {
         if (CurrentPlatform)
         {
-          CurrentPlatform->SetCanMove(true);
+          if (CurrentPlatform->bStartWithPlate)
+          {
+            CurrentPlatform->StartMovement();
 
-          bAlreadyUsed = (bOneShot) ? true : false;
+            bAlreadyUsed = (bOneShot) ? true : false;
+          }
+          else
+          {
+            UE_LOG(LogGameplaySystem, Warning, TEXT("%s is an auto platform and doesn't need plate input this can be changed the platform settings"), *CurrentPlatform->GetName())
+          }
         }
         else
         {

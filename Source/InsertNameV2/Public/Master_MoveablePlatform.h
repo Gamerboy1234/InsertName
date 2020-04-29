@@ -31,13 +31,17 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform Settings")
   bool bOneShot;
 
-  /* Updates the movement of the platform make it so that it either can move or disable movement */
-  UFUNCTION(BlueprintCallable, Category = "Movement Functions")
-  void SetCanMove(bool bShouldMove);
-  
-  /* Reads the value of bCanMove */
-  UFUNCTION(BlueprintPure, Category = "Movement Functions")
-  const bool GetCanMove();
+   /* Whether or not the platform should automatically move when game is started */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform Settings", meta = (EditCondition = "!bStartWithPlate"))
+  bool bAutoStart;
+
+  /* Whether or not the platform should wait for pressure pate input to start moving */
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform Settings", meta = (EditCondition = "!bAutoStart"))
+  bool bStartWithPlate;
+
+  /* Function called to start platform movement */
+  UFUNCTION(BlueprintCallable, Category = "Platform Functions")
+  void StartMovement();
 
 protected:
 	// Called when the game starts or when spawned
@@ -48,10 +52,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+  
+  bool bCanMove;
 
   FVector GlobalTargetLocation;
 
   FVector GlobalStartLocation;
-
-  bool bCanMove;
 };

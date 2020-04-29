@@ -15,6 +15,8 @@ AMaster_MoveablePlatform::AMaster_MoveablePlatform()
 
   MovementSpeed = 200.0f;
   bOneShot = true;
+  bAutoStart = true;
+  bStartWithPlate = false;
 }
 
 // Called when the game starts or when spawned
@@ -24,6 +26,15 @@ void AMaster_MoveablePlatform::BeginPlay()
 	
   GlobalStartLocation = GetActorLocation();
   GlobalTargetLocation = GetTransform().TransformPosition(TargetLocation);
+
+  if (bAutoStart)
+  {
+    StartMovement();
+  }
+  else if (bStartWithPlate)
+  {
+    bCanMove = false;
+  }
 }
 
 // Called every frame
@@ -55,12 +66,7 @@ void AMaster_MoveablePlatform::Tick(float DeltaTime)
   }
 }
 
-const bool AMaster_MoveablePlatform::GetCanMove()
+void AMaster_MoveablePlatform::StartMovement()
 {
-  return bCanMove;
-}
-
-void AMaster_MoveablePlatform::SetCanMove(bool bShouldMove)
-{
-  bCanMove = bShouldMove;
+  bCanMove = true;
 }
