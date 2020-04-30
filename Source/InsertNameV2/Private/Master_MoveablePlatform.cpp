@@ -2,7 +2,6 @@
 
 
 #include "Master_MoveablePlatform.h"
-#include "PaperSpriteComponent.h"
 
 // Sets default values
 AMaster_MoveablePlatform::AMaster_MoveablePlatform()
@@ -10,63 +9,6 @@ AMaster_MoveablePlatform::AMaster_MoveablePlatform()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-  SpriteComp = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
-  RootComponent = SpriteComp;
-
-  MovementSpeed = 200.0f;
-  bOneShot = true;
-  bAutoStart = true;
   bStartWithPlate = false;
 }
 
-// Called when the game starts or when spawned
-void AMaster_MoveablePlatform::BeginPlay()
-{
-	Super::BeginPlay();
-	
-  GlobalStartLocation = GetActorLocation();
-  GlobalTargetLocation = GetTransform().TransformPosition(TargetLocation);
-
-  if (bAutoStart)
-  {
-    StartMovement();
-  }
-  else if (bStartWithPlate)
-  {
-    bCanMove = false;
-  }
-}
-
-// Called every frame
-void AMaster_MoveablePlatform::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-  if (bCanMove)
-  {
-    FVector Location = GetActorLocation();
-
-    float Journeylength = (GlobalTargetLocation - GlobalStartLocation).Size();
-    float JourneyTravelled = (Location - GlobalStartLocation).Size();
-
-    if (JourneyTravelled >= Journeylength)
-    {
-      bCanMove = (!bOneShot) ? true : false;
-
-      FVector Swap = GlobalStartLocation;
-      GlobalStartLocation = GlobalTargetLocation;
-      GlobalTargetLocation = Swap;
-    }
- 
-    FVector Direction = (GlobalTargetLocation - GlobalStartLocation).GetSafeNormal();
-
-    Location += MovementSpeed * DeltaTime * Direction;
-
-    SetActorLocation(Location);
-  }
-}
-
-void AMaster_MoveablePlatform::StartMovement()
-{
-  bCanMove = true;
-}
